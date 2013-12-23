@@ -26,13 +26,10 @@
 #ifndef _TVECTOR_H_
 #include "core/util/tVector.h"
 #endif
-#ifndef _GFXTEXTUREHANDLE_H_
-#include "gfx/gfxTextureHandle.h"
-#endif
-
 
 class Material;
-class BaseMatInstance;
+class TSMaterial;
+class TSMaterialInstance;
 class Stream;
 class GFXVertexFormat;
 class FeatureSet;
@@ -53,7 +50,6 @@ public:
 
    const Vector<String> &getMaterialNameList() const { return mMaterialNames; }
    const String &getMaterialName(U32 index) const { return mMaterialNames[index]; }
-   GFXTextureObject *getDiffuseTexture(U32 index);
 
    void setTextureLookupPath(const String& path) { mLookupPath = path; }
    void setMaterialName(U32 index, const String& name);
@@ -75,22 +71,21 @@ public:
    bool writeText(Stream &stream);
 
    void mapMaterials();
-
+   
    /// Initialize material instances in material list.
-   void initMatInstances(  const FeatureSet &features, 
-                           const GFXVertexFormat *vertexFormat );
+   void initMatInstances( const GFXVertexFormat *vertexFormat );
 
    /// Return the material instance or NULL if the 
    /// index is out of bounds.
-   inline BaseMatInstance* getMaterialInst( U32 index ) const
+   inline TSMaterialInstance* getMaterialInst( U32 index ) const
    {
       return index < mMatInstList.size() ? mMatInstList[index] : NULL;
    }
 
-   void setMaterialInst( BaseMatInstance *matInst, U32 index );
+   void setMaterialInst( TSMaterialInstance *matInst, U32 index );
 
    // Needs to be accessible if were going to freely edit instances
-   Vector<BaseMatInstance*> mMatInstList;
+   Vector<TSMaterialInstance*> mMatInstList;
 
 protected:
 

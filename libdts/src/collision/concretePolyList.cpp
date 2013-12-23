@@ -24,10 +24,11 @@
 #include "collision/concretePolyList.h"
 
 #include "math/mMath.h"
-#include "console/console.h"
-#include "gfx/gfxDevice.h"
-#include "gfx/primBuilder.h"
-#include "gfx/gfxStateBlock.h"
+#include "core/log.h"
+#include "platform/profiler.h"
+//#include "gfx/gfxDevice.h"
+//#include "gfx/primBuilder.h"
+//#include "gfx/gfxStateBlock.h"
 
 
 //----------------------------------------------------------------------------
@@ -84,7 +85,7 @@ U32 ConcretePolyList::addPlane(const PlaneF& plane)
 
 //----------------------------------------------------------------------------
 
-void ConcretePolyList::begin(BaseMatInstance* material,U32 surfaceKey)
+void ConcretePolyList::begin(TSMaterialInstance* material,U32 surfaceKey)
 {
    mPolyList.increment();
    Poly& poly = mPolyList.last();
@@ -144,6 +145,7 @@ void ConcretePolyList::end()
 
 void ConcretePolyList::render()
 {
+#if 0
    GFXStateBlockDesc solidZDisable;
    solidZDisable.setCullMode( GFXCullNone );
    solidZDisable.setZReadWrite( false, false );
@@ -169,7 +171,8 @@ void ConcretePolyList::render()
       PrimBuild::vertex3fv( pnt );
 
       PrimBuild::end();
-   }   
+   }
+#endif
 }
 
 void ConcretePolyList::triangulate()

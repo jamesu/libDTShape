@@ -434,15 +434,13 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
    if (smReadVersion>smVersion)
    {
       // error -- don't support future version yet :>
-      Con::errorf(ConsoleLogEntry::General,
-                  "Sequence import failed:  shape exporter newer than running executable.");
+      Log::errorf("Sequence import failed:  shape exporter newer than running executable.");
       return false;
    }
    if (smReadVersion<19)
    {
       // error -- don't support future version yet :>
-      Con::errorf(ConsoleLogEntry::General,
-         "Sequence import failed:  deprecated version (%i).",smReadVersion);
+      Log::errorf("Sequence import failed:  deprecated version (%i).",smReadVersion);
       return false;
    }
 
@@ -473,7 +471,7 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
             names.decrement();
 
             if (names.size() != startSize)
-               Con::errorf(ConsoleLogEntry::General, "TSShape::importSequence: failed to remove unused node correctly for dsq %s.", names[nameIndex].c_str(), sequencePath.c_str());
+               Log::errorf(LogEntry::General, "TSShape::importSequence: failed to remove unused node correctly for dsq %s.", names[nameIndex].c_str(), sequencePath.c_str());
          }
       }
    }

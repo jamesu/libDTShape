@@ -45,8 +45,5 @@
 #ifndef _MRANDOM_H_
 #include "math/mRandom.h"
 #endif
-#ifndef _MEASE_H_
-#include "math/mEase.h"
-#endif
 
 #endif //_MMATH_H_

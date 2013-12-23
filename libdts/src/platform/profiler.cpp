@@ -33,12 +33,13 @@
 #include "core/stream/fileStream.h"
 #include "core/frameAllocator.h"
 #include "core/strings/stringFunctions.h"
-#include "core/stringTable.h"
 
 #include "platform/profiler.h"
 #include "platform/threads/thread.h"
 
-#include "console/engineAPI.h"
+#include "core/engineObject.h"
+#include "core/log.h"
+#include "core/util/hashFunction.h"
 
 #ifdef TORQUE_ENABLE_PROFILER
 ProfilerRootData *ProfilerRootData::sRootList = NULL;
@@ -51,7 +52,7 @@ Profiler *gProfiler = NULL;
 // mismatched PROFILE_START and PROFILE_END blocks. We profile from the 
 // beginning to catch profile block errors that occur when torque is starting up.
 #ifdef TORQUE_PROFILER_DEBUG
-Vector<StringTableEntry> gProfilerNodeStack;
+Vector<const char*> gProfilerNodeStack;
 #define TORQUE_PROFILE_AT_ENGINE_START true
 #define PROFILER_DEBUG_PUSH_NODE( nodename ) \
    gProfilerNodeStack.push_back( nodename );
@@ -134,21 +135,14 @@ U32 endHighResolutionTimer(U32 time[2])
 #elif defined(TORQUE_OS_MAC)
 
 
+#import <mach/mach_time.h>
+
 void startHighResolutionTimer(U32 time[2]) {
-    UnsignedWide t;
-    Microseconds(&t);
-    time[0] = t.lo;
-    time[1] = t.hi;
+	time[0] = mach_absolute_time();
 }
 
 U32 endHighResolutionTimer(U32 time[2])  {
-   UnsignedWide t;
-   Microseconds(&t);
-   return t.lo - time[0]; 
-   // given that we're returning a 32 bit integer, and this is unsigned subtraction... 
-   // it will just wrap around, we don't need the upper word of the time.
-   // NOTE: the code assumes that more than 3 hrs will not go by between calls to startHighResolutionTimer() and endHighResolutionTimer().
-   // I mean... that damn well better not happen anyway.
+	return mach_absolute_time() - time[0];
 }
 
 #else
@@ -245,7 +239,7 @@ ProfilerRootData::ProfilerRootData(const char *name)
          AssertFatal( false, avar( "Duplicate profile name: %s", name ) );
 
    mName = name;
-   mNameHash = _StringTable::hashString(name);
+   mNameHash = Torque::hash((const U8*)name, dStrlen(name), 0);
    mNextRoot = sRootList;
    sRootList = this;
    mTotalTime = 0;
@@ -280,7 +274,7 @@ void Profiler::validate()
 }
 
 #ifdef TORQUE_ENABLE_PROFILE_PATH
-const char * Profiler::getProfilePath()
+String Profiler::getProfilePath()
 {
 #ifdef TORQUE_MULTITHREAD
    // Ignore non-main-thread profiler activity.
@@ -293,7 +287,7 @@ const char * Profiler::getProfilePath()
 #endif
 
 #ifdef TORQUE_ENABLE_PROFILE_PATH
-const char * Profiler::constructProfilePath(ProfilerData * pd)
+String Profiler::constructProfilePath(ProfilerData * pd)
 {
    if (pd->mParent)
    {
@@ -470,12 +464,12 @@ void Profiler::hashPop(ProfilerRootData *expected)
 
          if(mNextEnable)
          {
-            Con::warnf("Warning: forcing the Torque profiler thread to run only on cpu 1.");
+            Log::warnf("Warning: forcing the Torque profiler thread to run only on cpu 1.");
             SetThreadAffinityMask(GetCurrentThread(), 1);
          }
          else
          {
-            Con::warnf("Warning: the Torque profiler thread may now run on any cpu.");
+            Log::warnf("Warning: the Torque profiler thread may now run on any cpu.");
             DWORD procMask;
             DWORD sysMask;
             GetProcessAffinityMask( GetCurrentProcess(), &procMask, &sysMask);
@@ -500,7 +494,7 @@ static S32 QSORT_CALLBACK rootDataCompare(const void *s1, const void *s2)
 static void profilerDataDumpRecurse(ProfilerData *data, char *buffer, U32 bufferLen, F64 totalTime)
 {
    // dump out this one:
-   Con::printf("%7.3f %7.3f %8d %s%s",
+   Log::printf("%7.3f %7.3f %8d %s%s",
          100 * data->mTotalTime / totalTime,
          100 * (data->mTotalTime - data->mSubTime) / totalTime,
          data->mInvokeCount,
@@ -593,12 +587,12 @@ void Profiler::dump()
 
    if (mDumpToConsole == true)
    {
-      Con::printf("Profiler Data Dump:");
-      Con::printf("Ordered by non-sub total time -");
-      Con::printf("%%NSTime  %% Time  Invoke #  Name");
+      Log::printf("Profiler Data Dump:");
+      Log::printf("Ordered by non-sub total time -");
+      Log::printf("%%NSTime  %% Time  Invoke #  Name");
       for(U32 i = 0; i < rootVector.size(); i++)
       {
-         Con::printf("%7.3f %7.3f %8d %s",
+         Log::printf("%7.3f %7.3f %8d %s",
                      100 * (rootVector[i]->mTotalTime - rootVector[i]->mSubTime) / totalTime,
                      100 * rootVector[i]->mTotalTime / totalTime,
                      rootVector[i]->mTotalInvokeCount,
@@ -607,9 +601,9 @@ void Profiler::dump()
          rootVector[i]->mTotalTime = 0;
          rootVector[i]->mSubTime = 0;
       }
-      Con::printf("");
-      Con::printf("Ordered by stack trace total time -");
-      Con::printf("%% Time  %% NSTime  Invoke #  Name");
+      Log::printf("");
+      Log::printf("Ordered by stack trace total time -");
+      Log::printf("%% Time  %% NSTime  Invoke #  Name");
 
       mCurrentProfilerData->mTotalTime = endHighResolutionTimer(mCurrentProfilerData->mStartTime);
 
@@ -622,7 +616,7 @@ void Profiler::dump()
    else if (mDumpToFile == true && mDumpFileName[0] != '\0')
    {
       FileStream fws;
-      bool success = fws.open(mDumpFileName, Torque::FS::File::Write);
+      bool success = fws.open(mDumpFileName, FileStream::Write);
       AssertFatal(success, "Cannot write profile dump to specified file!");
          char buffer[1024];
 
@@ -687,74 +681,6 @@ void Profiler::enableMarker(const char *marker, bool enable)
             data->mEnabled = enable;
       }
    }
-}
-
-//=============================================================================
-//    Console Functions.
-//=============================================================================
-// MARK: ---- Console Functions ----
-
-//-----------------------------------------------------------------------------
-
-DefineEngineFunction( profilerMarkerEnable, void, ( const char* markerName, bool enable ), ( true ),   
-   "@brief Enable or disable a specific profile.\n\n"
-   "@param enable     Optional paramater to enable or disable the profile.\n"
-   "@param markerName Name of a specific marker to enable or disable.\n"
-   "@note Calling this function will first call profilerReset(), clearing all data from profiler. "
-   "All profile markers are enabled by default.\n\n"
-   "@ingroup Debugging")
-{
-   if( gProfiler )
-      gProfiler->enableMarker( markerName, enable );
-}
-
-//-----------------------------------------------------------------------------
-
-DefineEngineFunction( profilerEnable, void, ( bool enable ),,
-				"@brief Enables or disables the profiler.\n\n"
-				"Data is only gathered while the profiler is enabled.\n\n"
-				"@note Profiler is not available in shipping builds.\n"
-				"T3D has predefined profiling areas surrounded by markers, "
-				"but you may need to define additional markers (in C++) around areas you wish to profile,"
-				" by using the PROFILE_START( markerName ); and PROFILE_END(); macros.\n\n"
-				"@ingroup Debugging\n" )
-{
-   if(gProfiler)
-      gProfiler->enable(enable);
-}
-
-DefineEngineFunction(profilerDump, void, (),,
-				"@brief Dumps current profiling stats to the console window.\n\n"
-				"@note Markers disabled with profilerMarkerEnable() will be skipped over. "
-				"If the profiler is currently running, it will be disabled.\n"
-				"@ingroup Debugging")
-{
-   if(gProfiler)
-      gProfiler->dumpToConsole();
-}
-
-DefineEngineFunction( profilerDumpToFile, void, ( const char* fileName ),,
-				"@brief Dumps current profiling stats to a file.\n\n"
-				"@note If the profiler is currently running, it will be disabled.\n"
-				"@param fileName Name and path of file to save profiling stats to. Must use forward slashes (/). "
-				"Will attempt to create the file if it does not already exist.\n"
-				"@tsexample\n"
-				"profilerDumpToFile( \"C:/Torque/log1.txt\" );\n"
-				"@endtsexample\n\n"
-				"@ingroup Debugging" )
-{
-   if(gProfiler)
-      gProfiler->dumpToFile(fileName);
-}
-
-DefineEngineFunction( profilerReset, void, (),,
-                "@brief Resets the profiler, clearing it of all its data.\n\n"
-				"If the profiler is currently running, it will first be disabled. "
-				"All markers will retain their current enabled/disabled status.\n\n"
-				"@ingroup Debugging" )
-{
-   if(gProfiler)
-      gProfiler->reset();
 }
 
 #endif

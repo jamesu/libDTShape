@@ -23,20 +23,14 @@
 #ifndef _TSSHAPEINSTANCE_H_
 #define _TSSHAPEINSTANCE_H_
 
-#ifndef __RESOURCE_H__
-#include "core/resource.h"
-#endif
 #ifndef _TSSHAPE_H_
 #include "ts/tsShape.h"
 #endif
 #ifndef _TSINTEGERSET_H_
 #include "ts/tsIntegerSet.h"
 #endif
-#ifndef _CONSOLE_H_
-#include "console/console.h"
-#endif
-#ifndef _GBITMAP_H_
-#include "gfx/bitmap/gBitmap.h"
+#ifndef _CORE_LOG_H_
+#include "core/log.h"
 #endif
 #ifndef _TSRENDERDATA_H_
 #include "ts/tsRenderState.h"
@@ -48,8 +42,9 @@
 class RenderItem;
 class TSThread;
 class ConvexFeature;
-class SceneRenderState;
-class FeatureSet;
+class TSSceneRenderState;
+class TSMeshInstanceRenderData;
+class TSShapeInstance;
 
 
 //-------------------------------------------------------------------------------------
@@ -126,7 +121,7 @@ class TSShapeInstance
      /// @{
 
      /// Render!  This draws the base-textured object.
-      virtual void render( S32 objectDetail, TSMaterialList *, const TSRenderState &rdata, F32 alpha );      
+      virtual void render( S32 objectDetail, TSMaterialList *, TSRenderState &rdata, F32 alpha );      
      /// @}
 
      /// @name Collision Routines
@@ -135,10 +130,6 @@ class TSShapeInstance
       virtual bool buildPolyList( S32 objectDetail, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials );
       virtual bool getFeatures( S32 objectDetail, const MatrixF &mat, const Point3F &n, ConvexFeature *feature, U32 &surfaceKey );
       virtual void support( S32 od, const Point3F &v, F32 *currMaxDP, Point3F *currSupport );
-
-      virtual bool buildPolyListOpcode( S32 objectDetail, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials );
-      virtual bool castRayOpcode( S32 objectDetail, const Point3F &start, const Point3F &end, RayInfo *info, TSMaterialList *materials );
-      virtual bool buildConvexOpcode( const MatrixF &mat, S32 objectDetail, const Box3F &bounds, Convex *c, Convex *list );
 
       /// Ray cast for collision detection
      virtual bool castRay( S32 objectDetail, const Point3F &start, const Point3F &end, RayInfo *info, TSMaterialList* materials ) = 0;
@@ -157,10 +148,10 @@ class TSShapeInstance
       /// If true this mesh is forced to be hidden
       /// regardless of the animation state.
       bool forceHidden;
-
-      TSVertexBufferHandle mVertexBuffer;
-      GFXPrimitiveBufferHandle mPrimitiveBuffer;
       
+      /// Generic pointer to store instance data
+      TSMeshInstanceRenderData *renderInstData;
+
       /// The time at which this mesh 
       /// was last rendered.
       U32 mLastTime;
@@ -168,7 +159,7 @@ class TSShapeInstance
       MeshObjectInstance();
       virtual ~MeshObjectInstance() {}
 
-      void render( S32 objectDetail, TSMaterialList *, const TSRenderState &rdata, F32 alpha );
+      void render( S32 objectDetail, TSMaterialList *, TSRenderState &rdata, F32 alpha );
 
       /// Gets the mesh with specified detail level
       TSMesh * getMesh(S32 num) const { return num<object->numMeshes ? *(meshList+num) : NULL; }
@@ -181,10 +172,6 @@ class TSShapeInstance
       void support( S32 od, const Point3F &v, F32 *currMaxDP, Point3F *currSupport );
       bool castRay( S32 objectDetail, const Point3F &start, const Point3F &end, RayInfo *info, TSMaterialList *materials );
       bool castRayRendered( S32 objectDetail, const Point3F &start, const Point3F &end, RayInfo *info, TSMaterialList *materials );
-
-      bool buildPolyListOpcode( S32 objectDetail, AbstractPolyList *polyList, const Box3F &box, TSMaterialList* materials );
-      bool castRayOpcode( S32 objectDetail, const Point3F &start, const Point3F &end, RayInfo *info, TSMaterialList *materials );
-      bool buildConvexOpcode( const MatrixF &mat, S32 objectDetail, const Box3F &bounds, Convex *c, Convex *list );
 
      /// @}
    };
@@ -259,11 +246,7 @@ protected:
    /// 0=at this dl, 1=at higher detail level, where higher means bigger size on screen
    /// for dl=0, we use twice detail level 0's size as the size of the "next" dl
    F32 mCurrentIntraDetailLevel;
-
-   /// This is only valid when the instance was created from
-   /// a resource.  Else it is null.
-   Resource<TSShape> mShapeResource;
-
+   
    /// This should always point to a valid shape and should
    /// equal mShapeResource if it was created from a resource.
    TSShape *mShape;
@@ -326,11 +309,11 @@ protected:
    /// Call this to own the material list -- i.e., we'll make a copy of the 
    /// currently set material list and be responsible for deleting it.  You
    /// can pass an optional feature set for initializing the cloned materials.
-   void cloneMaterialList( const FeatureSet *features = NULL ); 
+   void cloneMaterialList( ); 
 
    /// Initializes or re-initializes the material list with 
    /// an optional feature set.
-   void initMaterialList(  const FeatureSet *features = NULL );
+   void initMaterialList( );
 
    bool ownMaterialList() const { return mOwnMaterialList; }
 
@@ -485,8 +468,8 @@ protected:
 
    /// @}
 
-   virtual void render( const TSRenderState &rdata );
-   virtual void render( const TSRenderState &rdata, S32 dl, F32 intraDL = 0.0f );
+   virtual void render( TSRenderState &rdata );
+   virtual void render( TSRenderState &rdata, S32 dl, F32 intraDL = 0.0f );
 
    void animate() { animate( mCurrentDetailLevel ); }
    void animate(S32 dl);
@@ -540,7 +523,7 @@ protected:
    void setCurrentDetail( S32 dl, F32 intraDL = 1.0f );
 
    /// Helper function which internally calls setDetailFromDistance.
-   S32 setDetailFromPosAndScale( const SceneRenderState *state, 
+   S32 setDetailFromPosAndScale( const TSSceneRenderState *state,
                                  const Point3F &pos, 
                                  const Point3F &scale );
 
@@ -548,7 +531,7 @@ protected:
    /// distance between your object and the camera.
    ///
    /// @see TSShape::Detail.
-   S32 setDetailFromDistance( const SceneRenderState *state, F32 scaledDist );
+   S32 setDetailFromDistance( const TSSceneRenderState *state, F32 scaledDist );
 
    /// Sets the current detail level using the legacy screen error metric.
    S32 setDetailFromScreenError( F32 errorTOL );
@@ -580,10 +563,6 @@ protected:
    Point3F support(const Point3F & v, S32 dl);
    void computeBounds(S32 dl, Box3F & bounds); ///< uses current transforms to compute bounding box around a detail level
                                                ///< see like named method on shape if you want to use default transforms
-
-   bool buildPolyListOpcode( S32 dl, AbstractPolyList *polyList, const Box3F &box );
-   bool castRayOpcode( S32 objectDetail, const Point3F & start, const Point3F & end, RayInfo *);
-   bool buildConvexOpcode( const MatrixF &objMat, const Point3F &objScale, S32 objectDetail, const Box3F &bounds, Convex *c, Convex *list );
 
 //-------------------------------------------------------------------------------------
 // Thread Control
@@ -656,8 +635,7 @@ protected:
 //-------------------------------------------------------------------------------------
 // constructors, destructors, initialization, io
 //-------------------------------------------------------------------------------------
-
-   TSShapeInstance( const Resource<TSShape> & shape, bool loadMaterials = true);
+   
    TSShapeInstance( TSShape * pShape, bool loadMaterials = true);
    ~TSShapeInstance();
 

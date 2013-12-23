@@ -40,12 +40,12 @@
 #endif
 
 #ifndef _TEMPALLOC_H_
-#include "util/tempAlloc.h"
+#include "core/tempAlloc.h"
 #endif
 
-#ifndef _TALGORITHM_H_
-#include "core/tAlgorithm.h"
-#endif
+//#ifndef _TALGORITHM_H_
+//#include "core/tAlgorithm.h"
+//#endif
 
 
 /// Set of planes which can be tested against bounding volumes.
@@ -362,119 +362,5 @@ U32 PlaneSet< T >::testPlanes( const Box3F& bounds, U32 planeMask, F32 expand ) 
    return retMask;
 }
 
-//-----------------------------------------------------------------------------
-
-template< typename T >
-bool PlaneSet< T >::clipSegment( Point3F &pnt0, Point3F &pnt1 ) const
-{	
-   F32 tmin = F32_MAX;
-   F32 tmax = -F32_MAX;
-   U32 hitCount = 0;
-   Point3F tpnt;
-
-   const U32 numPlanes = mNumPlanes;
-   for( U32 i = 0; i < numPlanes; ++ i )
-   {
-      const PlaneF &plane = mPlanes[ i ];
-
-      F32 t = plane.intersect( pnt0, pnt1 );
-
-      if( t >= 0.0f && t <= 1.0f )
-      {
-         tpnt.interpolate( pnt0, pnt1, t );
-
-         if ( isContained( tpnt, 1.0e-004f ) )
-         {
-            tmin = getMin( tmin, t );
-            tmax = getMax( tmax, t );
-            hitCount ++;
-         }
-      }
-   }
-
-   // If we had no intersections then either both points are inside or both are outside.
-
-   if( hitCount == 0 )	
-      return isContained( pnt0 );
-
-   // If we had one intersection then we have one point inside.
-   // tmin and tmax are the same here.
-   if( hitCount == 1 )
-   {
-      if( isContained( pnt0 ) )
-         pnt1.interpolate( pnt0, pnt1, tmax );
-      else
-         pnt0.interpolate( pnt0, pnt1, tmin );
-   }
-   else
-   {
-      Point3F prevPnt0( pnt0 );
-      Point3F prevPnt1( pnt1 );
-
-      if( tmin < F32_MAX )
-         pnt0.interpolate( prevPnt0, prevPnt1, tmin );
-      if( tmax > -F32_MAX )
-         pnt1.interpolate( prevPnt0, prevPnt1, tmax );
-   }
-
-   return true;   
-}
-
-//-----------------------------------------------------------------------------
-
-template< typename T >
-U32 PlaneSet< T >::clipPolygon( const Point3F* inVertices, U32 inNumVertices, Point3F* outVertices, U32 maxOutVertices ) const
-{
-   TempAlloc< Point3F > tempBuffer( inNumVertices + mNumPlanes );
-
-   // We use two buffers as interchanging roles as source and target.
-   // For the first iteration, inVertices is the source.
-
-   Point3F* tempPolygon = tempBuffer;
-   Point3F* clippedPolygon = const_cast< Point3F* >( inVertices );
-
-   U32 numClippedPolygonVertices = inNumVertices;
-   U32 numTempPolygonVertices = 0;
-
-   for( U32 nplane = 0; nplane < mNumPlanes; ++ nplane )
-   {
-      // Make the output of the last iteration the
-      // input of this iteration.
-
-      swap( tempPolygon, clippedPolygon );
-      numTempPolygonVertices = numClippedPolygonVertices;
-
-      if( maxOutVertices < numTempPolygonVertices + 1 )
-         return 0;
-
-      // Clip our current remainder of the original polygon
-      // against the current plane.
-
-      const PlaneF& plane = mPlanes[ nplane ];
-      numClippedPolygonVertices = plane.clipPolygon( tempPolygon, numTempPolygonVertices, clippedPolygon );
-
-      // If the polygon was completely on the backside of the plane,
-      // then polygon is outside the frustum.  In this case, return false
-      // to indicate we haven't clipped anything.
-
-      if( !numClippedPolygonVertices )
-         return false;
-
-      // On first iteration, replace the inVertices with the
-      // outVertices buffer.
-
-      if( tempPolygon == inVertices )
-         tempPolygon = outVertices;
-   }
-
-   // If outVertices isn't the target buffer of the last
-   // iteration, copy the vertices over from the temporary
-   // buffer.
-
-   if( clippedPolygon != outVertices )
-      dMemcpy( outVertices, clippedPolygon, numClippedPolygonVertices * sizeof( Point3F ) );
-
-   return numClippedPolygonVertices;
-}
 
 #endif // !_MPLANESET_H_

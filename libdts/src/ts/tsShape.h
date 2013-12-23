@@ -35,7 +35,13 @@
 #ifndef _TSSHAPEALLOC_H_
 #include "ts/tsShapeAlloc.h"
 #endif
+#ifndef _ENGINEOBJECT_H_
+#include "core/engineObject.h"
+#endif
 
+#include "core/util/path.h"
+#include "core/color.h"
+#include "core/strings/stringFunctions.h"
 
 #define DTS_EXPORTER_CURRENT_VERSION 124
 
@@ -62,7 +68,7 @@ struct CollisionShapeInfo
 /// lists are still loaded in TSShapeInstance.
 ///
 /// @see TSShapeInstance for a further discussion of the 3space system.
-class TSShape
+class TSShape : public EngineObject
 {
   public:
       enum
@@ -393,6 +399,8 @@ class TSShape
 
    S8* mShapeData;
    U32 mShapeDataSize;
+   
+   Torque::Path mPath;
 
    // shape class has few methods --
    // just constructor/destructor, io, and lookup methods
@@ -403,12 +411,20 @@ class TSShape
    void init();
    void initMaterialList();    ///< you can swap in a new material list, but call this if you do
    bool preloadMaterialList(const Torque::Path &path); ///< called to preload and validate the materials in the mat list
+   
+   // Generic helpers to load a shape or cae from a pth
+   static TSShape *createFromPath(const Torque::Path &path);
+   
+   Torque::Path getPath() { return mPath; }
 
    void setupBillboardDetails( const String &cachePath );
 
    /// Called from init() to calcuate the GFX vertex features for
    /// all detail meshes in the shape.
    void initVertexFeatures();
+   
+   /// Initializes mesh renderers
+   void initRender();
 
    bool getSequencesConstructed() const { return mSequencesConstructed; }
    void setSequencesConstructed(const bool c) { mSequencesConstructed = c; }
@@ -649,6 +665,9 @@ class TSShape
    bool setSequenceBlend(const String& seqName, bool blend, const String& blendRefSeqName, S32 blendRefFrame);
    bool setSequenceGroundSpeed(const String& seqName, const Point3F& trans, const Point3F& rot);
    /// @}
+   
+   /// Interface to reuse loaded shapes
+   static TSShape *loadShape(const String& filename);
 };
 
 

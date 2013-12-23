@@ -24,7 +24,7 @@
 #include "core/frameAllocator.h"
 
 #include "math/mMatrix.h"
-#include "console/console.h"
+#include "core/log.h"
 
 
 const MatrixF MatrixF::Identity( true );
@@ -188,8 +188,8 @@ void MatrixF::dumpMatrix(const char *caption /* =NULL */) const
    dMemset(spacerRef, ' ', size);
    spacerRef[size] = 0;
 
-   Con::printf("%s = | %-8.4f %-8.4f %-8.4f %-8.4f |", caption,    m[idx(0,0)], m[idx(0, 1)], m[idx(0, 2)], m[idx(0, 3)]);
-   Con::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(1,0)], m[idx(1, 1)], m[idx(1, 2)], m[idx(1, 3)]);
-   Con::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(2,0)], m[idx(2, 1)], m[idx(2, 2)], m[idx(2, 3)]);
-   Con::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(3,0)], m[idx(3, 1)], m[idx(3, 2)], m[idx(3, 3)]);
+   Log::printf("%s = | %-8.4f %-8.4f %-8.4f %-8.4f |", caption,    m[idx(0,0)], m[idx(0, 1)], m[idx(0, 2)], m[idx(0, 3)]);
+   Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(1,0)], m[idx(1, 1)], m[idx(1, 2)], m[idx(1, 3)]);
+   Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(2,0)], m[idx(2, 1)], m[idx(2, 2)], m[idx(2, 3)]);
+   Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(3,0)], m[idx(3, 1)], m[idx(3, 2)], m[idx(3, 3)]);
 }

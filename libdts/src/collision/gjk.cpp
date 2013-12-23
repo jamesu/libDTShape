@@ -26,7 +26,6 @@
 
 #include "core/dataChunker.h"
 #include "collision/collision.h"
-#include "scene/sceneObject.h"
 #include "collision/convex.h"
 #include "collision/gjk.h"
 

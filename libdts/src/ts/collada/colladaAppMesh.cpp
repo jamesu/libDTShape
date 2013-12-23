@@ -36,7 +36,6 @@ namespace DictHash
 #include "ts/collada/colladaAppMaterial.h"
 
 #include "core/util/tDictionary.h"
-#include "core/stringTable.h"
 
 using namespace ColladaUtils;
 
@@ -431,7 +430,7 @@ S32 ColladaAppMesh::addMaterial(const char* symbol)
 
    // Lookup the symbol in the materials already bound to this geometry/controller
    // instance
-   Map<StringTableEntry,U32>::Iterator itr = boundMaterials.find(symbol);
+   Map<String,U32>::Iterator itr = boundMaterials.find(symbol);
    if (itr != boundMaterials.end())
       return itr->value;
 
@@ -463,14 +462,9 @@ S32 ColladaAppMesh::addMaterial(const char* symbol)
          }
       }
    }
-   else
-   {
-      // No Collada material is present for this symbol, so just create an empty one
-      appMaterials.push_back(new ColladaAppMaterial(symbol));
-   }
 
    // Add this symbol to the bound list for the mesh
-   boundMaterials.insert(StringTable->insert(symbol), matIndex);
+   boundMaterials.insert(symbol, matIndex);
    return matIndex;
 }
 
@@ -794,7 +788,7 @@ void ColladaAppMesh::getMorphVertexData(const domMorph* morph, F32 time, const M
    if (targetGeoms.size() != targetWeights.getCount())
    {
       domController* ctrl = daeSafeCast<domController>(const_cast<domMorph*>(morph)->getParent());
-      Con::warnf("Mismatched morph targets and weights in %s.", _GetNameOrId(ctrl));
+      Log::warnf("Mismatched morph targets and weights in %s.", _GetNameOrId(ctrl));
 
       // Set unused targets to zero weighting (unused weights are ignored)
       while (targetGeoms.size() > targetWeights.getCount())

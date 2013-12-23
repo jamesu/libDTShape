@@ -24,7 +24,7 @@
 #define _COLLADA_APPMESH_H_
 
 #ifndef _TDICTIONARY_H_
-#include "core/tDictionary.h"
+#include "core/util/tDictionary.h"
 #endif
 #ifndef _APPMESH_H_
 #include "ts/loader/appMesh.h"
@@ -85,7 +85,7 @@ protected:
    ColladaExtension_geometry* geomExt;                ///< geometry extension
 
    Vector<VertTuple> vertTuples;                      ///<
-   Map<StringTableEntry,U32> boundMaterials;          ///< Local map of symbols to materials
+   Map<String,U32> boundMaterials;                    ///< Local map of symbols to materials
 
    static bool fixedSizeEnabled;                      ///< Set to true to fix the detail size to a particular value for all geometry
    static S32 fixedSize;                              ///< The fixed detail size value for all geometry

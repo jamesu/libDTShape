@@ -34,7 +34,7 @@
 #endif
 
 class SceneObject;
-class BaseMatInstance;
+class TSMaterialInstance;
 
 
 /// A polygon filtering interface.
@@ -96,7 +96,7 @@ public:
 
    /// Add a box via the query interface (below). This wraps some calls
    /// to addPoint and addPlane.
-   void addBox(const Box3F &box, BaseMatInstance* material = NULL);
+   void addBox(const Box3F &box, TSMaterialInstance* material = NULL);
 
    void doConstruct();
    /// @}
@@ -170,7 +170,7 @@ public:
    ///
    /// @param  material    A material ID for this surface.
    /// @param  surfaceKey  A key value to associate with this surface.
-   virtual void begin(BaseMatInstance* material,U32 surfaceKey) = 0;
+   virtual void begin(TSMaterialInstance* material,U32 surfaceKey) = 0;
 
    /// Indicate the plane of the surface.
    virtual void plane(U32 v1,U32 v2,U32 v3) = 0;

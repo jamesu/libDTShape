@@ -46,11 +46,9 @@
 #ifndef TINYXML_INCLUDED
 #include "tinyxml.h"
 #endif
-#ifndef _CONSOLE_H_
-#include "console/console.h"
+#ifndef _CORE_LOG_H_
+#include "core/log.h"
 #endif
-
-#include "platform/tmm_off.h"
 
 #include "dae.h"
 #include "dae/daeErrorHandler.h"
@@ -61,8 +59,6 @@
 #include "dom/domMorph.h"
 #include "dom/domNode.h"
 #include "dom/domCOLLADA.h"
-
-#include "platform/tmm_on.h"
 
 namespace ColladaUtils
 {
@@ -643,7 +639,7 @@ template<> inline const domListOfUInts *ColladaPrimitive<domPolylist>::getTriang
       if (!primitive->getP() || !primitive->getP()->getValue().getCount() ||
          (primitive->getP()->getValue().getCount() != expectedCount) )
       {
-         Con::warnf("<polylist> element found with invalid <p> array. This primitive will be ignored.");
+         Log::warnf("<polylist> element found with invalid <p> array. This primitive will be ignored.");
          return pTriangleData;
       }
 

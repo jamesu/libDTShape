@@ -35,32 +35,18 @@
 #ifndef _ABSTRACTPOLYLIST_H_
 #include "collision/abstractPolyList.h"
 #endif
-#ifndef _GFXDEVICE_H_
-#include "gfx/gfxDevice.h"
-#endif
-#ifndef _GFXPRIMITIVEBUFFER_H_
-#include "gfx/gfxPrimitiveBuffer.h"
-#endif
 #ifndef _TSPARSEARRAY_H_
 #include "core/tSparseArray.h"
+#endif
+#ifndef _TSRENDER_H_
+#include "ts/tsRender.h"
 #endif
 
 #include "core/util/safeDelete.h"
 
-#if defined(TORQUE_OS_XENON)
-//#  define USE_MEM_VERTEX_BUFFERS
-#endif
-
-#if defined(USE_MEM_VERTEX_BUFFERS)
-#  include "gfx/D3D9/360/gfx360MemVertexBuffer.h"
-#endif
-
-namespace Opcode { class Model; class MeshInterface; }
-namespace IceMaths { class IndexedTriangle; class Point; }
-
 class Convex;
 
-class SceneRenderState;
+class TSSceneRenderState;
 class SceneObject;
 struct MeshRenderInst;
 class TSRenderState;
@@ -70,6 +56,8 @@ class TSShapeInstance;
 struct RayInfo;
 class ConvexFeature;
 class ShapeBase;
+class TSMeshRenderer;
+class TSMeshInstanceRenderData;
 
 struct TSDrawPrimitive
 {
@@ -89,21 +77,13 @@ struct TSDrawPrimitive
    S32 matIndex;    ///< holds material index & element type (see above enum)
 };
 
-#if defined(USE_MEM_VERTEX_BUFFERS)
-struct __NullVertexStruct {};
-typedef GFX360MemVertexBufferHandle<__NullVertexStruct> TSVertexBufferHandle;
-#else
-typedef GFXVertexBufferDataHandle TSVertexBufferHandle;
-#endif
-
-
 ///
 class TSMesh
 {
    friend class TSShape;
   public:
    struct TSMeshVertexArray;
-  protected:
+  public:
 
    U32 meshType;
    Box3F mBounds;
@@ -112,15 +92,17 @@ class TSMesh
    F32 mVisibility;
    bool mDynamic;
 
+public:
    const GFXVertexFormat *mVertexFormat;
 
    U32 mVertSize;
+   
+public:
+   TSMeshRenderer *mRenderer;
 
-   TSVertexBufferHandle mVB;
-   GFXPrimitiveBufferHandle mPB;
-
+protected:
    void _convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vector<Point3F> &_verts, const Vector<Point3F> &_norms );
-   void _createVBIB( TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb );
+   void _createVBIB( TSMeshInstanceRenderData *meshRenderData = NULL );
 
   public:
 
@@ -180,14 +162,14 @@ class TSMesh
       Point2F &tvert2() const { return *reinterpret_cast<Point2F *>(reinterpret_cast<U8 *>(const_cast<__TSMeshVertexBase *>(this)) + 0x30); }
       void tvert2(const Point2F &tv) { (*reinterpret_cast<Point2F *>(reinterpret_cast<U8 *>(this) + 0x30)) = tv; }
 
-      GFXVertexColor &color() const { return *reinterpret_cast<GFXVertexColor *>(reinterpret_cast<U8 *>(const_cast<__TSMeshVertexBase *>(this)) + 0x38); }
-      void color(const GFXVertexColor &c) { (*reinterpret_cast<GFXVertexColor *>(reinterpret_cast<U8 *>(this) + 0x38)) = c; }
+      TSVertexColor &color() const { return *reinterpret_cast<TSVertexColor *>(reinterpret_cast<U8 *>(const_cast<__TSMeshVertexBase *>(this)) + 0x38); }
+      void color(const TSVertexColor &c) { (*reinterpret_cast<TSVertexColor *>(reinterpret_cast<U8 *>(this) + 0x38)) = c; }
    };
 
    struct __TSMeshVertex_3xUVColor : public __TSMeshVertexBase
    {
       Point2F _tvert2;
-      GFXVertexColor _color;
+      TSVertexColor _color;
       F32 _tvert3;  // Unused, but needed for alignment purposes
    };
 #pragma pack()
@@ -279,16 +261,15 @@ class TSMesh
 
    /// This is used by sgShadowProjector to render the 
    /// mesh directly, skipping the render manager.
-   virtual void render( TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb );
-   void innerRender( TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb );
+   virtual void render( TSMeshRenderer &renderer );
+   void innerRender( TSMeshRenderer &renderer );
    virtual void render( TSMaterialList *, 
-                        const TSRenderState &data,
+                        TSRenderState &data,
                         bool isSkinDirty,
                         const Vector<MatrixF> &transforms, 
-                        TSVertexBufferHandle &vertexBuffer,
-                        GFXPrimitiveBufferHandle &primitiveBuffer );
+                        TSMeshRenderer &renderer );
 
-   void innerRender( TSMaterialList *, const TSRenderState &data, TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb );
+   void innerRender( TSMaterialList *, TSRenderState &data, TSMeshRenderer &renderer );
 
    /// @}
 
@@ -339,6 +320,9 @@ class TSMesh
                      Point3F *tan0, 
                      Point3F *tan1,
                      const Vector<Point3F> &_verts);
+   
+   /// Creates mRenderer
+   void initRender();
 
    /// on load...optionally convert primitives to other form
    static bool smUseTriangles;
@@ -391,16 +375,6 @@ class TSMesh
 
    TSMesh();
    virtual ~TSMesh();
-   
-   Opcode::Model *mOptTree;
-   Opcode::MeshInterface* mOpMeshInterface;
-   IceMaths::IndexedTriangle* mOpTris;
-   IceMaths::Point* mOpPoints;
-
-   void prepOpcodeCollision();
-   bool buildConvexOpcode( const MatrixF &mat, const Box3F &bounds, Convex *c, Convex *list );
-   bool buildPolyListOpcode( const S32 od, AbstractPolyList *polyList, const Box3F &nodeBox, TSMaterialList *materials );
-   bool castRayOpcode( const Point3F &start, const Point3F &end, RayInfo *rayInfo, TSMaterialList *materials );
 
    static const F32 VISIBILITY_EPSILON; 
 };
@@ -510,16 +484,15 @@ public:
    Vector<S32> vertexIndex;
 
    /// set verts and normals...
-   void updateSkin( const Vector<MatrixF> &transforms, TSVertexBufferHandle &instanceVB, GFXPrimitiveBufferHandle &instancePB );
+   void updateSkin( const Vector<MatrixF> &transforms, TSMeshInstanceRenderData *renderData = NULL );
 
    // render methods..
-   void render( TSVertexBufferHandle &instanceVB, GFXPrimitiveBufferHandle &instancePB );
+   void render( TSMeshRenderer &renderer );
    void render(   TSMaterialList *, 
-                  const TSRenderState &data,
+                  TSRenderState &data,
                   bool isSkinDirty,
                   const Vector<MatrixF> &transforms, 
-                  TSVertexBufferHandle &vertexBuffer,
-                  GFXPrimitiveBufferHandle &primitiveBuffer );
+                  TSMeshRenderer &renderer );
 
    // collision methods...
    bool buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials );

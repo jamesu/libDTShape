@@ -23,19 +23,26 @@
 #include <limits>
 
 #include "platform/platform.h"
-#include "console/console.h"
-#include "console/consoleTypes.h"
 #include "platform/threads/mutex.h"
-#include "app/mainLoop.h"
-#include "platform/input/event.h"
 #include "platform/typetraits.h"
-#include "core/volume.h"
+#include "core/util/tVector.h"
+#include "core/strings/stringFunctions.h"
 
+#include "math/mRandom.h"
+#include "core/module.h"
+
+
+#include <unistd.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <stdio.h>
 
 const F32 TypeTraits< F32 >::MIN = - F32_MAX;
 const F32 TypeTraits< F32 >::MAX = F32_MAX;
 const F32 TypeTraits< F32 >::ZERO = 0;
 const F32 Float_Inf = std::numeric_limits< F32 >::infinity();
+
+static MRandomLCG sgPlatRandom;
 
 // The tools prefer to allow the CPU time to process
 #ifndef TORQUE_TOOLS
@@ -45,114 +52,97 @@ S32 sgBackgroundProcessSleepTime = 200;
 #endif
 S32 sgTimeManagerProcessInterval = 1;
 
-Vector<Platform::KeyboardInputExclusion> gKeyboardExclusionList;
-bool gInitKeyboardExclusionList = false;
-static bool gWebDeployment = false;
-
-void Platform::initConsole()
-{
-   Con::addVariable("$platform::backgroundSleepTime", TypeS32, &sgBackgroundProcessSleepTime, "Controls processor time usage when the game window is out of focus.\n"
-	   "@ingroup Platform\n");
-   Con::addVariable("$platform::timeManagerProcessInterval", TypeS32, &sgTimeManagerProcessInterval, "Controls processor time usage when the game window is in focus.\n"
-	   "@ingroup Platform\n");
-}
-
 S32 Platform::getBackgroundSleepTime()
 {
    return sgBackgroundProcessSleepTime;
 }
 
-ConsoleToolFunction(restartInstance, void, 1, 1, "restartInstance()")
+void Platform::onFatalError(int code)
 {
-   StandardMainLoop::setRestart(true);
-   Platform::postQuitMessage( 0 );
+   exit(code);
 }
 
-void Platform::clearKeyboardInputExclusion()
+//-----------------------------------------------------------------------------
+void Platform::debugBreak()
 {
-   gKeyboardExclusionList.clear();
-   gInitKeyboardExclusionList = true;
+   //kill(getpid(), SIGSEGV);
+   kill(getpid(), SIGTRAP);
 }
 
-void Platform::addKeyboardInputExclusion(const KeyboardInputExclusion &kie)
+//-----------------------------------------------------------------------------
+void Platform::outputDebugString(const char *string, ...)
 {
-   gKeyboardExclusionList.push_back(kie);
+   char buffer[2048];
+   
+   va_list args;
+   va_start( args, string );
+   
+   dVsprintf( buffer, sizeof(buffer), string, args );
+   va_end( args );
+   
+   U32 length = dStrlen(buffer);
+   if( length == (sizeof(buffer) - 1 ) )
+      length--;
+   
+   buffer[length++]  = '\n';
+   buffer[length]    = '\0';
+   
+   fwrite(buffer, sizeof(char), length, stderr);
 }
 
-const bool Platform::checkKeyboardInputExclusion(const InputEventInfo *info)
+
+//------------------------------------------------------------------------------
+void Platform::AlertOK(const char *windowTitle, const char *message)
 {
-   // Do one-time initialization of platform defaults.
-   if(!gInitKeyboardExclusionList)
    {
-      gInitKeyboardExclusionList = true;
-
-      // CodeReview Looks like we don't even need to do #ifdefs here since
-      // things like cmd-tab don't appear on windows, and alt-tab is an unlikely
-      // desired bind on other platforms - might be best to simply have a 
-      // global exclusion list and keep it standard on all platforms.
-      // This might not be so, but it's the current assumption. [bjg 5/4/07]
-
-      // Alt-tab
-      {
-         KeyboardInputExclusion kie;
-         kie.key = KEY_TAB;
-         kie.andModifierMask = SI_ALT;
-         addKeyboardInputExclusion(kie);
-      }
-
-      // ... others go here...
+      dPrintf("Alert: %s %s\n", windowTitle, message);
    }
+}
 
-   // Walk the list and look for matches.
-   for(S32 i=0; i<gKeyboardExclusionList.size(); i++)
+//------------------------------------------------------------------------------
+bool Platform::AlertOKCancel(const char *windowTitle, const char *message)
+{
    {
-      if(gKeyboardExclusionList[i].checkAgainstInput(info))
-         return true;
+      dPrintf("Alert: %s %s\n", windowTitle, message);
+      return false;
    }
-
-   return false;
 }
 
-const bool Platform::KeyboardInputExclusion::checkAgainstInput( const InputEventInfo *info ) const
+//------------------------------------------------------------------------------
+bool Platform::AlertRetry(const char *windowTitle, const char *message)
 {
-   if(info->objType != SI_KEY)
+   {
+      dPrintf("Alert: %s %s\n", windowTitle, message);
       return false;
-
-   if(info->objInst != key)
-      return false;
-
-   if((info->modifier & andModifierMask) != andModifierMask)
-      return false;
-
-   if(info->modifier & !(info->modifier & orModifierMask))
-      return false;
-
-   return true;
-}
-
-S32 Platform::compareModifiedTimes( const char *firstPath, const char *secondPath )
-{
-   FileTime firstModTime;
-   if ( !getFileTimes( firstPath, NULL, &firstModTime ) ) {
-      //The reason we failed to get file times could be cause it is in a zip.  Lets check.
-      return Torque::FS::CompareModifiedTimes(firstPath, secondPath);
    }
-
-   FileTime secondModTime;
-   if ( !getFileTimes( secondPath, NULL, &secondModTime ) )
-      return -1;
-
-   return compareFileTimes( firstModTime, secondModTime );
 }
 
-bool Platform::getWebDeployment()
+//------------------------------------------------------------------------------
+
+void* dMalloc_r(dsize_t in_size, const char* fileName, const dsize_t line)
 {
-   return gWebDeployment;
+   return malloc(in_size);
 }
 
-void Platform::setWebDeployment(bool v)
+void dFree(void* in_pFree)
 {
-   gWebDeployment = v;
+   free(in_pFree);
 }
 
+void* dRealloc_r(void* in_pResize, dsize_t in_size, const char* fileName, const dsize_t line)
+{
+   return realloc(in_pResize,in_size);
+}
+
+extern void shit();
+
+MODULE_BEGIN( Platform )
+
+MODULE_INIT
+{
+   shit();
+   Processor::init();
+}
+
+MODULE_END;
 

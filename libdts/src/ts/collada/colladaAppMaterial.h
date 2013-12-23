@@ -30,7 +30,7 @@
 #include "ts/collada/colladaExtensions.h"
 #endif
 
-class Material;
+class TSMaterial;
 
 class ColladaAppMaterial : public AppMaterial
 {
@@ -83,7 +83,7 @@ public:
       }
    }
 
-   Material *createMaterial(const Torque::Path& path) const;
+   TSMaterial *createMaterial(const Torque::Path& path) const;
 };
 
 #endif // _COLLADA_APP_MATERIAL_H_

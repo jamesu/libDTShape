@@ -23,24 +23,26 @@
 #include "platform/platform.h"
 #include "ts/tsLastDetail.h"
 
-#include "renderInstance/renderPassManager.h"
+//#include "renderInstance/renderPassManager.h"
 #include "ts/tsShapeInstance.h"
-#include "scene/sceneManager.h"
-#include "scene/sceneRenderState.h"
-#include "lighting/lightInfo.h"
-#include "renderInstance/renderImposterMgr.h"
-#include "gfx/gfxTransformSaver.h"
-#include "gfx/bitmap/ddsFile.h"
-#include "gfx/bitmap/ddsUtils.h"
-#include "gfx/gfxTextureManager.h"
+//#include "scene/sceneManager.h"
+//#include "scene/sceneRenderState.h"
+//#include "lighting/lightInfo.h"
+//#include "renderInstance/renderImposterMgr.h"
+//#include "gfx/gfxTransformSaver.h"
+//#include "gfx/bitmap/ddsFile.h"
+//#include "gfx/bitmap/ddsUtils.h"
+//#include "gfx/gfxTextureManager.h"
 #include "math/mRandom.h"
 #include "core/stream/fileStream.h"
-#include "util/imposterCapture.h"
-#include "materials/materialManager.h"
-#include "materials/materialFeatureTypes.h"
-#include "console/consoleTypes.h"
+//#include "util/imposterCapture.h"
+#include "ts/tsMaterialManager.h"
 
 
+//#include "gfx/bitmap/gBitmap.h"
+
+
+#if 0
 GFXImplementVertexFormat( ImposterState )
 {
    addElement( "POSITION", GFXDeclType_Float4 );
@@ -50,19 +52,11 @@ GFXImplementVertexFormat( ImposterState )
    addElement( "ImposterUpVec", GFXDeclType_Float3, 1 );
    addElement( "ImposterRightVec", GFXDeclType_Float3, 2 );
 };
-
+#endif
 
 Vector<TSLastDetail*> TSLastDetail::smLastDetails;
 
 bool TSLastDetail::smCanShadow = true;
-
-
-AFTER_MODULE_INIT( Sim )
-{
-   Con::addVariable( "$pref::imposter::canShadow", TypeBool, &TSLastDetail::smCanShadow,
-      "User preference which toggles shadows from imposters.  Defaults to true.\n"
-      "@ingroup Rendering\n" );
-}
 
 
 TSLastDetail::TSLastDetail(   TSShape *shape,
@@ -86,26 +80,27 @@ TSLastDetail::TSLastDetail(   TSShape *shape,
 
    mCachePath = cachePath;
 
-   mMaterial = NULL;
+   //mMaterial = NULL;
    mMatInstance = NULL;
 
    // Store this in the static list.
-   smLastDetails.push_back( this );  
+   //smLastDetails.push_back( this );
 }
 
 TSLastDetail::~TSLastDetail()
 {
    SAFE_DELETE( mMatInstance );
-   if ( mMaterial )
-      mMaterial->deleteObject();
+   //if ( mMaterial )
+   //   mMaterial->deleteObject();
 
    // Remove ourselves from the list.
-   Vector<TSLastDetail*>::iterator iter = find( smLastDetails.begin(), smLastDetails.end(), this );
-   smLastDetails.erase( iter );
+   //Vector<TSLastDetail*>::iterator iter = find( smLastDetails.begin(), smLastDetails.end(), this );
+   //smLastDetails.erase( iter );
 }
 
-void TSLastDetail::render( const TSRenderState &rdata, F32 alpha )
+void TSLastDetail::render( TSRenderState &rdata, F32 alpha )
 {
+#if 0
    // Early out if we have nothing to render.
    if (  alpha < 0.01f || 
          !mMatInstance ||
@@ -150,11 +145,13 @@ void TSLastDetail::render( const TSRenderState &rdata, F32 alpha )
    ri->defaultKey = 1;
    ri->defaultKey2 = ri->mat->getStateHint();
 
-   renderPass->addInst( ri );   
+   renderPass->addInst( ri );
+#endif
 }
 
 void TSLastDetail::update( bool forceUpdate )
 {
+#if 0
    // This should never be called on a dedicated server or
    // anywhere else where we don't have a GFX device!
    AssertFatal( GFXDevice::devicePresent(), "TSLastDetail::update() - Cannot update without a GFX device!" );
@@ -181,7 +178,7 @@ void TSLastDetail::update( bool forceUpdate )
       shapeFile = path.getFullPath();
       if ( !Platform::isFile( shapeFile ) )  
       {
-         Con::errorf( "TSLastDetail::update - '%s' could not be found!", mCachePath.c_str() );
+         Log::errorf( "TSLastDetail::update - '%s' could not be found!", mCachePath.c_str() );
          return;
       }
    }
@@ -195,7 +192,7 @@ void TSLastDetail::update( bool forceUpdate )
    // If the time check fails now then the update must have not worked.
    if ( Platform::compareModifiedTimes( diffuseMapPath, shapeFile ) < 0 )
    {
-      Con::errorf( "TSLastDetail::update - Failed to create imposters for '%s'!", mCachePath.c_str() );
+      Log::errorf( "TSLastDetail::update - Failed to create imposters for '%s'!", mCachePath.c_str() );
       return;
    }
 
@@ -267,6 +264,7 @@ void TSLastDetail::update( bool forceUpdate )
    AssertFatal( imposterUVs.size() != 0, "hey" );
 
    mMaterial->mImposterUVs = imposterUVs;
+#endif
 }
 
 void TSLastDetail::_validateDim()
@@ -292,7 +290,7 @@ void TSLastDetail::_validateDim()
 
    if ( newDim != mDim )
    {
-      Con::printf( "TSLastDetail::_validateDim - '%s' detail dimensions too big! Reduced from %d to %d.", 
+      Log::printf( "TSLastDetail::_validateDim - '%s' detail dimensions too big! Reduced from %d to %d.", 
          mCachePath.c_str(),
          mDim, newDim );
 
@@ -302,6 +300,7 @@ void TSLastDetail::_validateDim()
 
 void TSLastDetail::_update()
 {
+#if 0
    // We're gonna render... make sure we can.
    bool sceneBegun = GFX->canCurrentlyRender();
    if ( !sceneBegun )
@@ -463,17 +462,17 @@ void TSLastDetail::_update()
    
    
    // Should we dump the images?
-   if ( Con::getBoolVariable( "$TSLastDetail::dumpImposters", false ) )
+   if ( Log::getBoolVariable( "$TSLastDetail::dumpImposters", false ) )
    {
       String imposterPath = mCachePath + ".imposter.png";
       String normalsPath = mCachePath + ".imposter_normals.png";
 
       FileStream stream;
-      if ( stream.open( imposterPath, Torque::FS::File::Write  ) )
+      if ( stream.open( imposterPath, FileStream::Write  ) )
          destBmp.writeBitmap( "png", stream );
       stream.close();
 
-      if ( stream.open( normalsPath, Torque::FS::File::Write ) )
+      if ( stream.open( normalsPath, FileStream::Write ) )
          destNormal.writeBitmap( "png", stream );
       stream.close();
    }
@@ -492,12 +491,12 @@ void TSLastDetail::_update()
 
    // Finally save the imposters to disk.
    FileStream fs;
-   if ( fs.open( _getDiffuseMapPath(), Torque::FS::File::Write ) )
+   if ( fs.open( _getDiffuseMapPath(), FileStream::Write ) )
    {
       ddsDest->write( fs );
       fs.close();
    }
-   if ( fs.open( _getNormalMapPath(), Torque::FS::File::Write ) )
+   if ( fs.open( _getNormalMapPath(), FileStream::Write ) )
    {
       ddsNormals->write( fs );
       fs.close();
@@ -509,21 +508,23 @@ void TSLastDetail::_update()
    // If we did a begin then end it now.
    if ( !sceneBegun )
       GFX->endScene();
+#endif
 }
 
 void TSLastDetail::deleteImposterCacheTextures()
 {
    const String diffuseMap = _getDiffuseMapPath();
    if ( diffuseMap.length() )
-      dFileDelete( diffuseMap );
+      Platform::deletePath( diffuseMap );
 
    const String normalMap = _getNormalMapPath();
    if ( normalMap.length() )
-      dFileDelete( normalMap );
+      Platform::deletePath( normalMap );
 }
 
 void TSLastDetail::updateImposterImages( bool forceUpdate )
 {
+#if 0
    // Can't do it without GFX!
    if ( !GFXDevice::devicePresent() )
       return;
@@ -540,14 +541,7 @@ void TSLastDetail::updateImposterImages( bool forceUpdate )
 
    if ( !sceneBegun )
       GFX->endScene();
-}
-
-ConsoleFunction(tsUpdateImposterImages, void, 1, 2, "tsUpdateImposterImages( bool forceupdate )")
-{
-   if ( argc > 1 )
-      TSLastDetail::updateImposterImages( dAtob( argv[1] ) );
-   else
-      TSLastDetail::updateImposterImages();
+#endif
 }
 
 

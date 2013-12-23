@@ -80,7 +80,7 @@ void m_matF_x_BatchedVertWeightList_C(const MatrixF &mat,
 
 MODULE_BEGIN( TSMeshIntrinsics )
 
-   MODULE_INIT_AFTER( 3D )
+   MODULE_INIT_AFTER( Platform )
    
    MODULE_INIT
    {

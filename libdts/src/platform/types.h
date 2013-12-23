@@ -49,8 +49,6 @@ typedef char           UTF8;        ///< Compiler independent 8  bit Unicode enc
 typedef unsigned short UTF16;       ///< Compiler independent 16 bit Unicode encoded character
 typedef unsigned int   UTF32;       ///< Compiler independent 32 bit Unicode encoded character
 
-typedef const char* StringTableEntry;
-
 //------------------------------------------------------------------------------
 //-------------------------------------- Type constants...
 #define __EQUAL_CONST_F F32(0.000001)                             ///< Constant float epsilon used for F32 comparisons
@@ -92,11 +90,7 @@ static const F32 F32_MAX = F32(3.402823466e+38F);                 ///< Constant 
 //--------------------------------------
 // Identify the compiler being used
 
-// PC-lint
-#if defined(_lint)
-#  include "platform/types.lint.h"
-// Metrowerks CodeWarrior
-#elif defined(__MWERKS__)
+#if defined(__MWERKS__)
 #  include "platform/types.codewarrior.h"
 // Microsoft Visual C++/Visual.NET
 #elif defined(_MSC_VER)
@@ -109,11 +103,122 @@ static const F32 F32_MAX = F32(3.402823466e+38F);                 ///< Constant 
 #endif
 
 /// Integral type matching the host's memory address width.
-#ifdef TORQUE_64BITS
+#ifdef TORQUE_64
    typedef U64 MEM_ADDRESS;
 #else
    typedef U32 MEM_ADDRESS;
 #endif
+
+
+// --------------------------------------------------------
+// size, time, null...
+
+#ifdef TORQUE_OS_XENON
+
+///< Calling convention
+#ifdef FN_CDECL
+#  undef FN_CDECL
+#endif
+#define FN_CDECL __cdecl
+
+// size_t is needed to overload new
+// size_t tends to be OS and compiler specific and may need to
+// be if/def'ed in the future
+typedef size_t dsize_t;
+
+struct FileTime
+{
+   U32 v1;
+   U32 v2;
+};
+
+
+#ifndef NULL
+#  define NULL (0)
+#endif
+
+#else
+
+#ifdef TORQUE_OS_WIN32
+
+#define FN_CDECL __cdecl            ///< Calling convention
+
+// size_t is needed to overload new
+// size_t tends to be OS and compiler specific and may need to
+// be if/def'ed in the future
+typedef unsigned int  dsize_t;
+
+
+/// Platform dependent file date-time structure.  The definition of this structure
+/// will likely be different for each OS platform.
+struct FileTime
+{
+   U32 v1;
+   U32 v2;
+};
+
+
+#ifndef NULL
+#  define NULL 0
+#endif
+
+#endif
+#endif
+
+
+#ifdef TORQUE_OS_DARWIN
+
+
+///< Calling convention
+#define FN_CDECL
+#define STDCALL
+
+// size_t is needed to overload new
+// size_t tends to be OS and compiler specific and may need to
+// be if/def'ed in the future
+typedef unsigned long  dsize_t;
+
+
+/** Platform dependent file date-time structure.  The defination of this structure
+ * will likely be different for each OS platform.
+ * On the PPC is a 64-bit structure for storing the date/time for a file
+ */
+
+// 64-bit structure for storing the date/time for a file
+// The date and time, specified in seconds since the unix epoch.
+// NOTE: currently, this is only 32-bits in value, so the upper 32 are all zeroes.
+typedef U64 FileTime;
+
+#ifndef NULL
+#  define NULL (0)
+#endif
+
+#else
+
+#ifdef TORQUE_OS_POSIX
+
+#define FN_CDECL     ///< Calling convention
+
+// size_t is needed to overload new
+// size_t tends to be OS and compiler specific and may need to
+// be if/def'ed in the future
+typedef unsigned int  dsize_t;
+
+
+/** Platform dependent file date-time structure.  The defination of this structure
+ * will likely be different for each OS platform.
+ */
+typedef S32 FileTime;
+
+
+#ifndef NULL
+#  define NULL (0)
+#endif
+
+#endif
+
+#endif
+
 
 //-------------------------------------- Some all-around useful inlines and globals
 //

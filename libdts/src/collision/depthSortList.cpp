@@ -22,7 +22,7 @@
 
 #include "platform/platform.h"
 #include "math/mMath.h"
-#include "console/console.h"
+#include "core/log.h"
 #include "collision/depthSortList.h"
 #include "core/color.h"
 #include "core/stream/fileStream.h" // TODO, remove this

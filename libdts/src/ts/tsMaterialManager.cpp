@@ -24,13 +24,14 @@
 #include "ts/tsMaterialManager.h"
 
 #include "core/util/safeDelete.h"
+#include "core/module.h"
 #include "core/log.h"
 
 void TSMaterialManager::mapMaterial(const String & textureName, const String & materialName)
 {
-   if (!getMapEntry(textureName).empty())
+   if (getMapEntry(textureName).isNotEmpty())
    {
-      if (!textureName.compare("unmapped_mat", String::NoCase))
+      if (!textureName.equal("unmapped_mat", String::NoCase))
          Log::warnf(LogEntry::General, "Warning, overwriting material for: %s", textureName.c_str());
    }
    

@@ -221,12 +221,21 @@ struct _TypeTraits< T* >
    typedef _ConstructPtr Construct;
    typedef _DestructPtr Destruct;
 
+#ifdef TORQUE_64
+   template< typename A >
+   static bool isTaggedPtr( A* ptr ) { return ( U64( ptr ) & 0x1 ); } //TODO: 64bits
+   template< typename A >
+   static A* getTaggedPtr( A* ptr ) { return ( A* ) ( U64( ptr ) | 0x1 ); } //TODO: 64bits
+   template< typename A >
+   static A* getUntaggedPtr( A* ptr ) { return ( A* ) ( U64( ptr ) & 0xFFFFFFFFFFFFFFFE ); } //TODO: 64bit
+#else
    template< typename A >
    static bool isTaggedPtr( A* ptr ) { return ( U32( ptr ) & 0x1 ); } //TODO: 64bits
    template< typename A >
    static A* getTaggedPtr( A* ptr ) { return ( A* ) ( U32( ptr ) | 0x1 ); } //TODO: 64bits
    template< typename A >
    static A* getUntaggedPtr( A* ptr ) { return ( A* ) ( U32( ptr ) & 0xFFFFFFFE ); } //TODO: 64bit
+#endif
 };
 
 template< typename T >

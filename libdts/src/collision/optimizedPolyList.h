@@ -33,6 +33,9 @@
 
 #define DEV 0.01
 
+
+class TSMaterialInstance;
+
 /// A concrete, renderable PolyList
 ///
 /// This class is used to store geometry from a PolyList query.
@@ -109,7 +112,7 @@ class OptimizedPolyList : public AbstractPolyList
    Vector<U32>       mIndexList;
    Vector<PlaneF>    mPlaneList;
 
-   Vector<BaseMatInstance*> mMaterialList;
+   Vector<TSMaterialInstance*> mMaterialList;
 
    // The Polygon structure puts the vertex data
    // and the polygon together
@@ -124,8 +127,8 @@ class OptimizedPolyList : public AbstractPolyList
    U32  addPoint(const Point3F& p);
    U32  addPlane(const PlaneF& plane);
 
-   void begin(BaseMatInstance* material, U32 surfaceKey);
-   void begin(BaseMatInstance* material, U32 surfaceKey, PolyType type);
+   void begin(TSMaterialInstance* material, U32 surfaceKey);
+   void begin(TSMaterialInstance* material, U32 surfaceKey, PolyType type);
    void plane(U32 v1, U32 v2, U32 v3);
    void plane(const PlaneF& p);
    void plane(const U32 index);
@@ -142,7 +145,7 @@ class OptimizedPolyList : public AbstractPolyList
    U32 insertUV0(const Point2F& uv);
    U32 insertUV1(const Point2F& uv);
    U32 insertPlane(const PlaneF& plane);
-   U32 insertMaterial(BaseMatInstance* baseMat);
+   U32 insertMaterial(TSMaterialInstance* baseMat);
 
    U32 insertVertex(const Point3F& point,
                     const Point3F& normal = Point3F(0.0f, 0.0f, 1.0f),

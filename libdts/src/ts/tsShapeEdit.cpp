@@ -22,14 +22,11 @@
 
 #include "platform/platform.h"
 
-#include "console/consoleTypes.h"
-#include "core/resourceManager.h"
 #include "ts/tsShape.h"
 #include "ts/tsShapeInstance.h"
 #include "ts/tsLastDetail.h"
 #include "ts/tsMaterialList.h"
 #include "core/stream/fileStream.h"
-#include "core/volume.h"
 
 
 //-----------------------------------------------------------------------------
@@ -45,7 +42,7 @@ S32 TSShape::addName(const String& name)
    if (index >= 0)
       return index;
 
-   names.push_back(StringTable->insert(name));
+   names.push_back(name);
    return names.size()-1;
 }
 
@@ -181,7 +178,7 @@ S32 TSShape::addImposter(const String& cachePath, S32 size, S32 numEquatorSteps,
       // the settings, otherwise quit
       if ( details[detIndex].subShapeNum >= 0 )
       {
-         Con::errorf( "TSShape::addImposter: A non-billboard detail already "
+         Log::errorf( "TSShape::addImposter: A non-billboard detail already "
             "exists at size %d", size );
          return -1;
       }
@@ -239,15 +236,18 @@ S32 TSShape::addImposter(const String& cachePath, S32 size, S32 numEquatorSteps,
          }
       }
 
+#if 0
       // Could be dedicated server.
       if ( GFXDevice::devicePresent() )
          setupBillboardDetails( cachePath );
+#endif
 
       while ( detailCollisionAccelerators.size() < details.size() )
          detailCollisionAccelerators.push_back( NULL );
    }
    else
    {
+#if 0
       if ( billboardDetails.size() && GFXDevice::devicePresent() )
       {
          delete billboardDetails[detIndex];
@@ -263,6 +263,7 @@ S32 TSShape::addImposter(const String& cachePath, S32 size, S32 numEquatorSteps,
 
          billboardDetails[detIndex]->update( true );
       }
+#endif
    }
 
    return detIndex;
@@ -280,7 +281,7 @@ bool TSShape::removeImposter()
 
    if ( detIndex == details.size() )
    {
-      Con::errorf( "TSShape::removeImposter: No imposter detail level found in shape" );
+      Log::errorf( "TSShape::removeImposter: No imposter detail level found in shape" );
       return false;
    }
 
@@ -364,7 +365,7 @@ template<class T> bool doRename(TSShape* shape, Vector<T>& group, const String& 
    S32 index = findByName(group, shape->findName(oldName));
    if (index < 0)
    {
-      Con::errorf("TSShape::rename: Could not find '%s'", oldName.c_str());
+      Log::errorf("TSShape::rename: Could not find '%s'", oldName.c_str());
       return false;
    }
 
@@ -375,7 +376,7 @@ template<class T> bool doRename(TSShape* shape, Vector<T>& group, const String& 
    // Check that this name is not already in use
    if (findByName(group, shape->findName(newName)) >= 0)
    {
-      Con::errorf("TSShape::rename: '%s' is already in use", newName.c_str());
+      Log::errorf("TSShape::rename: '%s' is already in use", newName.c_str());
       return false;
    }
 
@@ -412,14 +413,14 @@ bool TSShape::addNode(const String& name, const String& parentName, const Point3
    // Check that adding this node would not exceed the maximum count
    if (nodes.size() >= MAX_TS_SET_SIZE)
    {
-      Con::errorf("TSShape::addNode: Cannot add node, shape already has maximum (%d) nodes", MAX_TS_SET_SIZE);
+      Log::errorf("TSShape::addNode: Cannot add node, shape already has maximum (%d) nodes", MAX_TS_SET_SIZE);
       return false;
    }
 
    // Check that there is not already a node with this name
    if (findNode(name) >= 0)
    {
-      Con::errorf("TSShape::addNode: %s already exists!", name.c_str());
+      Log::errorf("TSShape::addNode: %s already exists!", name.c_str());
       return false;
    }
 
@@ -430,7 +431,7 @@ bool TSShape::addNode(const String& name, const String& parentName, const Point3
       parentIndex = findNode(parentName);
       if (parentIndex < 0)
       {
-         Con::errorf("TSShape::addNode: Could not find parent node '%s'", parentName.c_str());
+         Log::errorf("TSShape::addNode: Could not find parent node '%s'", parentName.c_str());
          return false;
       }
    }
@@ -532,7 +533,7 @@ bool TSShape::removeNode(const String& name)
    S32 nodeIndex = findNode(name);
    if (nodeIndex < 0)
    {
-      Con::errorf("TSShape::removeNode: Could not find node '%s'", name.c_str());
+      Log::errorf("TSShape::removeNode: Could not find node '%s'", name.c_str());
       return false;
    }
 
@@ -543,7 +544,7 @@ bool TSShape::removeNode(const String& name)
    getNodeObjects(nodeIndex, nodeObjects);
    if (nodeObjects.size())
    {
-      Con::warnf("TSShape::removeNode: Node '%s' has %d objects attached, these "
+      Log::warnf("TSShape::removeNode: Node '%s' has %d objects attached, these "
          "will be reassigned to the node's parent ('%s')", name.c_str(), nodeObjects.size(),
          ((nodeParentIndex >= 0) ? getName(nodes[nodeParentIndex].nameIndex).c_str() : "null"));
    }
@@ -640,7 +641,7 @@ bool TSShape::setNodeTransform(const String& name, const Point3F& pos, const Qua
    S32 nodeIndex = findNode(name);
    if (nodeIndex < 0)
    {
-      Con::errorf("TSShape::setNodeTransform: Could not find node '%s'", name.c_str());
+      Log::errorf("TSShape::setNodeTransform: Could not find node '%s'", name.c_str());
       return false;
    }
 
@@ -788,7 +789,7 @@ bool TSShape::setObjectNode(const String& objName, const String& nodeName)
    S32 objIndex = findObject(objName);
    if (objIndex < 0)
    {
-      Con::errorf("TSShape::setObjectNode: Could not find object '%s'", objName.c_str());
+      Log::errorf("TSShape::setObjectNode: Could not find object '%s'", objName.c_str());
       return false;
    }
 
@@ -800,7 +801,7 @@ bool TSShape::setObjectNode(const String& objName, const String& nodeName)
       nodeIndex = findNode(nodeName);
       if (nodeIndex < 0)
       {
-         Con::errorf("TSShape::setObjectNode: Could not find node '%s'", nodeName.c_str());
+         Log::errorf("TSShape::setObjectNode: Could not find node '%s'", nodeName.c_str());
          return false;
       }
    }
@@ -816,7 +817,7 @@ bool TSShape::removeObject(const String& name)
    S32 objIndex = findObject(name);
    if (objIndex < 0)
    {
-      Con::errorf("TSShape::removeObject: Could not find object '%s'", name.c_str());
+      Log::errorf("TSShape::removeObject: Could not find object '%s'", name.c_str());
       return false;
    }
 
@@ -1058,7 +1059,7 @@ bool TSShape::addMesh(TSShape* srcShape, const String& srcMeshName, const String
    TSMesh* srcMesh = srcShape->findMesh(srcMeshName);
    if (!srcMesh)
    {
-      Con::errorf("TSShape::addMesh: Could not find mesh '%s' in shape", srcMeshName.c_str());
+      Log::errorf("TSShape::addMesh: Could not find mesh '%s' in shape", srcMeshName.c_str());
       return false;
    }
 
@@ -1079,7 +1080,7 @@ bool TSShape::addMesh(TSShape* srcShape, const String& srcMeshName, const String
          if (nodeMap[srcNode] == -1)
          {
             const char* name = srcShape->getName(srcShape->nodes[srcNode].nameIndex).c_str();
-            Con::errorf("TSShape::addMesh: Skin is weighted to node (%s) that "
+            Log::errorf("TSShape::addMesh: Skin is weighted to node (%s) that "
                "does not exist in this shape", name);
             return false;
          }
@@ -1133,7 +1134,7 @@ bool TSShape::setMeshSize(const String& meshName, S32 size)
    if (!findMeshIndex(meshName, objIndex, meshIndex) ||
       !meshes[objects[objIndex].startMeshIndex + meshIndex])
    {
-      Con::errorf("TSShape::setMeshSize: Could not find mesh '%s'", meshName.c_str());
+      Log::errorf("TSShape::setMeshSize: Could not find mesh '%s'", meshName.c_str());
       return false;
    }
 
@@ -1160,7 +1161,7 @@ bool TSShape::removeMesh(const String& meshName)
    if (!findMeshIndex(meshName, objIndex, meshIndex) ||
       !meshes[objects[objIndex].startMeshIndex + meshIndex])
    {
-      Con::errorf("TSShape::removeMesh: Could not find mesh '%s'", meshName.c_str());
+      Log::errorf("TSShape::removeMesh: Could not find mesh '%s'", meshName.c_str());
       return false;
    }
 
@@ -1221,7 +1222,7 @@ S32 TSShape::setDetailSize(S32 oldSize, S32 newSize)
    S32 oldIndex = findDetailBySize( oldSize );
    if ( oldIndex < 0 )
    {
-      Con::errorf( "TSShape::setDetailSize: Cannot find detail with size %d", oldSize );
+      Log::errorf( "TSShape::setDetailSize: Cannot find detail with size %d", oldSize );
       return -1;
    }
 
@@ -1303,7 +1304,7 @@ bool TSShape::removeDetail( S32 size )
 
    if ( ( dl < 0 ) || ( dl >= details.size() ) )
    {
-      Con::errorf( "TSShape::removeDetail: Invalid detail index (%d)", dl );
+      Log::errorf( "TSShape::removeDetail: Invalid detail index (%d)", dl );
       return false;
    }
 
@@ -1357,19 +1358,19 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
       S32 oldSeqCount = sequences.size();
 
       // DSQ source file
-      char filenameBuf[1024];
-      Con::expandScriptFilename(filenameBuf, sizeof(filenameBuf), path.getFullPath().c_str());
+      
+      String filename = path.getFullPath();
 
       FileStream *f;
-      if((f = FileStream::createAndOpen( filenameBuf, Torque::FS::File::Read )) == NULL)
+      if((f = FileStream::createAndOpen( filename, FileStream::Read )) == NULL)
       {
-         Con::errorf("TSShape::addSequence: Could not load DSQ file '%s'", filenameBuf);
+         Log::errorf("TSShape::addSequence: Could not load DSQ file '%s'", filename.c_str());
          return false;
       }
-      if (!importSequences(f, filenameBuf) || (f->getStatus() != Stream::Ok))
+      if (!importSequences(f, filename) || (f->getStatus() != Stream::Ok))
       {
          delete f;
-         Con::errorf("TSShape::addSequence: Load sequence file '%s' failed", filenameBuf);
+         Log::errorf("TSShape::addSequence: Load sequence file '%s' failed", filename.c_str());
          return false;
       }
       delete f;
@@ -1397,7 +1398,7 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
          S32 seqIndex = findSequence(nameIndex);
          if ((seqIndex != -1) && (seqIndex != i))
          {
-            Con::errorf("TSShape::addSequence: Failed to add sequence '%s' "
+            Log::errorf("TSShape::addSequence: Failed to add sequence '%s' "
                "(name already exists)", getName(nameIndex).c_str());
             sequences[i].nameIndex = addName("__dummy__");
             removeSequence("__dummy__");
@@ -1410,7 +1411,7 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
       TSShape::Sequence& seq = sequences.last();
 
       // Store information about how this sequence was created
-      seq.sourceData.from = String::ToString("%s\t%s", filenameBuf, name.c_str());
+      seq.sourceData.from = String::ToString("%s\t%s", filename.c_str(), name.c_str());
       seq.sourceData.total = seq.numKeyframes;
       seq.sourceData.start = ((startFrame < 0) || (startFrame >= seq.numKeyframes)) ? 0 : startFrame;
       seq.sourceData.end = ((endFrame < 0) || (endFrame >= seq.numKeyframes)) ? seq.numKeyframes-1 : endFrame;
@@ -1421,30 +1422,29 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
    /* Check that sequence to be added does not already exist */
    if (findSequence(name) != -1)
    {
-      Con::errorf("TSShape::addSequence: Cannot add sequence '%s' (name already exists)", name.c_str());
+      Log::errorf("TSShape::addSequence: Cannot add sequence '%s' (name already exists)", name.c_str());
       return false;
    }
 
-   Resource<TSShape> hSrcShape;
+   EngineObjectRef hSrcShape;
    TSShape* srcShape = this;        // Assume we are copying an existing sequence
 
    if (path.getExtension().equal("dts", String::NoCase) ||
        path.getExtension().equal("dae", String::NoCase))
    {
       // DTS or DAE source file
-      char filenameBuf[1024];
-      Con::expandScriptFilename(filenameBuf, sizeof(filenameBuf), path.getFullPath().c_str());
+      String filename = path.getFullPath();
 
-      hSrcShape = ResourceManager::get().load(filenameBuf);
+      hSrcShape = TSShape::loadShape(filename);
       if (!bool(hSrcShape))
       {
-         Con::errorf("TSShape::addSequence: Could not load source shape '%s'", path.getFullPath().c_str());
+         Log::errorf("TSShape::addSequence: Could not load source shape '%s'", filename.c_str());
          return false;
       }
-      srcShape = const_cast<TSShape*>((const TSShape*)hSrcShape);
+      srcShape = (TSShape*)hSrcShape.getPointer();
       if (!srcShape->sequences.size())
       {
-         Con::errorf("TSShape::addSequence: Source shape '%s' does not contain any sequences", path.getFullPath().c_str());
+         Log::errorf("TSShape::addSequence: Source shape '%s' does not contain any sequences", filename.c_str());
          return false;
       }
 
@@ -1462,7 +1462,7 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
    S32 seqIndex = srcShape->findSequence(oldName);
    if (seqIndex < 0)
    {
-      Con::errorf("TSShape::addSequence: Could not find sequence named '%s'", oldName.c_str());
+      Log::errorf("TSShape::addSequence: Could not find sequence named '%s'", oldName.c_str());
       return false;
    }
 
@@ -1470,7 +1470,7 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
    const TSShape::Sequence* srcSeq = &srcShape->sequences[seqIndex];
    if ((startFrame < 0) || (startFrame >= srcSeq->numKeyframes))
    {
-      Con::warnf("TSShape::addSequence: Start keyframe (%d) out of range (0-%d) for sequence '%s'",
+      Log::warnf("TSShape::addSequence: Start keyframe (%d) out of range (0-%d) for sequence '%s'",
          startFrame, srcSeq->numKeyframes-1, oldName.c_str());
       startFrame = 0;
    }
@@ -1478,7 +1478,7 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
       endFrame = srcSeq->numKeyframes - 1;
    else if (endFrame >= srcSeq->numKeyframes)
    {
-      Con::warnf("TSShape::addSequence: End keyframe (%d) out of range (0-%d) for sequence '%s'",
+      Log::warnf("TSShape::addSequence: End keyframe (%d) out of range (0-%d) for sequence '%s'",
          endFrame, srcSeq->numKeyframes-1, oldName.c_str());
       endFrame = srcSeq->numKeyframes - 1;
    }
@@ -1778,7 +1778,7 @@ bool TSShape::removeSequence(const String& name)
    S32 seqIndex = findSequence(name);
    if (seqIndex < 0)
    {
-      Con::errorf("TSShape::removeSequence: Could not find sequence '%s'", name.c_str());
+      Log::errorf("TSShape::removeSequence: Could not find sequence '%s'", name.c_str());
       return false;
    }
 
@@ -1838,14 +1838,14 @@ bool TSShape::addTrigger(const String& seqName, S32 keyframe, S32 state)
    S32 seqIndex = findSequence(seqName);
    if (seqIndex < 0)
    {
-      Con::errorf("TSShape::addTrigger: Could not find sequence '%s'", seqName.c_str());
+      Log::errorf("TSShape::addTrigger: Could not find sequence '%s'", seqName.c_str());
       return false;
    }
 
    TSShape::Sequence& seq = sequences[seqIndex];
    if (keyframe >= seq.numKeyframes)
    {
-      Con::errorf("TSShape::addTrigger: Keyframe out of range (0-%d for sequence '%s')",
+      Log::errorf("TSShape::addTrigger: Keyframe out of range (0-%d for sequence '%s')",
          seq.numKeyframes-1, seqName.c_str());
       return false;
    }
@@ -1910,14 +1910,14 @@ bool TSShape::removeTrigger(const String& seqName, S32 keyframe, S32 state)
    S32 seqIndex = findSequence(seqName);
    if (seqIndex < 0)
    {
-      Con::errorf("TSShape::removeTrigger: Could not find sequence '%s'", seqName.c_str());
+      Log::errorf("TSShape::removeTrigger: Could not find sequence '%s'", seqName.c_str());
       return false;
    }
 
    TSShape::Sequence& seq = sequences[seqIndex];
    if (keyframe >= seq.numKeyframes)
    {
-      Con::errorf("TSShape::removeTrigger: Keyframe out of range (0-%d for sequence '%s')",
+      Log::errorf("TSShape::removeTrigger: Keyframe out of range (0-%d for sequence '%s')",
          seq.numKeyframes-1, seqName.c_str());
       return false;
    }
@@ -1955,7 +1955,7 @@ bool TSShape::removeTrigger(const String& seqName, S32 keyframe, S32 state)
       }
    }
 
-   Con::errorf("TSShape::removeTrigger: Could not find trigger (%d, %d) for sequence '%s'",
+   Log::errorf("TSShape::removeTrigger: Could not find trigger (%d, %d) for sequence '%s'",
       keyframe, state, seqName.c_str());
 
    return false;
@@ -1993,7 +1993,7 @@ bool TSShape::setSequenceBlend(const String& seqName, bool blend, const String& 
    S32 seqIndex = findSequence(seqName);
    if (seqIndex < 0)
    {
-      Con::errorf("TSShape::setSequenceBlend: Could not find sequence named '%s'", seqName.c_str());
+      Log::errorf("TSShape::setSequenceBlend: Could not find sequence named '%s'", seqName.c_str());
       return false;
    }
    TSShape::Sequence& seq = sequences[seqIndex];
@@ -2006,14 +2006,14 @@ bool TSShape::setSequenceBlend(const String& seqName, bool blend, const String& 
    S32 blendRefSeqIndex = findSequence(blendRefSeqName);
    if (blendRefSeqIndex < 0)
    {
-      Con::errorf("TSShape::setSequenceBlend: Could not find reference sequence named '%s'", blendRefSeqName.c_str());
+      Log::errorf("TSShape::setSequenceBlend: Could not find reference sequence named '%s'", blendRefSeqName.c_str());
       return false;
    }
    TSShape::Sequence& blendRefSeq = sequences[blendRefSeqIndex];
 
    if ((blendRefFrame < 0) || (blendRefFrame >= blendRefSeq.numKeyframes))
    {
-      Con::errorf("TSShape::setSequenceBlend: Reference frame out of range (0-%d)", blendRefSeq.numKeyframes-1);
+      Log::errorf("TSShape::setSequenceBlend: Reference frame out of range (0-%d)", blendRefSeq.numKeyframes-1);
       return false;
    }
 
@@ -2079,7 +2079,7 @@ bool TSShape::setSequenceGroundSpeed(const String& seqName, const Point3F& trans
    S32 seqIndex = findSequence(seqName);
    if (seqIndex < 0)
    {
-      Con::errorf("setSequenceGroundSpeed: Could not find sequence named '%s'", seqName.c_str());
+      Log::errorf("setSequenceGroundSpeed: Could not find sequence named '%s'", seqName.c_str());
       return false;
    }
    TSShape::Sequence& seq = sequences[seqIndex];

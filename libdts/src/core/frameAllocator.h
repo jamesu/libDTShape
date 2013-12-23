@@ -187,8 +187,8 @@ public:
 /// FrameTemp<char> tempStr(32); // NOTE! This parameter is NOT THE SIZE IN BYTES. See constructor docs.
 /// dStrcat( tempStr, SomeOtherString );
 /// tempStr[2] = 'l';
-/// Con::printf( tempStr );
-/// Con::printf( "Foo: %s", ~tempStr );
+/// Log::printf( tempStr );
+/// Log::printf( "Foo: %s", ~tempStr );
 /// @endcode
 ///
 /// This will automatically handle getting and restoring the watermark of the

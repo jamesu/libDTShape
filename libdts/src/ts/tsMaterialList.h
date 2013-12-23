@@ -24,7 +24,7 @@
 #define _TSMATERIALLIST_H_
 
 #ifndef _MATERIALLIST_H_
-#include "materials/materialList.h"
+#include "ts/materialList.h"
 #endif
 #ifndef _PATH_H_
 #include "core/util/path.h"

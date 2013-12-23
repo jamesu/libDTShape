@@ -23,10 +23,9 @@
 #include "platform/platform.h"
 #include "ts/loader/tsShapeLoader.h"
 
-#include "core/volume.h"
-#include "materials/materialList.h"
-#include "materials/matInstance.h"
-#include "materials/materialManager.h"
+#include "ts/materialList.h"
+#include "ts/tsMaterial.h"
+#include "ts/tsMaterialManager.h"
 #include "ts/tsShapeInstance.h"
 #include "ts/tsMaterialList.h"
 
@@ -114,7 +113,7 @@ void TSShapeLoader::updateProgress(int major, const char* msg, int numMinor, int
       progressMsg = avar("%s (%d of %d)", msg, minor + 1, numMinor);
    }
 
-   Con::executef("updateTSShapeLoadProgress", Con::getFloatArg(progress), progressMsg);
+   //Log::executef("updateTSShapeLoadProgress", Log::getFloatArg(progress), progressMsg);
 }
 
 //-----------------------------------------------------------------------------
@@ -138,7 +137,7 @@ TSShape* TSShapeLoader::generateShape(const Torque::Path& path)
    if (!subshapes.size())
    {
       delete shape;
-      Con::errorf("Failed to load shape \"%s\", no subshapes found", path.getFullPath().c_str());
+      Log::errorf("Failed to load shape \"%s\", no subshapes found", path.getFullPath().c_str());
       return NULL;
    }
 
@@ -177,7 +176,7 @@ bool TSShapeLoader::processNode(AppNode* node)
    {
       if ( boundsNode )
       {
-         Con::warnf( "More than one bounds node found" );
+         Log::warnf( "More than one bounds node found" );
          return false;
       }
       boundsNode = node;
@@ -361,7 +360,7 @@ void TSShapeLoader::generateSubshapes()
 
       if (shape->nodes.size() >= MAX_TS_SET_SIZE)
       {
-         Con::warnf("Shape exceeds the maximum node count (%d). Ignoring additional nodes.",
+         Log::warnf("Shape exceeds the maximum node count (%d). Ignoring additional nodes.",
             MAX_TS_SET_SIZE);
       }
    }
@@ -371,7 +370,7 @@ void TSShapeLoader::generateSubshapes()
 bool cmpMeshNameAndSize(const String& key, const Vector<String>& names, void* arg1, void* arg2)
 {
    const Vector<AppMesh*>& meshes = *(Vector<AppMesh*>*)arg1;
-   S32                     meshSize = (S32)arg2;
+   S32                     meshSize = *((S32*)arg2);
 
    for (S32 i = 0; i < names.size(); i++)
    {
@@ -398,7 +397,7 @@ void TSShapeLoader::generateObjects()
          AppMesh* mesh = subshape->objMeshes[iMesh];
          mesh->detailSize = 2;
          String name = String::GetTrailingNumber( mesh->getName(), mesh->detailSize );
-         name = getUniqueName( name, cmpMeshNameAndSize, meshNames, &(subshape->objMeshes), (void*)mesh->detailSize );
+         name = getUniqueName( name, cmpMeshNameAndSize, meshNames, &(subshape->objMeshes), &mesh->detailSize );
          meshNames.push_back( name );
 
          // Fix up any collision details that don't have a negative detail level.
@@ -487,7 +486,7 @@ void TSShapeLoader::generateObjects()
          shape->addDetail(detailName, mesh->detailSize, iSub);
          if (shape->details.size() > oldNumDetails)
          {
-            Con::warnf("Object mesh \"%s\" has no matching detail (\"%s%d\" has"
+            Log::warnf("Object mesh \"%s\" has no matching detail (\"%s%d\" has"
                " been added automatically)", mesh->getName(false), detailName, mesh->detailSize);
          }
       }
@@ -541,7 +540,7 @@ void TSShapeLoader::generateSkins()
 
          if (skin->nodeIndex[iBone] == -1)
          {
-            Con::warnf("Could not find bone %d. Defaulting to first node", iBone);
+            Log::warnf("Could not find bone %d. Defaulting to first node", iBone);
             skin->nodeIndex[iBone] = 0;
          }
       }
@@ -639,19 +638,19 @@ void TSShapeLoader::generateFrame(TSShape::Object& obj, F32 t, bool addFrame, bo
          // and tverts was added
          if ((appMesh->points.size() - oldNumPoints) != appMesh->vertsPerFrame)
          {
-            Con::warnf("Wrong number of points (%d) added at time=%f (expected %d)",
+            Log::warnf("Wrong number of points (%d) added at time=%f (expected %d)",
                appMesh->points.size() - oldNumPoints, t, appMesh->vertsPerFrame);
             addFrame = false;
          }
          if ((appMesh->normals.size() - oldNumPoints) != appMesh->vertsPerFrame)
          {
-            Con::warnf("Wrong number of normals (%d) added at time=%f (expected %d)",
+            Log::warnf("Wrong number of normals (%d) added at time=%f (expected %d)",
                appMesh->normals.size() - oldNumPoints, t, appMesh->vertsPerFrame);
             addFrame = false;
          }
          if ((appMesh->uvs.size() - oldNumUvs) != appMesh->vertsPerFrame)
          {
-            Con::warnf("Wrong number of tverts (%d) added at time=%f (expected %d)",
+            Log::warnf("Wrong number of tverts (%d) added at time=%f (expected %d)",
                appMesh->uvs.size() - oldNumUvs, t, appMesh->vertsPerFrame);
             addMatFrame = false;
          }

@@ -22,7 +22,7 @@
 
 #include "platform/platform.h"
 #include "math/mMath.h"
-#include "console/console.h"
+#include "core/log.h"
 #include "collision/planeExtractor.h"
 
 //----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ bool PlaneExtractorPolyList::isEmpty() const
    return true;
 }
 
-void PlaneExtractorPolyList::begin(BaseMatInstance*,U32)
+void PlaneExtractorPolyList::begin(TSMaterialInstance*,U32)
 {
    mPlaneList->increment();
 }

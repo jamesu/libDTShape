@@ -34,12 +34,6 @@
 #ifndef _PLATFORMASSERT_H_
 #include "platform/platformAssert.h"
 #endif
-#ifndef _MSGBOX_H_
-#include "platform/nativeDialogs/msgBox.h"
-#endif
-#ifndef _VERSION_H_
-#include "app/version.h"
-#endif
 #ifndef _TORQUE_STRING_H_
 #include "core/util/str.h"
 #endif
@@ -49,6 +43,9 @@
 
 #include <new>
 #include <typeinfo>
+
+#define BEGIN_NS(ns) namespace ns
+#define END_NS }
 
 /// Global processor identifiers.
 ///
@@ -138,17 +135,6 @@ struct Processor
 #define TORQUE_DEBUGBREAK() Platform::debugBreak();
 #endif
 
-/// Physical type of a drive.
-enum DriveType
-{
-   DRIVETYPE_FIXED = 0,       ///< Non-removable fixed drive.
-   DRIVETYPE_REMOVABLE = 1,   ///< Removable drive.
-   DRIVETYPE_REMOTE = 2,      ///< Networked/remote drive.
-   DRIVETYPE_CDROM = 3,       ///< CD-Rom.
-   DRIVETYPE_RAMDISK = 4,     ///< A ramdisk!
-   DRIVETYPE_UNKNOWN = 5      ///< Don't know.
-};
-
 // Some forward declares for later.
 class Point2I;
 template<class T> class Vector;
@@ -178,34 +164,16 @@ namespace Platform
    String localTimeToString( const LocalTime &lt );
    
    U32  getTime();
-   U32  getVirtualMilliseconds();
 
    /// Returns the milliseconds since the system was started.  You should
    /// not depend on this for high precision timing.
    /// @see PlatformTimer
    U32 getRealMilliseconds();
 
-   void advanceTime(U32 delta);
    S32 getBackgroundSleepTime();
-
-   // Platform control
-   void init();
-   void initConsole();
-   void shutdown();
-   void process();
-
-   // Math control state
-   U32 getMathControlState();
-   void setMathControlState(U32 state);
-   void setMathControlStateKnown();
    
    // Process control
    void sleep(U32 ms);
-   bool excludeOtherInstances(const char *string);
-   bool checkOtherInstances(const char *string);
-   void restartInstance();
-   void postQuitMessage(const U32 in_quitVal);
-   void forceShutdown(S32 returnValue);
 
    // Debug
    void outputDebugString(const char *string, ...);
@@ -214,105 +182,25 @@ namespace Platform
    // Random
    float getRandom();
    
-   // Window state
-   void setWindowLocked(bool locked);
-   void minimizeWindow();
-   //const Point2I &getWindowSize();
-   void setWindowSize( U32 newWidth, U32 newHeight, bool fullScreen );
-   void closeWindow();
-
-   // File stuff
-   bool doCDCheck();
-   StringTableEntry createPlatformFriendlyFilename(const char *filename);
-   struct FileInfo
-   {
-      const char* pFullPath;
-      const char* pFileName;
-      U32 fileSize;
-   };
-   bool cdFileExists(const char *filePath, const char *volumeName, S32 serialNum);
-   void fileToLocalTime(const FileTime &ft, LocalTime *lt);
-   /// compare file times returns < 0 if a is earlier than b, >0 if b is earlier than a
-   S32 compareFileTimes(const FileTime &a, const FileTime &b);
-   bool stringToFileTime(const char * string, FileTime * time);
-   bool fileTimeToString(FileTime * time, char * string, U32 strLen);
-
-   /// Compares the last modified time between two file paths.  Returns < 0 if
-   /// the first file is earlier than the second, > 0 if the second file is earlier
-   /// than the first, and 0 if the files are equal.
-   ///
-   /// If either of the files doesn't exist it returns -1.
-   S32 compareModifiedTimes( const char *firstPath, const char *secondPath );
-
-   // Directory functions.  Dump path returns false iff the directory cannot be
-   //  opened.
+   // Return path to root (usually cwd)
+   const char *getRootDir();
    
-   StringTableEntry getCurrentDirectory();
-   bool             setCurrentDirectory(StringTableEntry newDir);
-
-   StringTableEntry getTemporaryDirectory();
-   StringTableEntry getTemporaryFileName();
-
-   /// Returns the filename of the torque executable.
-   /// On Win32, this is the .exe file.
-   /// On Mac, this is the .app/ directory bundle.
-   StringTableEntry getExecutableName();
-   /// Returns full pathname of the torque executable without filename
-   StringTableEntry getExecutablePath();
+   void onFatalError(int code);
    
-   /// Returns the full path to the directory that contains main.cs.
-   /// Tools scripts are validated as such if they are in this directory or a
-   /// subdirectory of this directory.
-   StringTableEntry getMainDotCsDir();
-
-   /// Set main.cs directory. Used in runEntryScript()
-   void setMainDotCsDir(const char *dir);
-
-   StringTableEntry getPrefsPath(const char *file = NULL);
-
-   char *makeFullPathName(const char *path, char *buffer, U32 size, const char *cwd = NULL);
-   StringTableEntry stripBasePath(const char *path);
    bool isFullPath(const char *path);
-   StringTableEntry makeRelativePathName(const char *path, const char *to);
-
-   String stripExtension( String fileName, Vector< String >& validExtensions );
-
-   bool dumpPath(const char *in_pBasePath, Vector<FileInfo>& out_rFileVector, S32 recurseDepth = -1);
-   bool dumpDirectories( const char *path, Vector<StringTableEntry> &directoryVector, S32 depth = 0, bool noBasePath = false );
-   bool hasSubDirectory( const char *pPath );
+   bool createPath(const char *pathName);
+   String makeRelativePathName(const char *path, const char *to);
+   char *makeFullPathName(const char *path, char *buffer, U32 size, const char *cwd = NULL);
+   
+   S32 compareFileTimes(const FileTime &a, const FileTime &b);
    bool getFileTimes(const char *filePath, FileTime *createTime, FileTime *modifyTime);
-   bool isFile(const char *pFilePath);
-   S32  getFileSize(const char *pFilePath);
-   bool isDirectory(const char *pDirPath);
-   bool isSubDirectory(const char *pParent, const char *pDir);
-
-   void addExcludedDirectory(const char *pDir);
-   void clearExcludedDirectories();
-   bool isExcludedDirectory(const char *pDir);
-
-   /// Given a directory path, create all necessary directories for that path to exist.
-   bool createPath(const char *path); // create a directory path
+   
+   bool deletePath(const char *filename);
 
    // Alerts
    void AlertOK(const char *windowTitle, const char *message);
    bool AlertOKCancel(const char *windowTitle, const char *message);
    bool AlertRetry(const char *windowTitle, const char *message);
-
-   // Volumes
-   struct VolumeInformation
-   {
-      StringTableEntry  RootPath;
-      StringTableEntry  Name;
-      StringTableEntry  FileSystem;
-      U32               SerialNumber;
-      U32               Type;
-      bool              ReadOnly;
-   };
-   extern struct VolumeInformation  *PVolumeInformation;
-
-   // Volume functions.
-   void getVolumeNamesList( Vector<const char*>& out_rNameVector, bool bOnlyFixedDrives = false );
-   void getVolumeInformationList( Vector<VolumeInformation>& out_rVolumeInfoVector, bool bOnlyFixedDrives = false );
 
    struct SystemInfo_struct
    {
@@ -329,75 +217,7 @@ namespace Platform
             U32            properties;      // CPU type specific enum
          } processor;
    };
-   extern Signal<void(void)> SystemInfoReady;
    extern SystemInfo_struct  SystemInfo;
-
-   // Web page launch function:
-   bool openWebBrowser( const char* webAddress );
-
-   // display Splash Window
-   bool displaySplashWindow( String path );
-
-   void openFolder( const char* path );
-
-   // Open file at the OS level, according to registered file-types.
-   void openFile( const char* path );
-
-   const char* getLoginPassword();
-   bool setLoginPassword( const char* password );
-
-   const char* getClipboard();
-   bool setClipboard(const char *text);
-
-   // User Specific Functions
-   StringTableEntry getUserHomeDirectory();
-   StringTableEntry getUserDataDirectory();
-   bool getUserIsAdministrator();
-   
-   // Displays a fancy platform specific message box
-   S32 messageBox(const UTF8 *title, const UTF8 *message, MBButtons buttons = MBOkCancel, MBIcons icon = MIInformation);
-   
-   /// Description of a keyboard input we want to ignore.
-   struct KeyboardInputExclusion
-   {
-      KeyboardInputExclusion()
-      {
-         key = 0;
-         orModifierMask = 0;
-         andModifierMask = 0;
-      }
-
-      /// The key code to ignore, e.g. KEY_TAB. If this and the other
-      /// conditions match, ignore the key.
-      S32 key;
-
-      /// if(modifiers | orModifierMask) and the other conditions match,
-      /// ignore the key.
-      U32 orModifierMask;
-
-      /// if((modifiers & andModifierMask) == andModifierMask) and the
-      /// other conditions match, ignore the key stroke.
-      U32 andModifierMask;
-
-      /// Based on the values above, determine if a given input event
-      /// matchs this exclusion rule.
-      const bool checkAgainstInput(const InputEventInfo *info) const;
-   };
-
-   /// Reset the keyboard input exclusion list.
-   void clearKeyboardInputExclusion();
-   
-   /// Add a new keyboard exclusion.
-   void addKeyboardInputExclusion(const KeyboardInputExclusion &kie);
-
-   /// Check if a given input event should be excluded.
-   const bool checkKeyboardInputExclusion(const InputEventInfo *info);
-	
-   
-   /// Set/Get whether this is a web deployment 
-	bool getWebDeployment();
-   void setWebDeployment(bool v);
-   
 };
 
 //------------------------------------------------------------------------------
@@ -480,21 +300,10 @@ inline void destructInPlace(T* p)
 //------------------------------------------------------------------------------
 /// Memory functions
 
-#if !defined(TORQUE_DISABLE_MEMORY_MANAGER)
-#  define TORQUE_TMM_ARGS_DECL   , const char* fileName, const U32 lineNum
-#  define TORQUE_TMM_ARGS        , fileName, lineNum
-#  define TORQUE_TMM_LOC         , __FILE__, __LINE__
-   extern void* FN_CDECL operator new(dsize_t size, const char*, const U32);
-   extern void* FN_CDECL operator new[](dsize_t size, const char*, const U32);
-   extern void  FN_CDECL operator delete(void* ptr);
-   extern void  FN_CDECL operator delete[](void* ptr);
-#  define _new new(__FILE__, __LINE__)
-#  define new  _new
-#else
+
 #  define TORQUE_TMM_ARGS_DECL
 #  define TORQUE_TMM_ARGS
 #  define TORQUE_TMM_LOC
-#endif
 
 #define dMalloc(x) dMalloc_r(x, __FILE__, __LINE__)
 #define dRealloc(x, y) dRealloc_r(x, y, __FILE__, __LINE__)
@@ -549,27 +358,6 @@ template<class T> void dCopyArray(T *dst, const T *src, dsize_t size)
    #define dALIGN_BEGIN()
    #define dALIGN_END()
 #endif
-
-//------------------------------------------------------------------------------
-// FileIO functions
-extern bool dFileDelete(const char *name);
-extern bool dFileRename(const char *oldName, const char *newName);
-extern bool dFileTouch(const char *name);
-extern bool dPathCopy(const char *fromName, const char *toName, bool nooverwrite = true);
-
-typedef void* FILE_HANDLE;
-enum DFILE_STATUS
-{
-   DFILE_OK = 1
-};
-
-extern FILE_HANDLE dOpenFileRead(const char *name, DFILE_STATUS &error);
-extern FILE_HANDLE dOpenFileReadWrite(const char *name, bool append, DFILE_STATUS &error);
-extern int dFileRead(FILE_HANDLE handle, U32 bytes, char *dst, DFILE_STATUS &error);
-extern int dFileWrite(FILE_HANDLE handle, U32 bytes, const char *dst, DFILE_STATUS &error);
-extern void dFileClose(FILE_HANDLE handle);
-
-extern StringTableEntry osGetTemporaryDirectory();
 
 //------------------------------------------------------------------------------
 struct Math

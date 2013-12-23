@@ -54,19 +54,15 @@ typedef unsigned _int64 U64;
 #  ifndef TORQUE_OS_XENON
 #     define TORQUE_OS_XENON
 #  endif
-#  include "platform/types.xenon.h"
 #elif defined( _XBOX_VER )
 #  define TORQUE_OS_STRING "Xbox"
 #  define TORQUE_OS_XBOX
-#  include "platform/types.win32.h"
 #elif defined(_WIN32)
 #  define TORQUE_OS_STRING "Win32"
 #  define TORQUE_OS_WIN32
-#  include "platform/types.win32.h"
 #else 
 #  error "VC: Unsupported Operating System"
 #endif
-
 
 //--------------------------------------
 // Identify the CPU

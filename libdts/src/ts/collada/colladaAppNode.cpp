@@ -32,8 +32,6 @@
 #include "ts/collada/colladaAppMesh.h"
 #include "ts/collada/colladaAppMesh.h"
 
-#include "core/stringTable.h"
-
 // Trim leading and trailing whitespace from the first word in the string
 // Note that the string is modified.
 static char* TrimFirstWord(char* str)
@@ -82,7 +80,7 @@ ColladaAppNode::ColladaAppNode(const domNode* node, ColladaAppNode* parent)
       char* name = TrimFirstWord( pos );
       char* value = TrimFirstWord( split + 1 );
 
-      mProps.insert(StringTable->insert(name), dAtof(value));
+      mProps.insert(name, dAtof(value));
 
       pos = value + dStrlen( value ) + 1;
    }
@@ -128,7 +126,7 @@ void ColladaAppNode::buildChildList()
             if (node)
                mChildNodes.push_back(new ColladaAppNode(node, this));
             else
-               Con::warnf("Failed to resolve instance_node with url=%s", instanceNode->getUrl().originalStr().c_str());
+               Log::warnf("Failed to resolve instance_node with url=%s", instanceNode->getUrl().originalStr().c_str());
             break;
          }
       }

@@ -27,7 +27,7 @@
 #include "math/mRandom.h"
 #include "math/util/frustum.h"
 #include "platform/profiler.h"
-#include "core/tAlgorithm.h"
+//#include "core/tAlgorithm.h"
 
 namespace MathUtils
 {
@@ -1662,7 +1662,9 @@ bool clipFrustumByPolygon( const Point3F* points, U32 numPoints, const RectI& vi
       // Make the output of the last iteration the
       // input of this iteration.
 
-      swap( tempPolygon, clippedPolygon );
+      Point3F *prevPolygon = clippedPolygon;
+      clippedPolygon = tempPolygon;
+      tempPolygon = prevPolygon;
       numTempPolygonVertices = numClippedPolygonVertices;
 
       // Clip our current remainder of the original polygon

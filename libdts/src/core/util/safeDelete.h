@@ -88,6 +88,10 @@
 //-----------------------------------------------------------------------------
 #define SAFE_DELETE_MESSAGE   SAFE_FREE_REFERENCE
 
+#ifndef SAFE_RELEASE
+#  define SAFE_RELEASE(x) if( x != NULL ) { x->Release(); x = NULL; }
+#endif
+
 // @}
 
 #endif // _TORQUE_SAFEDELETE_H_

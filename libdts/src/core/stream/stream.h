@@ -116,9 +116,6 @@ public:
    /// writes a line to the stream
    void writeLine(const U8 *buffer);
 
-   /// Reads a string and inserts it into the StringTable
-   /// @see StringTable
-   const char *readSTString(bool casesens = false);
    /// Reads a string of maximum 255 characters long
    virtual void readString(char stringBuf[256]);
    /// Reads a string that could potentially be more than 255 characters long.
@@ -153,11 +150,6 @@ public:
    bool write(const NetAddress &);
    /// Read a network address from the stream.
    bool read(NetAddress*);
-
-   /// Write some raw data onto the stream.
-   bool write(const RawData &);
-   /// Read some raw data from the stream.
-   bool read(RawData *);
 
    /// Write some raw data onto the stream.
    bool write(const Torque::ByteBuffer &);

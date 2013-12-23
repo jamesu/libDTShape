@@ -22,10 +22,8 @@
 
 #include "platform/platform.h"
 
-#include "console/consoleTypes.h"
-#include "core/resourceManager.h"
 #include "ts/tsShapeConstruct.h"
-#include "console/engineAPI.h"
+#include "core/engineObject.h"
 
 // define macros required for ConvexDecomp headers
 #if defined( _WIN32 )
@@ -309,14 +307,14 @@ void MeshFit::addSourceMesh( const TSShape::Object& obj, const TSMesh* mesh )
 TSMesh* MeshFit::initMeshFromFile( const String& filename ) const
 {
    // Open the source shape file and make a copy of the mesh
-   Resource<TSShape> hShape = ResourceManager::get().load(filename);
-   if (!bool(hShape) || !((TSShape*)hShape)->meshes.size())
+   EngineObjectRef hShape = TSShape::loadShape(filename);
+   if (!bool(hShape) || !((TSShape*)hShape.getPointer())->meshes.size())
    {
-      Con::errorf("TSShape::createMesh: Could not load source mesh from %s", filename.c_str());
+      Log::errorf("TSShape::createMesh: Could not load source mesh from %s", filename.c_str());
       return NULL;
    }
 
-   TSMesh* srcMesh = ((TSShape*)hShape)->meshes[0];
+   TSMesh* srcMesh = ((TSShape*)hShape.getPointer())->meshes[0];
    return mShape->copyMesh( srcMesh );
 }
 
@@ -402,7 +400,7 @@ F32 MeshFit::maxDot( const VectorF& v ) const
 // Best-fit oriented bounding box
 void MeshFit::addBox( const Point3F& sides, const MatrixF& mat )
 {
-   TSMesh* mesh = initMeshFromFile( TSShapeConstructor::getCubeShapePath() );
+   TSMesh* mesh = initMeshFromFile( "core/art/shapes/unit_cube.dts" );
    if ( !mesh )
       return;
 
@@ -431,7 +429,7 @@ void MeshFit::fitOBB()
 // Best-fit sphere
 void MeshFit::addSphere( F32 radius, const Point3F& center )
 {
-   TSMesh* mesh = initMeshFromFile( TSShapeConstructor::getSphereShapePath() );
+   TSMesh* mesh = initMeshFromFile( "core/art/shapes/unit_sphere.dts" );
    if ( !mesh )
       return;
 
@@ -460,7 +458,7 @@ void MeshFit::fitSphere()
 // Best-fit capsule
 void MeshFit::addCapsule( F32 radius, F32 height, const MatrixF& mat )
 {
-   TSMesh* mesh = initMeshFromFile( TSShapeConstructor::getCapsuleShapePath() );
+   TSMesh* mesh = initMeshFromFile( "core/art/shapes/unit_capsule.dts" );
    if ( !mesh )
       return;
 
@@ -712,6 +710,8 @@ void MeshFit::fitConvexHulls( U32 depth, F32 mergeThreshold, F32 concavityThresh
    CONVEX_DECOMPOSITION::releaseConvexDecomposition( ic );
 }
 
+#if 0
+
 //-----------------------------------------------------------------------------
 DefineTSShapeConstructorMethod( addPrimitive, bool, ( const char* meshName, const char* type, const char* params, TransformF txfm, const char* nodeName ),,
    ( meshName, type, params, txfm, nodeName ), false,
@@ -772,7 +772,7 @@ DefineTSShapeConstructorMethod( addPrimitive, bool, ( const char* meshName, cons
 
    if ( !fit.isReady() )
    {
-      Con::errorf( "TSShapeConstructor::addPrimitive: Invalid params: '%s' for type '%s'",
+      Log::errorf( "TSShapeConstructor::addPrimitive: Invalid params: '%s' for type '%s'",
          params, type );
       return false;
    }
@@ -844,7 +844,7 @@ DefineTSShapeConstructorMethod( addCollisionDetail, bool, ( S32 size, const char
    fit.initSourceGeometry( target );
    if ( !fit.isReady() )
    {
-      Con::errorf( "TSShapeConstructor::addCollisionDetail: Failed to initialise mesh fitter "
+      Log::errorf( "TSShapeConstructor::addCollisionDetail: Failed to initialise mesh fitter "
          "using target: %s", target );
       return false;
    }
@@ -872,7 +872,7 @@ DefineTSShapeConstructorMethod( addCollisionDetail, bool, ( S32 size, const char
    }
    else
    {
-      Con::errorf( "TSShape::addCollisionDetail: Invalid type: '%s'", type );
+      Log::errorf( "TSShape::addCollisionDetail: Invalid type: '%s'", type );
       return false;
    }
 
@@ -938,3 +938,5 @@ DefineTSShapeConstructorMethod( addCollisionDetail, bool, ( S32 size, const char
    ADD_TO_CHANGE_SET();
    return true;
 }}
+
+#endif

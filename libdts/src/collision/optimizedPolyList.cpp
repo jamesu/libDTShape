@@ -22,10 +22,9 @@
 
 #include "math/mMath.h"
 #include "core/color.h"
-#include "console/console.h"
+#include "core/log.h"
 #include "collision/optimizedPolyList.h"
-#include "materials/baseMatInstance.h"
-#include "materials/materialDefinition.h"
+#include "ts/tsMaterial.h"
 
 //----------------------------------------------------------------------------
 
@@ -204,18 +203,17 @@ U32 OptimizedPolyList::insertPlane(const PlaneF& plane)
    return (U32)retIdx;
 }
 
-U32 OptimizedPolyList::insertMaterial(BaseMatInstance* baseMat)
+U32 OptimizedPolyList::insertMaterial(TSMaterialInstance* baseMat)
 {
    S32 retIdx = -1;
-
    if ( !baseMat )
       return retIdx;
 
-   Material* mat = dynamic_cast<Material*>(baseMat->getMaterial());
+   TSMaterial* mat = dynamic_cast<TSMaterial*>(baseMat->getMaterial());
 
    for (U32 i = 0; i < mMaterialList.size(); i++)
    {
-      Material* testMat = dynamic_cast<Material*>(mMaterialList[i]->getMaterial());
+      TSMaterial* testMat = dynamic_cast<TSMaterial*>(mMaterialList[i]->getMaterial());
 
       if (mat && testMat)
       {
@@ -237,7 +235,6 @@ U32 OptimizedPolyList::insertMaterial(BaseMatInstance* baseMat)
       retIdx = mMaterialList.size();
       mMaterialList.push_back(baseMat);
    }
-
    return (U32)retIdx;
 }
 
@@ -267,7 +264,7 @@ U32 OptimizedPolyList::addPlane(const PlaneF& plane)
 
 //----------------------------------------------------------------------------
 
-void OptimizedPolyList::begin(BaseMatInstance* material, U32 surfaceKey)
+void OptimizedPolyList::begin(TSMaterialInstance* material, U32 surfaceKey)
 {
    mPolyList.increment();
    Poly& poly = mPolyList.last();
@@ -278,7 +275,7 @@ void OptimizedPolyList::begin(BaseMatInstance* material, U32 surfaceKey)
    poly.object = mCurrObject;
 }
 
-void OptimizedPolyList::begin(BaseMatInstance* material, U32 surfaceKey, PolyType type)
+void OptimizedPolyList::begin(TSMaterialInstance* material, U32 surfaceKey, PolyType type)
 {
    begin(material, surfaceKey);
 

@@ -60,38 +60,42 @@ typedef unsigned long long  U64;
 #  define TORQUE_OS_WIN32
 #  define TORQUE_SUPPORTS_NASM
 #  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
-#  include "platform/types.win32.h"
+
+#elif defined(_WIN64)
+#  define TORQUE_OS_STRING "Win64"
+#  define TORQUE_OS_WIN32
+#  define TORQUE_OS_WIN64
 
 #elif defined(SN_TARGET_PS3)
 #  define TORQUE_OS_STRING "PS3"
 #  define TORQUE_OS_PS3
-#  include "platform/types.posix.h"
 
 #elif defined(linux)
 #  define TORQUE_OS_STRING "Linux"
 #  define TORQUE_OS_LINUX
+#  define TORQUE_OS_POSIX
 #  define TORQUE_SUPPORTS_NASM
 #  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
-#  include "platform/types.posix.h"
 
 #elif defined(__OpenBSD__)
 #  define TORQUE_OS_STRING "OpenBSD"
 #  define TORQUE_OS_OPENBSD
+#  define TORQUE_OS_POSIX
 #  define TORQUE_SUPPORTS_NASM
 #  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
-#  include "platform/types.posix.h"
 
 #elif defined(__FreeBSD__)
 #  define TORQUE_OS_STRING "FreeBSD"
 #  define TORQUE_OS_FREEBSD
+#  define TORQUE_OS_POSIX
 #  define TORQUE_SUPPORTS_NASM
 #  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
-#  include "platform/types.posix.h"
 
 #elif defined(__APPLE__)
 #  define TORQUE_OS_STRING "MacOS X"
 #  define TORQUE_OS_MAC
-#  include "platform/types.mac.h"
+#  define TORQUE_OS_POSIX
+#  define TORQUE_OS_DARWIN
 #  if defined(i386)
 // Disabling ASM on XCode for shared library build code relocation issues
 // This could be reconfigured for static builds, though minimal impact
@@ -101,13 +105,18 @@ typedef unsigned long long  U64;
 #  error "GCC: Unsupported Operating System"
 #endif
 
-
 //--------------------------------------
 // Identify the CPU
 #if defined(i386)
 #  define TORQUE_CPU_STRING "Intel x86"
 #  define TORQUE_CPU_X86
 #  define TORQUE_LITTLE_ENDIAN
+
+#elif defined(__amd64__)
+#  define TORQUE_CPU_STRING "Intel x86-64"
+#  define TORQUE_CPU_X86_64
+#  define TORQUE_LITTLE_ENDIAN
+#  define TORQUE_64
 
 #elif defined(__ppc__)
 #  define TORQUE_CPU_STRING "PowerPC"

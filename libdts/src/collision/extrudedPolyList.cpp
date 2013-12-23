@@ -22,7 +22,7 @@
 
 #include "platform/platform.h"
 #include "math/mMath.h"
-#include "console/console.h"
+#include "core/log.h"
 #include "collision/extrudedPolyList.h"
 #include "math/mPolyhedron.h"
 #include "collision/collision.h"
@@ -177,7 +177,7 @@ U32 ExtrudedPolyList::addPlane(const PlaneF& plane)
 
 //----------------------------------------------------------------------------
 
-void ExtrudedPolyList::begin(BaseMatInstance* material, U32 /*surfaceKey*/)
+void ExtrudedPolyList::begin(TSMaterialInstance* material, U32 /*surfaceKey*/)
 {
    mPoly.object = mCurrObject;
    mPoly.material = material;

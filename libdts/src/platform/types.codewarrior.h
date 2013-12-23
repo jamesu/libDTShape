@@ -54,16 +54,16 @@ typedef unsigned long long U64;     ///< Compiler independent Unsigned 64-bit in
 #if defined(_WIN32)
 #  define TORQUE_OS_STRING "Win32"
 #  define TORQUE_OS_WIN32
-#  include "platform/types.win32.h"
 
 #elif defined(macintosh) || defined(__APPLE__)
 #  define TORQUE_OS_STRING "Mac"
 #  define TORQUE_OS_MAC
+#  define TORQUE_OS_DARWIN
 #  if defined(__MACH__)
 #     define TORQUE_OS_MAC
 #  endif
-#  include "platform/types.ppc.h"
-#else 
+
+#else
 #  error "CW: Unsupported Operating System"
 #endif
 

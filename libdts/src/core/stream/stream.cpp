@@ -21,16 +21,12 @@
 //-----------------------------------------------------------------------------
 
 #include "core/color.h"
-#include "core/util/rawData.h"
 #include "core/frameAllocator.h"
-#include "platform/platformNet.h"
 
 #include "core/stream/stream.h"
 
-#include "core/stringTable.h"
 #include "core/strings/stringFunctions.h"
 
-#include "core/util/byteBuffer.h"
 #include "core/util/endian.h"
 #include "core/util/str.h"
 
@@ -129,13 +125,6 @@ void Stream::readString(char buf[256])
    read(&len);
    read(S32(len), buf);
    buf[len] = 0;
-}
-
-const char *Stream::readSTString(bool casesens)
-{
-   char buf[256];
-   readString(buf);
-   return StringTable->insert(buf, casesens);
 }
 
 void Stream::readLongString(U32 maxStringLen, char *stringBuf)
@@ -281,76 +270,6 @@ bool Stream::read(ColorF* pColor)
 
    *pColor = temp;
    return success;
-}
-
-bool Stream::write(const NetAddress &na)
-{
-   bool success = write(na.type);
-   success &= write(na.port);
-   success &= write(na.netNum[0]);
-   success &= write(na.netNum[1]);
-   success &= write(na.netNum[2]);
-   success &= write(na.netNum[3]);
-   success &= write(na.nodeNum[0]);
-   success &= write(na.nodeNum[1]);
-   success &= write(na.nodeNum[2]);
-   success &= write(na.nodeNum[3]);
-   success &= write(na.nodeNum[4]);
-   success &= write(na.nodeNum[5]);
-   return success;
-}
-
-bool Stream::read(NetAddress *na)
-{
-   bool success = read(&na->type);
-   success &= read(&na->port);
-   success &= read(&na->netNum[0]);
-   success &= read(&na->netNum[1]);
-   success &= read(&na->netNum[2]);
-   success &= read(&na->netNum[3]);
-   success &= read(&na->nodeNum[0]);
-   success &= read(&na->nodeNum[1]);
-   success &= read(&na->nodeNum[2]);
-   success &= read(&na->nodeNum[3]);
-   success &= read(&na->nodeNum[4]);
-   success &= read(&na->nodeNum[5]);
-   return success;
-}
-
-bool Stream::write(const RawData &rd)
-{
-   bool s = write(rd.size);
-   s &= write(rd.size, rd.data);
-   return s;
-}
-
-bool Stream::read(RawData *rd)
-{
-   U32 size = 0;
-   bool s = read(&size);
-
-   rd->alloc(size);
-   s &= read(rd->size, rd->data);
-
-   return s;
-}
-
-bool Stream::write(const Torque::ByteBuffer &rd)
-{
-   bool s = write(rd.getBufferSize());
-   s &= write(rd.getBufferSize(), rd.getBuffer());
-   return s;
-}
-
-bool Stream::read(Torque::ByteBuffer *rd)
-{
-   U32 size = 0;
-   bool s = read(&size);
-
-   rd->resize(size);
-   s &= read(rd->getBufferSize(), rd->getBuffer());
-
-   return s;
 }
 
 bool Stream::copyFrom(Stream *other)

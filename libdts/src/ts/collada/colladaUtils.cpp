@@ -21,10 +21,10 @@
 //-----------------------------------------------------------------------------
 
 #include <algorithm>
-#include "console/console.h"
-#include "gfx/bitmap/gBitmap.h"
+#include "core/log.h"
+//#include "gfx/bitmap/gBitmap.h"
 #include "ts/collada/colladaUtils.h"
-#include "materials/matInstance.h"
+#include "ts/tsMaterial.h"
 
 using namespace ColladaUtils;
 
@@ -198,7 +198,7 @@ String ColladaUtils::resolveImagePath(const domImage* image)
    if (Platform::isFullPath(imageStr))
    {
       // Absolute path => check for outside the Torque game folder
-      imagePath = String( Platform::makeRelativePathName(imageStr, Platform::getMainDotCsDir()) );
+      imagePath = Platform::makeRelativePathName(imageStr, Platform::getRootDir());
       if ( !imagePath.getRoot().isEmpty()       ||    // different drive (eg. C:/ vs D:/)
            (imagePath.getPath().find("/") == 0) ||    // different OS (eg. /home vs C:/home)
            (imagePath.getPath().find("../") == 0) )   // same drive, outside Torque game folder
@@ -904,7 +904,7 @@ Torque::Path ColladaUtils::findTexture(const Torque::Path& diffuseMap)
 {
    Vector<Torque::Path> foundPaths;
 
-   GBitmap::sFindFiles(diffuseMap, &foundPaths);
+   // TOFIX GBitmap::sFindFiles(diffuseMap, &foundPaths);
 
    if (foundPaths.size() > 0)
       return Torque::Path(foundPaths[0]);
@@ -946,7 +946,7 @@ void ColladaUtils::exportColladaHeader(TiXmlElement* rootNode)
 
    TiXmlElement* authoringToolNode = new TiXmlElement("authoring_tool");
    contributorNode->LinkEndChild(authoringToolNode);
-   TiXmlText* authorText = new TiXmlText(avar("%s %s Object Exporter", getEngineProductString(), getVersionString()));
+   TiXmlText* authorText = new TiXmlText("TODO");//avar("%s %s Interior Exporter", getEngineProductString(), getVersionString()));
    authoringToolNode->LinkEndChild(authorText);
 
    TiXmlElement* commentsNode = new TiXmlElement("comments");
@@ -994,13 +994,14 @@ void ColladaUtils::exportColladaHeader(TiXmlElement* rootNode)
 
 void ColladaUtils::exportColladaMaterials(TiXmlElement* rootNode, const OptimizedPolyList& mesh, Vector<String>& matNames, const Torque::Path& colladaFile)
 {
+#if 0 // TOFIX
    // First the image library
    TiXmlElement* imgLibNode = new TiXmlElement("library_images");
    rootNode->LinkEndChild(imgLibNode);
 
    for (U32 i = 0; i < mesh.mMaterialList.size(); i++)
    {
-      BaseMatInstance* baseInst = mesh.mMaterialList[i];
+      TSMaterial* baseInst = mesh.mMaterialList[i];
 
       matNames.push_back(String::ToString("Material%d", i));
 
@@ -1057,7 +1058,7 @@ void ColladaUtils::exportColladaMaterials(TiXmlElement* rootNode, const Optimize
 
    for (U32 i = 0; i < mesh.mMaterialList.size(); i++)
    {
-      BaseMatInstance* baseInst = mesh.mMaterialList[i];
+      TSMaterial* baseInst = mesh.mMaterialList[i];
 
       Material* mat = dynamic_cast<Material*>(baseInst->getMaterial());
       if (!mat)
@@ -1079,7 +1080,7 @@ void ColladaUtils::exportColladaMaterials(TiXmlElement* rootNode, const Optimize
 
    for (U32 i = 0; i < mesh.mMaterialList.size(); i++)
    {
-      BaseMatInstance* baseInst = mesh.mMaterialList[i];
+      TSMaterial* baseInst = mesh.mMaterialList[i];
 
       Material* mat = dynamic_cast<Material*>(baseInst->getMaterial());
       if (!mat)
@@ -1136,6 +1137,7 @@ void ColladaUtils::exportColladaMaterials(TiXmlElement* rootNode, const Optimize
       TiXmlText* extraBlendText = new TiXmlText("ADD");
       extraBlendNode->LinkEndChild(extraBlendText);
    }
+#endif
 }
 
 void ColladaUtils::exportColladaTriangles(TiXmlElement* meshNode, const OptimizedPolyList& mesh, const String& meshName, const Vector<String>& matNames)
@@ -1491,5 +1493,5 @@ void ColladaUtils::exportToCollada(const Torque::Path& colladaFile, const Optimi
    Platform::makeFullPathName(colladaFile.getFullPath(), fullPath, MAX_PATH_LENGTH);
 
    if (!doc.SaveFile(fullPath))
-      Con::errorf("ColladaUtils::exportToCollada(): Unable to export to %s", fullPath);
+      Log::errorf("ColladaUtils::exportToCollada(): Unable to export to %s", fullPath);
 }

@@ -26,7 +26,6 @@
 #include "platform/types.h"
 #include "core/dataChunker.h"
 #include "collision/collision.h"
-#include "scene/sceneObject.h"
 #include "collision/gjk.h"
 #include "collision/concretePolyList.h"
 #include "platform/profiler.h"
@@ -420,25 +419,25 @@ void Convex::getFeatures(const MatrixF&,const VectorF&,ConvexFeature* f)
 {
    f->object = NULL;
 }
-
+// TOFIX
 const MatrixF& Convex::getTransform() const
 {
-   return mObject->getTransform();
+   return MatrixF(1);//mObject->getTransform();
 }
 
 const Point3F& Convex::getScale() const
 {
-   return mObject->getScale();
+   return Point3F(1,1,1);//mObject->getScale();
 }
 
 Box3F Convex::getBoundingBox() const
 {
-   return mObject->getWorldBox();
+   return Box3F();//mObject->getWorldBox();
 }
 
 Box3F Convex::getBoundingBox(const MatrixF& mat, const Point3F& scale) const
 {
-   Box3F wBox = mObject->getObjBox();
+   Box3F wBox;//TOFIX = mObject->getObjBox();
    wBox.minExtents.convolve(scale);
    wBox.maxExtents.convolve(scale);
    mat.mul(wBox);
@@ -460,6 +459,7 @@ void Convex::addToWorkingList(Convex* ptr)
 
 void Convex::updateWorkingList(const Box3F& box, const U32 colMask)
 {
+#if 0
    PROFILE_SCOPE( Convex_UpdateWorkingList );
 
    sTag++;
@@ -481,6 +481,7 @@ void Convex::updateWorkingList(const Box3F& box, const U32 colMask)
    mObject->getContainer()->findObjects(box, colMask,SimpleQueryList::insertionCallback, &sql);
    for (U32 i = 0; i < sql.mList.size(); i++)
       sql.mList[i]->buildConvex(box, this);
+#endif
 }
 
 void Convex::clearWorkingList()
@@ -666,7 +667,7 @@ void Convex::renderWorkingList()
       pList = pList->wLink.mNext;
    }
 
-   //Con::warnf( "convex rendered - %s", rendered ? "YES" : "NO" );
+   //Log::warnf( "convex rendered - %s", rendered ? "YES" : "NO" );
 }
 
 void Convex::render()

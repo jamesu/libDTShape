@@ -26,7 +26,7 @@
 #include "ts/collada/colladaAppMaterial.h"
 #include "ts/collada/colladaUtils.h"
 #include "ts/tsMaterialList.h"
-#include "materials/materialManager.h"
+#include "ts/tsMaterialManager.h"
 
 using namespace ColladaUtils;
 
@@ -185,7 +185,7 @@ void ColladaAppMaterial::resolveColor(const domCommon_color_or_texture_type* val
 }
 
 // Generate a new Material object
-Material *ColladaAppMaterial::createMaterial(const Torque::Path& path) const
+TSMaterial *ColladaAppMaterial::createMaterial(const Torque::Path& path) const
 {
    // The filename and material name are used as TorqueScript identifiers, so
    // clean them up first
@@ -196,18 +196,17 @@ Material *ColladaAppMaterial::createMaterial(const Torque::Path& path) const
    if (!cleanName.startsWith(cleanFile))
       cleanName = cleanFile + "_" + cleanName;
 
+   // Create the Material definition
+   TSMaterial *newMat = MATMGR->allocateAndRegister( cleanName, getName() );
+   newMat->initFromColladaMaterial(this);
+   
+#if 0 // should implement in app
    // Determine the blend operation for this material
    Material::BlendOp blendOp = (flags & TSMaterialList::Translucent) ? Material::LerpAlpha : Material::None;
    if (flags & TSMaterialList::Additive)
       blendOp = Material::Add;
    else if (flags & TSMaterialList::Subtractive)
       blendOp = Material::Sub;
-
-   // Create the Material definition
-   const String oldScriptFile = Con::getVariable("$Con::File");
-   Con::setVariable("$Con::File", path.getFullPath());   // modify current script path so texture lookups are correct
-   Material *newMat = MATMGR->allocateAndRegister( cleanName, getName() );
-   Con::setVariable("$Con::File", oldScriptFile);        // restore script path
 
    newMat->mDiffuseMapFilename[0] = diffuseMap;
    newMat->mNormalMapFilename[0] = normalMap;
@@ -220,6 +219,7 @@ Material *ColladaAppMaterial::createMaterial(const Torque::Path& path) const
    newMat->mDoubleSided = doubleSided;
    newMat->mTranslucent = (bool)(flags & TSMaterialList::Translucent);
    newMat->mTranslucentBlendOp = blendOp;
-
+#endif
+   
    return newMat;
 }

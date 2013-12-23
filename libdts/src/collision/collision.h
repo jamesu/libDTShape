@@ -34,7 +34,7 @@
 #endif
 
 class SceneObject;
-class BaseMatInstance;
+class TSMaterialInstance;
 
 //----------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ struct Collision
    SceneObject* object;
    Point3F point;
    VectorF normal;
-   BaseMatInstance* material;
+   TSMaterialInstance* material;
 
    // generate UV coordinate across (TSStatic) mesh based on 
    // matching normals, this isn't done by default and is 

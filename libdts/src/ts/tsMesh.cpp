@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 // Copyright (c) 2012 GarageGames, LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,28 +30,17 @@
 #include "ts/tsShapeInstance.h"
 #include "ts/tsRenderState.h"
 #include "ts/tsMaterialList.h"
-#include "ts/instancingMatHook.h"
 #include "math/mMath.h"
 #include "math/mathIO.h"
 #include "math/mathUtils.h"
-#include "console/console.h"
-#include "scene/sceneObject.h"
-#include "core/bitRender.h"
+#include "core/log.h"
 #include "collision/convex.h"
 #include "collision/optimizedPolyList.h"
 #include "core/frameAllocator.h"
 #include "platform/profiler.h"
-#include "materials/sceneData.h"
-#include "materials/materialManager.h"
-#include "scene/sceneManager.h"
-#include "scene/sceneRenderState.h"
-#include "materials/matInstance.h"
-#include "renderInstance/renderPassManager.h"
-#include "materials/customMaterialDefinition.h"
-#include "gfx/util/triListOpt.h"
-#include "util/triRayCheck.h"
-
-#include "opcode/Opcode.h"
+#include "ts/tsMaterialManager.h"
+#include "core/util/triListOpt.h"
+#include "math/util/triRayCheck.h"
 
 #if defined(TORQUE_OS_XENON)
 #  include "platformXbox/platformXbox.h"
@@ -80,7 +69,7 @@ Vector<S32*>     TSSkinMesh::smNodeIndexList;
 
 Vector<Point3F> gNormalStore;
 
-bool TSMesh::smUseTriangles = false; // convert all primitives to triangle lists on load
+bool TSMesh::smUseTriangles = true; // convert all primitives to triangle lists on load
 bool TSMesh::smUseOneStrip  = true; // join triangle strips into one long strip on load
 S32  TSMesh::smMinStripSize = 1;     // smallest number of _faces_ allowed per strip (all else put in tri list)
 bool TSMesh::smUseEncodedNormals = false;
@@ -109,46 +98,44 @@ void tsForceFaceCamera( MatrixF *mat, const Point3F *objScale )
 // TSMesh render methods
 //-----------------------------------------------------
 
-void TSMesh::render( TSVertexBufferHandle &instanceVB, GFXPrimitiveBufferHandle &instancePB )
+void TSMesh::render( TSMeshRenderer &renderer )
 {
-   // A TSMesh never uses the instanceVB.
-   TORQUE_UNUSED( instanceVB ); 
-   TORQUE_UNUSED( instancePB );
-
-   innerRender( mVB, mPB );
+   innerRender( renderer );
 }
 
-void TSMesh::innerRender( TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb )
+void TSMesh::innerRender( TSMeshRenderer &renderer )
 {
-   if ( !vb.isValid() || !pb.isValid() )
-      return;
-
-   GFX->setVertexBuffer( vb );
-   GFX->setPrimitiveBuffer( pb );
+   //if ( !vb.isValid() || !pb.isValid() )
+   //   return;
    
-   for( U32 p = 0; p < primitives.size(); p++ )
-      GFX->drawPrimitive( p );
+   // NULL == guess state
+   renderer.doRenderInst(this, NULL, NULL);
 }
 
 
 void TSMesh::render( TSMaterialList *materials, 
-                     const TSRenderState &rdata, 
+                     TSRenderState &rdata, 
                      bool isSkinDirty,
                      const Vector<MatrixF> &transforms, 
-                     TSVertexBufferHandle &vertexBuffer,
-                     GFXPrimitiveBufferHandle &primitiveBuffer )
+                     TSMeshRenderer &renderer )
 {
    // These are only used by TSSkinMesh.
    TORQUE_UNUSED( isSkinDirty );   
    TORQUE_UNUSED( transforms );
-   TORQUE_UNUSED( vertexBuffer );
-   TORQUE_UNUSED( primitiveBuffer );
+   
+   const bool renderDirty = mRenderer->isDirty(this, rdata.getCurrentRenderData());
+   
+   if ( renderDirty || isSkinDirty )
+   {
+      // Update GFX vertex buffer
+      _createVBIB(rdata.getCurrentRenderData());
+   }
 
    // Pass our shared VB.
-   innerRender( materials, rdata, mVB, mPB );
+   innerRender( materials, rdata, renderer );
 }
 
-void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata, TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb )
+void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMeshRenderer &renderer )
 {
    PROFILE_SCOPE( TSMesh_InnerRender );
 
@@ -159,13 +146,13 @@ void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata,
    if ( meshVisibility < VISIBILITY_EPSILON )
       return;
 
-   const SceneRenderState *state = rdata.getSceneState();
-   RenderPassManager *renderPass = state->getRenderPass();
+   const TSSceneRenderState *state = rdata.getSceneState();
+   TSRenderInst *coreRI = rdata.allocRenderInst();
+   
+   coreRI->type = 0;//RenderPassManager::RIT_Mesh;
+   coreRI->renderData = rdata.getCurrentRenderData();
 
-   MeshRenderInst *coreRI = renderPass->allocInst<MeshRenderInst>();
-   coreRI->type = RenderPassManager::RIT_Mesh;
-
-   const MatrixF &objToWorld = GFX->getWorldMatrix();
+   const MatrixF &objToWorld = rdata.mWorldMatrix;
 
    // Sort by the center point or the bounds.
    if ( rdata.useOriginSort() )
@@ -190,25 +177,20 @@ void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata,
       orient.setPosition(objPos);
       orient.scale(objToWorld.getScale());
 
-      coreRI->objectToWorld = renderPass->allocUniqueXform( orient );
+      coreRI->objectToWorld = rdata.allocMatrix(orient);
    }
    else
-      coreRI->objectToWorld = renderPass->allocUniqueXform( objToWorld );
+      coreRI->objectToWorld = rdata.allocMatrix(objToWorld);
 
-   coreRI->worldToCamera = renderPass->allocSharedXform(RenderPassManager::View);
-   coreRI->projection = renderPass->allocSharedXform(RenderPassManager::Projection);
+   coreRI->worldToCamera = state->getViewMatrix();
+   coreRI->projection = state->getProjectionMatrix();
+   
+   coreRI->mesh = this;
+   coreRI->defaultKey2 = (U64) mRenderer;
 
-   AssertFatal( vb.isValid(), "TSMesh::innerRender() - Got invalid vertex buffer!" );
-   AssertFatal( pb.isValid(), "TSMesh::innerRender() - Got invalid primitive buffer!" );
+   //coreRI->materialHint = rdata.getMaterialHint();
 
-   coreRI->vertBuff = &vb;
-   coreRI->primBuff = &pb;
-   coreRI->defaultKey2 = (U32) coreRI->vertBuff;
-
-   coreRI->materialHint = rdata.getMaterialHint();
-
-   coreRI->visibility = meshVisibility;  
-   coreRI->cubemap = rdata.getCubemap();
+   coreRI->visibility = meshVisibility; 
 
    // NOTICE: SFXBB is removed and refraction is disabled!
    //coreRI->backBuffTex = GFX->getSfxBackBuffer();
@@ -237,8 +219,8 @@ void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata,
 #endif
 
       const U32 matIndex = draw.matIndex & TSDrawPrimitive::MaterialMask;
-      BaseMatInstance *matInst = materials->getMaterialInst( matIndex );
-
+      TSMaterialInstance *matInst = materials->getMaterialInst( matIndex );
+/*
 #ifndef TORQUE_OS_MAC
 
       // Get the instancing material if this mesh qualifies.
@@ -246,7 +228,7 @@ void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata,
          matInst = InstancingMaterialHook::getInstancingMat( matInst );
 
 #endif
-
+*/
       // If we don't have a material instance after the overload then
       // there is nothing to render... skip this primitive.
       matInst = state->getOverrideMaterial( matInst );
@@ -255,10 +237,10 @@ void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata,
 
       // If the material needs lights then gather them
       // here once and set them on the core render inst.
-      if ( matInst->isForwardLit() && !coreRI->lights[0] && rdata.getLightQuery() )
-         rdata.getLightQuery()->getLights( coreRI->lights, 8 );
+      //if ( matInst->isForwardLit() && !coreRI->lights[0] && rdata.getLightQuery() )
+      //   rdata.getLightQuery()->getLights( coreRI->lights, 8 );
 
-      MeshRenderInst *ri = renderPass->allocInst<MeshRenderInst>();
+      TSRenderInst *ri = rdata.allocRenderInst();
       *ri = *coreRI;
 
       ri->matInst = matInst;
@@ -268,11 +250,12 @@ void TSMesh::innerRender( TSMaterialList *materials, const TSRenderState &rdata,
       // Translucent materials need the translucent type.
       if ( matInst->getMaterial()->isTranslucent() )
       {
-         ri->type = RenderPassManager::RIT_Translucent;
+         ri->type = 1;//TODORenderPassManager::RIT_Translucent;
          ri->translucentSort = true;
       }
-
-      renderPass->addInst( ri );
+      
+      renderer.onAddRenderInst(this, ri, &rdata);
+      rdata.addRenderInst( ri );
    }
 }
 
@@ -296,6 +279,7 @@ const Point3F * TSMesh::getNormals( S32 firstVert )
 
 bool TSMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials )
 {
+#if 0
    S32 firstVert  = vertsPerFrame * frame, i, base = 0;
 
    // add the verts...
@@ -366,7 +350,7 @@ bool TSMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surfaceK
       AssertFatal( draw.matIndex & TSDrawPrimitive::Indexed,"TSMesh::buildPolyList (1)" );
 
       U32 matIndex = draw.matIndex & TSDrawPrimitive::MaterialMask;
-      BaseMatInstance* material = ( materials ? materials->getMaterialInst( matIndex ) : 0 );
+      TSMaterialInstance* material = ( materials ? materials->getMaterialInst( matIndex ) : 0 );
 
       // gonna depend on what kind of primitive it is...
       if ( (draw.matIndex & TSDrawPrimitive::TypeMask) == TSDrawPrimitive::Triangles )
@@ -411,6 +395,7 @@ bool TSMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surfaceK
          }
       }
    }
+#endif
    return true;
 }
 
@@ -611,6 +596,7 @@ void TSMesh::support( S32 frame, const Point3F &v, F32 *currMaxDP, Point3F *curr
 
 bool TSMesh::castRay( S32 frame, const Point3F & start, const Point3F & end, RayInfo * rayInfo, TSMaterialList* materials )
 {
+#if 0
    if ( planeNormals.empty() )
       buildConvexHull(); // if haven't done it yet...
 
@@ -747,7 +733,7 @@ bool TSMesh::castRay( S32 frame, const Point3F & start, const Point3F & end, Ray
    }
    else if ( found )
       return true;
-
+#endif
    // only way to get here is if start is inside hull...
    // we could return null and just plug in garbage for the material and normal...
    return false;
@@ -755,6 +741,7 @@ bool TSMesh::castRay( S32 frame, const Point3F & start, const Point3F & end, Ray
 
 bool TSMesh::castRayRendered( S32 frame, const Point3F & start, const Point3F & end, RayInfo * rayInfo, TSMaterialList* materials )
 {
+#if 0
    if( vertsPerFrame <= 0 ) 
       return false;
 
@@ -766,7 +753,7 @@ bool TSMesh::castRayRendered( S32 frame, const Point3F & start, const Point3F & 
 	bool found = false;
 	F32 best_t = F32_MAX;
    U32 bestIdx0 = 0, bestIdx1 = 0, bestIdx2 = 0;
-   BaseMatInstance* bestMaterial = NULL;
+   TSMaterialInstance* bestMaterial = NULL;
 	Point3F dir = end - start;
 
    for ( S32 i = 0; i < primitives.size(); i++ )
@@ -777,7 +764,7 @@ bool TSMesh::castRayRendered( S32 frame, const Point3F & start, const Point3F & 
       AssertFatal( draw.matIndex & TSDrawPrimitive::Indexed,"TSMesh::castRayRendered (1)" );
 
       U32 matIndex = draw.matIndex & TSDrawPrimitive::MaterialMask;
-      BaseMatInstance* material = ( materials ? materials->getMaterialInst( matIndex ) : 0 );
+      TSMaterialInstance* material = ( materials ? materials->getMaterialInst( matIndex ) : 0 );
 
       U32 idx0, idx1, idx2;
 
@@ -871,6 +858,7 @@ bool TSMesh::castRayRendered( S32 frame, const Point3F & start, const Point3F & 
    else if ( found )
       return true;
 
+#endif
    return false;
 }
 
@@ -1145,17 +1133,13 @@ TSMesh::TSMesh() : meshType( StandardMeshType )
    VECTOR_SET_ASSOCIATION( planeMaterials );
    parentMesh = -1;
 
-   mOptTree = NULL;
-   mOpMeshInterface = NULL;
-   mOpTris = NULL;
-   mOpPoints = NULL;
-
    mDynamic = false;
    mVisibility = 1.0f;
    mHasTVert2 = false;
    mHasColor = false;
 
    mNumVerts = 0;
+   mRenderer = NULL;
 }
 
 //-----------------------------------------------------
@@ -1164,19 +1148,15 @@ TSMesh::TSMesh() : meshType( StandardMeshType )
 
 TSMesh::~TSMesh()
 {
-   SAFE_DELETE( mOptTree );
-   SAFE_DELETE( mOpMeshInterface );
-   SAFE_DELETE_ARRAY( mOpTris );
-   SAFE_DELETE_ARRAY( mOpPoints );
-
    mNumVerts = 0;
+   SAFE_DELETE(mRenderer);
 }
 
 //-----------------------------------------------------
 // TSSkinMesh methods
 //-----------------------------------------------------
 
-void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSVertexBufferHandle &instanceVB, GFXPrimitiveBufferHandle &instancePB )
+void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSMeshInstanceRenderData *renderData )
 {
    PROFILE_SCOPE( TSSkinMesh_UpdateSkin );
 
@@ -1256,21 +1236,11 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSVertexBufferHa
    {
       U8 *outPtr = reinterpret_cast<U8 *>(mVertexData.address());
       dsize_t outStride = mVertexData.vertSize();
-
-#if defined(USE_MEM_VERTEX_BUFFERS)
-      // Initialize it if NULL. 
-      // Skinning includes readbacks from memory (argh) so don't allocate with PAGE_WRITECOMBINE
-      if( instanceVB.isNull() )
-         instanceVB.set( GFX, outStride, mVertexFormat, mNumVerts, GFXBufferTypeDynamic );
-
-      // Grow if needed
-      if( instanceVB.getPointer()->mNumVerts < mNumVerts )
-         instanceVB.resize( mNumVerts );
-
-      // Lock, and skin directly into the final memory destination
-      outPtr = (U8 *)instanceVB.lock();
-      if(!outPtr) return;
-#endif
+      
+      // Map to verts in renderer
+      U8 *altPtr = mRenderer->mapVerts(this, renderData);
+      if (altPtr) outPtr = altPtr;
+      
       // Set position/normal to zero so we can accumulate
       zero_vert_normal_bulk(mNumVerts, outPtr, outStride);
 
@@ -1287,9 +1257,10 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSVertexBufferHa
          m_matF_x_BatchedVertWeightList(curBoneMat, numVerts, curTransform.alignedMem,
             outPtr, outStride);
       }
-#if defined(USE_MEM_VERTEX_BUFFERS)
-      instanceVB.unlock();
-#endif
+      
+      // Load verts
+      if (altPtr)
+         mRenderer->unmapVerts(this, renderData);
    }
 }
 
@@ -1350,7 +1321,7 @@ void TSSkinMesh::createBatchData()
             if ( !issuedWeightWarning )
             {
                issuedWeightWarning = true;
-               Con::warnf( "At least one vertex has too many bone weights - limiting "
+               Log::warnf( "At least one vertex has too many bone weights - limiting "
                   "to the largest %d influences (see maxBonePerVert in tsMesh.h).",
                   TSSkinMesh::BatchData::maxBonePerVert );
             }
@@ -1383,9 +1354,9 @@ void TSSkinMesh::createBatchData()
          batchOperations.last().transform[0].transformIndex = midx;
          batchOperations.last().transform[0].weight = w;
       }
-      //Con::printf( "[%d] transform idx %d, weight %1.5f", vidx, midx, w );
+      //Log::printf( "[%d] transform idx %d, weight %1.5f", vidx, midx, w );
    }
-   //Con::printf("End skin update");
+   //Log::printf("End skin update");
 
    // Normalize vertex weights (force weights for each vert to sum to 1)
    if ( issuedWeightWarning )
@@ -1470,17 +1441,16 @@ void TSSkinMesh::createBatchData()
 #endif
 }
 
-void TSSkinMesh::render( TSVertexBufferHandle &instanceVB, GFXPrimitiveBufferHandle &instancePB )
+void TSSkinMesh::render( TSMeshRenderer &renderer )
 {
-   innerRender( instanceVB, instancePB );
+   innerRender( renderer );
 }
 
 void TSSkinMesh::render(   TSMaterialList *materials, 
-                           const TSRenderState &rdata,
+                           TSRenderState &rdata,
                            bool isSkinDirty,
                            const Vector<MatrixF> &transforms, 
-                           TSVertexBufferHandle &vertexBuffer,
-                           GFXPrimitiveBufferHandle &primitiveBuffer )
+                           TSMeshRenderer &renderer )
 {
    PROFILE_SCOPE(TSSkinMesh_render);
 
@@ -1496,20 +1466,19 @@ void TSSkinMesh::render(   TSMaterialList *materials,
    if(!batchDataInitialized)
       createBatchData();
 
-   const bool vertsChanged = vertexBuffer.isNull() || vertexBuffer->mNumVerts != mNumVerts;
-   const bool primsChanged = primitiveBuffer.isNull() || primitiveBuffer->mIndexCount != indices.size();
+   const bool renderDirty = mRenderer->isDirty(this, rdata.getCurrentRenderData());
 
-   if ( primsChanged || vertsChanged || isSkinDirty )
+   if ( renderDirty || isSkinDirty )
    {
       // Perform skinning
-      updateSkin( transforms, vertexBuffer, primitiveBuffer );
+      updateSkin( transforms, rdata.getCurrentRenderData() );
       
       // Update GFX vertex buffer
-      _createVBIB( vertexBuffer, primitiveBuffer );
+      _createVBIB(rdata.getCurrentRenderData());
    }
 
    // render...
-   innerRender( materials, rdata, vertexBuffer, primitiveBuffer );   
+   innerRender( materials, rdata, renderer );
 }
 
 bool TSSkinMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials )
@@ -2362,105 +2331,25 @@ S8 * TSMesh::getSharedData8( S32 parentMesh, S32 size, S8 **source, bool skip )
 void TSMesh::createVBIB()
 {
    AssertFatal( getMeshType() != SkinMeshType, "TSMesh::createVBIB() - Invalid call for skinned mesh type!" );
-   _createVBIB( mVB, mPB );
+   _createVBIB(NULL);
 }
 
-void TSMesh::_createVBIB( TSVertexBufferHandle &vb, GFXPrimitiveBufferHandle &pb )
+void TSMesh::_createVBIB(TSMeshInstanceRenderData *meshRenderData)
 {
    AssertFatal(mVertexData.isReady(), "Call convertToAlignedMeshData() before calling _createVBIB()");
 
-   if ( mNumVerts == 0 || !GFXDevice::devicePresent() )
+   if ( mNumVerts == 0 )
       return;
 
    PROFILE_SCOPE( TSMesh_CreateVBIB );
+   
+   mRenderer->prepare(this, meshRenderData);
+}
 
-   // Number of verts can change in LOD skinned mesh
-   const bool vertsChanged = ( vb && vb->mNumVerts < mNumVerts );
-
-#if defined(USE_MEM_VERTEX_BUFFERS)
-   if(!mDynamic)
-   {
-#endif
-      // Create the vertex buffer
-      if( vertsChanged || vb == NULL )
-         vb.set( GFX, mVertSize, mVertexFormat, mNumVerts, mDynamic ? 
-#if defined(TORQUE_OS_XENON)
-         // Skinned meshes still will occasionally re-skin more than once per frame.
-         // This cannot happen on the Xbox360. Until this issue is resolved, use
-         // type volatile instead. [1/27/2010 Pat]
-            GFXBufferTypeVolatile : GFXBufferTypeStatic );
-#else
-            GFXBufferTypeDynamic : GFXBufferTypeStatic );
-#endif
-
-      // Copy from aligned memory right into GPU memory
-      U8 *vertData = (U8*)vb.lock();
-      if(!vertData) return;
-#if defined(TORQUE_OS_XENON)
-      XMemCpyStreaming_WriteCombined( vertData, mVertexData.address(), mVertexData.mem_size() );
-#else
-      dMemcpy( vertData, mVertexData.address(), mVertexData.mem_size() );
-#endif
-      vb.unlock();
-#if defined(USE_MEM_VERTEX_BUFFERS)
-   }
-#endif
-
-   const bool primsChanged = ( pb.isValid() && pb->mIndexCount != indices.size() );
-   if( primsChanged || pb.isNull() )
-   {
-      // go through and create PrimitiveInfo array
-      Vector <GFXPrimitive> piArray;
-      GFXPrimitive pInfo;
-
-      U32 primitivesSize = primitives.size();
-      for ( U32 i = 0; i < primitivesSize; i++ )
-      {
-         const TSDrawPrimitive & draw = primitives[i];
-
-         GFXPrimitiveType drawType = getDrawType( draw.matIndex >> 30 );
-
-         switch( drawType )
-         {
-         case GFXTriangleList:
-            pInfo.type = drawType;
-            pInfo.numPrimitives = draw.numElements / 3;
-            pInfo.startIndex = draw.start;
-            // Use the first index to determine which 16-bit address space we are operating in
-            pInfo.startVertex = indices[draw.start] & 0xFFFF0000;
-            pInfo.minIndex = pInfo.startVertex;
-            pInfo.numVertices = getMin((U32)0x10000, mNumVerts - pInfo.startVertex);
-            break;
-
-         case GFXTriangleStrip:
-         case GFXTriangleFan:
-            pInfo.type = drawType;
-            pInfo.numPrimitives = draw.numElements - 2;
-            pInfo.startIndex = draw.start;
-            // Use the first index to determine which 16-bit address space we are operating in
-            pInfo.startVertex = indices[draw.start] & 0xFFFF0000;
-            pInfo.minIndex = pInfo.startVertex;
-            pInfo.numVertices = getMin((U32)0x10000, mNumVerts - pInfo.startVertex);
-            break;
-
-         default:
-            AssertFatal( false, "WTF?!" );
-         }
-
-         piArray.push_back( pInfo );
-      }
-
-      pb.set( GFX, indices.size(), piArray.size(), GFXBufferTypeStatic );
-
-      U16 *ibIndices = NULL;
-      GFXPrimitive *piInput = NULL;
-      pb.lock( &ibIndices, &piInput );
-
-      dCopyArray( ibIndices, indices.address(), indices.size() );
-      dMemcpy( piInput, piArray.address(), piArray.size() * sizeof(GFXPrimitive) );
-
-      pb.unlock();
-   }
+void TSMesh::initRender()
+{
+   SAFE_DELETE(mRenderer);
+   mRenderer = TSMeshRenderer::create();
 }
 
 void TSMesh::assemble( bool skip )
@@ -2548,7 +2437,7 @@ void TSMesh::assemble( bool skip )
       // warn about non-addressable indices
       if ( !skip && szIndIn >= 0x10000 )
       {
-         Con::warnf("Mesh contains non-addressable indices, and may not render "
+         Log::warnf("Mesh contains non-addressable indices, and may not render "
             "correctly. Either split this mesh into pieces of no more than 65k "
             "unique verts prior to export, or use COLLADA.");
       }

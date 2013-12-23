@@ -27,13 +27,107 @@
 #include "math/mMatrix.h"
 #endif
 
+#ifndef _MRECT_H_
+#include "math/mRect.h"
+#endif
+
+#ifndef _DATACHUNKER_H_
+#include "core/dataChunker.h"
+#endif
+
+#ifndef _TVECTOR_H_
+#include "core/util/tVector.h"
+#endif
 
 
-class SceneRenderState;
-class GFXCubemap;
+class TSSceneRenderState;
 class Frustum;
-class LightQuery;
+class TSMaterialInstance;
+class TSMeshRenderer;
+class TSMesh;
+class TSMeshInstanceRenderData;
 
+typedef U32 TSRenderInstTypeHash;
+
+class TSRenderState;
+
+//**************************************************************************
+// Render Instance
+//**************************************************************************
+typedef struct TSRenderInst
+{
+   /// The type of render instance this is.
+   TSRenderInstTypeHash type;
+   
+   /// This should be true if the object needs to be sorted
+   /// back to front with other translucent instances.
+   /// @see sortDistSq
+   bool translucentSort;
+   
+   /// The reference squared distance from the camera used for
+   /// back to front sorting of the instances.
+   /// @see translucentSort
+   F32 sortDistSq;
+   
+   /// The default key used by render managers for
+   /// internal sorting.
+   U32 defaultKey;
+   
+   /// The secondary key used by render managers for
+   /// internal sorting.
+   U32 defaultKey2;
+   
+   /// Pointer to mesh
+   TSMesh *mesh;
+   
+   /// Generic data attached to render instance (i.e. what we get from the object instance)
+   TSMeshInstanceRenderData *renderData;
+   
+   /// If prim is NULL then this index is used to draw the
+   /// indexed primitive from the primitive buffer.
+   /// @see prim
+   U32 primBuffIndex;
+   
+   /// The material to setup when drawing this instance.
+   TSMaterialInstance *matInst;
+   
+   /// The object to world transform (world transform in most API's).
+   const MatrixF *objectToWorld;
+   
+   /// The worldToCamera (view transform in most API's).
+   const MatrixF* worldToCamera;
+   
+   /// The projection matrix.
+   const MatrixF* projection;
+   
+   // misc render states
+   U8    transFlags;
+   bool  reflective;
+   F32   visibility;
+   
+   void clear();
+   void render(TSRenderState *state);
+} TSRenderInst;
+
+// Generic interface which provides scene info to the rendering code
+class TSSceneRenderState
+{
+public:
+   virtual ~TSSceneRenderState(){;}
+   virtual TSMaterialInstance *getOverrideMaterial( TSMaterialInstance *inst ) const=0;
+   
+   virtual Point3F getCameraPosition() const=0;
+   virtual Point3F getDiffuseCameraPosition() const=0;
+   virtual RectF getViewport() const=0;
+   virtual Point2F getWorldToScreenScale() const=0;
+   
+   virtual const MatrixF *getWorldMatrix() const=0;
+   virtual bool isShadowPass() const=0;
+   
+   // Shared matrix stuff
+   virtual const MatrixF *getViewMatrix() const = 0;
+   virtual const MatrixF *getProjectionMatrix() const = 0;
+};
 
 /// A simple class for passing render state through the pre-render pipeline.
 ///
@@ -66,10 +160,13 @@ class TSRenderState
 {
 protected:
    
-   const SceneRenderState *mState;
-
-   GFXCubemap *mCubemap;
-
+   // user-supplied interface which 
+   const TSSceneRenderState *mState;
+   
+public:
+   // Current world transform matrix
+   MatrixF mWorldMatrix;
+   
    /// Used to override the normal
    /// fade value of an object.
    /// This is multiplied by the current
@@ -98,26 +195,34 @@ protected:
    /// sorting for transparency instead of the nearest
    /// bounding box point.
    bool mUseOriginSort;
+   
+   /// Generic pointer to a render data object
+   TSMeshInstanceRenderData *mRenderData;
 
-   /// The lighting query object used if any materials
-   /// are forward lit and need lights.
-   LightQuery *mLightQuery;
+protected:
+   MultiTypedChunker mChunker;
+   
+public:
+   Vector<TSRenderInst*> mRenderInsts;
+   Vector<TSRenderInst*> mTranslucentRenderInsts;
 
 public:
 
    TSRenderState();
-   TSRenderState( const TSRenderState &state );
+   TSRenderState( TSRenderState &state );
+   
+   void reset();
 
    /// @name Get/Set methods.
    /// @{
 
    ///@see mState
-   const SceneRenderState* getSceneState() const { return mState; }
-   void setSceneState( const SceneRenderState *state ) { mState = state; }
-
-   ///@see mCubemap
-   GFXCubemap* getCubemap() const { return mCubemap; }
-   void setCubemap( GFXCubemap *cubemap ) { mCubemap = cubemap; }
+   const TSSceneRenderState* getSceneState() const { return mState; }
+   void setSceneState( const TSSceneRenderState *state ) { mState = state; }
+   
+   ///Sets a render
+   TSMeshInstanceRenderData *getCurrentRenderData() const { return mRenderData; }
+   void setCurrentRenderData(TSMeshInstanceRenderData *data) { mRenderData = data; }
 
    ///@see mFadeOverride
    F32 getFadeOverride() const { return mFadeOverride; }
@@ -142,12 +247,68 @@ public:
    ///@see mUseOriginSort
    void setOriginSort( bool enable ) { mUseOriginSort = enable; }
    bool useOriginSort() const { return mUseOriginSort; }
-
-   ///@see mLightQuery
-   void setLightQuery( LightQuery *query ) { mLightQuery = query; }
-   LightQuery* getLightQuery() const { return mLightQuery; }
+   
+   /// Allocates a new TSRenderInst
+   TSRenderInst *allocRenderInst();
+   
+   /// Allocates a new world matrix
+   MatrixF *allocMatrix(const MatrixF &transform);
+   
+   /// Adds a new TSRenderInst to the rendering pool
+   void addRenderInst(TSRenderInst *inst);
+   
+   /// Sorts TSRenderInsts
+   void sortRenderInsts();
 
    /// @}
+};
+
+
+// Generic class to store render data
+class TSMeshInstanceRenderData
+{
+public:
+   TSMeshInstanceRenderData(){;}
+   virtual ~TSMeshInstanceRenderData(){;}
+   
+   static TSMeshInstanceRenderData *create();
+};
+
+// Generic interface which stores vertex buffers and such for TSMeshes
+class TSMeshRenderer
+{
+public:
+   TSMeshRenderer() {;}
+   virtual ~TSMeshRenderer() {;}
+   
+   /// Prepares any static buffers, and also any dynamic ones if
+   /// renderState != NULL
+   virtual void prepare(TSMesh *mesh, TSMeshInstanceRenderData *meshRenderData) = 0;
+   
+   /// Return a vertex buffer to update,
+   /// or NULL if you want mesh->mVertexData
+   /// to be directly updated
+   virtual U8* mapVerts(TSMesh *mesh, TSMeshInstanceRenderData *meshRenderData) = 0;
+   
+   /// Counterpart to mapVerts, use this to unmap
+   /// any mapped vertex buffers
+   virtual void unmapVerts(TSMesh *mesh, TSMeshInstanceRenderData *meshRenderData) = 0;
+   
+   /// Called when a TSRenderInst is queued for rendering
+   /// Use this to store the state of any dynamic vertex buffers
+   virtual void onAddRenderInst(TSMesh *mesh, TSRenderInst *inst, TSRenderState *renderState) = 0;
+   
+   /// Renders whatever needs to be drawn, usually called AFTER the main
+   virtual void doRenderInst(TSMesh *mesh, TSRenderInst *inst, TSRenderState *renderState) = 0;
+   
+   /// Returns true if buffers need updating
+   virtual bool isDirty(TSMesh *mesh, TSMeshInstanceRenderData *renderData) = 0;
+   
+   /// Cleans up Mesh renderer
+   virtual void clear() = 0;
+   
+   /// Factory function to create TSMeshRenderer
+   static TSMeshRenderer *create();
 };
 
 #endif // _TSRENDERDATA_H_

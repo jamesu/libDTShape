@@ -24,10 +24,10 @@
 #include "collision/clippedPolyList.h"
 
 #include "math/mMath.h"
-#include "console/console.h"
+#include "core/log.h"
 #include "platform/profiler.h"
 
-#include "core/tAlgorithm.h"
+//#include "core/tAlgorithm.h"
 
 bool ClippedPolyList::allowClipping = true;
 
@@ -122,7 +122,7 @@ U32 ClippedPolyList::addPlane(const PlaneF& plane)
 
 //----------------------------------------------------------------------------
 
-void ClippedPolyList::begin(BaseMatInstance* material,U32 surfaceKey)
+void ClippedPolyList::begin(TSMaterialInstance* material,U32 surfaceKey)
 {
    mPolyList.increment();
    Poly& poly = mPolyList.last();

@@ -104,8 +104,8 @@ public:
    Box3F & getBounds() { return mBounds; }
    F32 & getRadius() { return mRadius; }
 
-   void render( const TSRenderState &rdata ) { render( mCurrentObjectDetail, rdata ); }
-   void render( S32 dl, const TSRenderState &rdata );
+   void render( TSRenderState &rdata ) { render( mCurrentObjectDetail, rdata ); }
+   void render( S32 dl, TSRenderState &rdata );
 
    /// choose detail method -- pass in NULL for first parameter to just use shapes data
    void setDetailData(F32 * sizeCutoffs, S32 numDetails);

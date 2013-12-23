@@ -200,7 +200,7 @@ void TSPartInstance::breakShape(TSShapeInstance * shape, TSPartInstance * curren
 // issues: setupTexturing expects a detail level, we give it an object detail level
 //-------------------------------------------------------------------------------------
 
-void TSPartInstance::render(S32 od, const TSRenderState &rdata)
+void TSPartInstance::render(S32 od, TSRenderState &rdata)
 {
    S32 i;
 

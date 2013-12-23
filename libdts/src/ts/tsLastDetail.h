@@ -23,9 +23,6 @@
 #ifndef _TSLASTDETAIL_H_
 #define _TSLASTDETAIL_H_
 
-#ifndef _MATHTYPES_H_
-#include "math/mathTypes.h"
-#endif
 #ifndef _MPOINT3_H_
 #include "math/mPoint3.h"
 #endif
@@ -35,26 +32,21 @@
 #ifndef _TVECTOR_H_
 #include "core/util/tVector.h"
 #endif
-#ifndef __RESOURCE_H__
-#include "core/resource.h"
-#endif
 #ifndef _TSRENDERDATA_H_
 #include "ts/tsRenderState.h"
 #endif
-#ifndef _GFXVERTEXFORMAT_H_
-#include "gfx/gfxVertexFormat.h"
-#endif
-#ifndef _SIM_H_
-#include "console/simObject.h"
+#ifndef _TSRENDER_H_
+#include "ts/tsRender.h"
 #endif
 
 
 class TSShape;
 class TSRenderState;
-class SceneRenderState;
+class TSSceneRenderState;
 class Material;
-class BaseMatInstance;
+class TSMaterialInstance;
 
+#if 0
 
 /// The imposter state vertex format.
 GFXDeclareVertexFormat( ImposterState )
@@ -74,6 +66,8 @@ GFXDeclareVertexFormat( ImposterState )
    Point3F upVec;
    Point3F rightVec;
 };
+
+#endif
 
 
 /// This neat little class renders the object to a texture so that when the object
@@ -129,10 +123,10 @@ protected:
    GFXVertexFormat mImposterVertDecl;
 
    /// The material for this imposter.
-   SimObjectPtr<Material> mMaterial;
+   //SimObjectPtr<Material> mMaterial;
 
    /// The material instance used to render this imposter.
-   BaseMatInstance *mMatInstance;
+   TSMaterialInstance *mMatInstance;
 
    /// This is a global list of all the TSLastDetail
    /// objects in the system.
@@ -187,10 +181,10 @@ public:
 
    /// Internal function called from TSShapeInstance to 
    /// submit an imposter render instance.
-   void render( const TSRenderState &rdata, F32 alpha );
+   void render( TSRenderState &rdata, F32 alpha );
 
    /// Returns the material instance used to render this imposter.
-   BaseMatInstance* getMatInstance() const { return mMatInstance; }
+   TSMaterialInstance* getMatInstance() const { return mMatInstance; }
 
    /// Helper function which deletes the cached imposter 
    /// texture files from disk.

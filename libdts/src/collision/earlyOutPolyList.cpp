@@ -21,7 +21,7 @@
 //-----------------------------------------------------------------------------
 
 #include "math/mMath.h"
-#include "console/console.h"
+#include "core/log.h"
 #include "collision/earlyOutPolyList.h"
 
 
@@ -104,7 +104,7 @@ U32 EarlyOutPolyList::addPlane(const PlaneF& plane)
 
 //----------------------------------------------------------------------------
 
-void EarlyOutPolyList::begin(BaseMatInstance* material,U32 surfaceKey)
+void EarlyOutPolyList::begin(TSMaterialInstance* material,U32 surfaceKey)
 {
    if (mEarlyOut == true)
       return;

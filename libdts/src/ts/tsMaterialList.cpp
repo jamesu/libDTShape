@@ -24,8 +24,8 @@
 #include "ts/tsMaterialList.h"
 
 #include "ts/tsShape.h"
-#include "materials/matInstance.h"
-#include "materials/materialManager.h"
+#include "ts/tsMaterial.h"
+#include "ts/tsMaterialManager.h"
 
 
 TSMaterialList::TSMaterialList(U32 materialCount,
@@ -288,18 +288,18 @@ bool TSMaterialList::renameMaterial(U32 i, const String& newName)
    String mappedName = MATMGR->getMapEntry(newName);
    if (mappedName.isEmpty())
    {
-      GFXTexHandle texHandle;
+      // TOFIX GFXTexHandle texHandle;
       if (mLookupPath.isEmpty())
       {
-         texHandle.set( newName, &GFXDefaultStaticDiffuseProfile, avar("%s() - handle (line %d)", __FUNCTION__, __LINE__) );
+         //texHandle.set( newName, &GFXDefaultStaticDiffuseProfile, avar("%s() - handle (line %d)", __FUNCTION__, __LINE__) );
       }
       else
       {
          String fullPath = String::ToString( "%s/%s", mLookupPath.c_str(), newName.c_str() );
-         texHandle.set( fullPath, &GFXDefaultStaticDiffuseProfile, avar("%s() - handle (line %d)", __FUNCTION__, __LINE__) );
+         //texHandle.set( fullPath, &GFXDefaultStaticDiffuseProfile, avar("%s() - handle (line %d)", __FUNCTION__, __LINE__) );
       }
-      if (!texHandle.isValid())
-         return false;
+      //if (!texHandle.isValid())
+      //   return false;
    }
 
    // change material name
@@ -317,7 +317,7 @@ void TSMaterialList::mapMaterial( U32 i )
 {
    Parent::mapMaterial( i );
 
-   BaseMatInstance* matInst = mMatInstList[i];
-   if (matInst && matInst->getMaterial()->isTranslucent())
+   TSMaterialInstance* matInst = mMatInstList[i];
+   if (matInst && matInst->isTranslucent())
       mFlags[i] |= Translucent;
 }

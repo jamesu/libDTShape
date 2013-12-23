@@ -13,18 +13,17 @@ Swizzle<U8, 4> *TSVertexColor::mDeviceSwizzle = NULL;
 
 #include "platform/profiler.h"
 #include "core/util/hashFunction.h"
-#include "core/strings/stringFunctions.h"
 
 
 namespace GFXSemantic
 {
-   const String POSITION = String( "POSITION" );
-   const String NORMAL = String( "NORMAL" );
-   const String BINORMAL = String( "BINORMAL" );
-   const String TANGENT = String( "TANGENT" );
-   const String TANGENTW = String( "TANGENTW" );
-   const String COLOR = String( "COLOR" );
-   const String TEXCOORD = String( "TEXCOORD" );
+   const String POSITION = String( "POSITION" ).intern();
+   const String NORMAL = String( "NORMAL" ).intern();
+   const String BINORMAL = String( "BINORMAL" ).intern();
+   const String TANGENT = String( "TANGENT" ).intern();
+   const String TANGENTW = String( "TANGENTW" ).intern();
+   const String COLOR = String( "COLOR" ).intern();
+   const String TEXCOORD = String( "TEXCOORD" ).intern();
 }
 
 
@@ -103,7 +102,7 @@ void GFXVertexFormat::addElement( const String& semantic, GFXDeclType type, U32 
    mDirty = true;
    mElements.increment();
    mElements.last().mStreamIndex = stream;
-   mElements.last().mSemantic = semantic;
+   mElements.last().mSemantic = semantic.intern();
    mElements.last().mSemanticIndex = index;
    mElements.last().mType = type;
 }
@@ -181,13 +180,10 @@ void GFXVertexFormat::_updateDirty()
    {
       const GFXVertexElement &element = mElements[i];
       
-      char buf[1024];
-      dSprintf(buf, sizeof(buf), "%d,%s,%d,%d\n",   element.mStreamIndex,
+      desc += String::ToString( "%d,%s,%d,%d\n",   element.mStreamIndex,
                                element.mSemantic.c_str(),
                                element.mSemanticIndex,
                                element.mType );
-      
-      desc += buf;
       
       if ( element.isSemantic( GFXSemantic::NORMAL ) )
          mHasNormal = true;
@@ -202,7 +198,7 @@ void GFXVertexFormat::_updateDirty()
    }
    
    // Intern the string for fast compares later.
-   mDescription = desc;
+   mDescription = desc.intern();
    
    mDirty = false;
 }

@@ -23,8 +23,8 @@
 #ifndef _FILESTREAM_H_
 #define _FILESTREAM_H_
 
-#ifndef _VOLUME_H_
-#include "core/volume.h"
+#ifndef _FILEIO_H_
+#include "core/fileio.h"
 #endif
 #ifndef _STREAM_H_
 #include "core/stream/stream.h"
@@ -33,6 +33,16 @@
 class FileStream : public Stream
 {
 public:
+   
+   /// How are we accessing the file?
+   enum AccessMode
+   {
+      Read         = File::Read,  ///< Open for read only, starting at beginning of file.
+      Write        = File::Write,  ///< Open for write only, starting at beginning of file; will blast old contents of file.
+      ReadWrite    = File::ReadWrite,  ///< Open for read-write.
+      WriteAppend  = File::WriteAppend   ///< Write-only, starting at end of file.
+   };
+   
    enum
    {
       BUFFER_SIZE = 8 * 1024,       // this can be changed to anything appropriate [in k]
@@ -46,7 +56,7 @@ public:
    // This function will allocate a new FileStream and open it.
    //  If it fails to allocate or fails to open, it will return NULL.
    //  The caller is responsible for deleting the instance.
-   static FileStream *createAndOpen(const String &inFileName, Torque::FS::File::AccessMode inMode);
+   static FileStream *createAndOpen(const String &inFileName, AccessMode inMode);
 
    // mandatory methods from Stream base class...
    virtual bool hasCapability(const Capability i_cap) const;
@@ -56,7 +66,7 @@ public:
    virtual U32  getStreamSize();
 
    // additional methods needed for a file stream...
-   virtual bool open(const String &inFileName, Torque::FS::File::AccessMode inMode);
+   virtual bool open(const String &inFileName, FileStream::AccessMode inMode);
    virtual void close();
 
    bool flush();
@@ -77,7 +87,7 @@ protected:
    U32  mStreamCaps;                   // dependent on access mode
 
 private:
-   Torque::FS::FileRef mFile;          // file being streamed
+   File *mFile;          // file being streamed
 
    U8   mBuffer[BUFFER_SIZE];
    U32  mBuffHead;                     // first valid position of buffer (from start-of-file)

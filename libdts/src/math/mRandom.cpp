@@ -22,21 +22,20 @@
 
 #include "platform/platform.h"
 #include "math/mRandom.h"
-#include "core/util/journal/journal.h"
 
 MRandomLCG gRandGen;
 U32 gRandGenSeed = 1376312589;
 
 void MRandomLCG::setGlobalRandSeed(U32 seed)
 {
-	if (Journal::IsPlaying())
+	/*if (Journal::IsPlaying())
 		Journal::Read(&gRandGenSeed);
 	else
-	{
+	{*/
 		gRandGenSeed = seed;
-		if (Journal::IsRecording())
+		/*if (Journal::IsRecording())
 			Journal::Write(gRandGenSeed);
-	}
+	}*/
 
 	//now actually set the seed
 	gRandGen.setSeed(gRandGenSeed);

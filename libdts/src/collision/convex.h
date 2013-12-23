@@ -35,7 +35,7 @@ class CollisionList;
 struct CollisionStateList;
 class AbstractPolyList;
 class SceneObject;
-class BaseMatInstance;
+class TSMaterialInstance;
 class Convex;
 
 
@@ -55,7 +55,7 @@ public:
    Vector<Point3F> mVertexList;
    Vector<Edge> mEdgeList;
    Vector<Face> mFaceList;
-   BaseMatInstance* material;
+   TSMaterialInstance* material;
    SceneObject* object;
 
    ConvexFeature()
@@ -83,6 +83,7 @@ enum ConvexType {
    TSConvexType,
    BoxConvexType,
    TerrainConvexType,
+   InteriorConvexType,
    ShapeBaseConvexType,
    TSStaticConvexType,
    AtlasChunkConvexType, ///< @deprecated

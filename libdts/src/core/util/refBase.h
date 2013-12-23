@@ -78,8 +78,6 @@ private:
    WeakReference * mReference;
 };
 
-template< typename T > class SimObjectPtr;
-
 /// Weak reference pointer class.
 /// Instances of this template class can be used as pointers to
 /// instances of WeakRefBase and its subclasses.
@@ -133,7 +131,6 @@ protected:
 
    void set(T * obj) { set(obj ? obj->getWeakReference() : (WeakRefBase::WeakReference *)NULL); }
 private:
-   template< typename > friend class SimObjectPtr;
    WeakRefBase::WeakReference * mReference;
 };
 

@@ -25,60 +25,17 @@
 
 #include "ts/tsLastDetail.h"
 #include "ts/tsMaterialList.h"
-#include "console/consoleTypes.h"
 #include "ts/tsDecal.h"
 #include "platform/profiler.h"
 #include "core/frameAllocator.h"
-#include "gfx/gfxDevice.h"
-#include "materials/materialManager.h"
-#include "materials/materialFeatureTypes.h"
-#include "materials/sceneData.h"
-#include "materials/matInstance.h"
-#include "scene/sceneRenderState.h"
-#include "gfx/primBuilder.h"
-#include "gfx/gfxDrawUtil.h"
+//#include "gfx/gfxDevice.h"
+#include "ts/tsMaterialManager.h"
+#include "ts/tsMaterial.h"
+//#include "scene/sceneRenderState.h"
+//#include "gfx/primBuilder.h"
+//#include "gfx/gfxDrawUtil.h"
 #include "core/module.h"
-
-
-MODULE_BEGIN( TSShapeInstance )
-
-   MODULE_INIT
-   {
-      Con::addVariable("$pref::TS::detailAdjust", TypeF32, &TSShapeInstance::smDetailAdjust,
-         "@brief User perference for scaling the TSShape level of detail.\n"
-         "The smaller the value the closer the camera must get to see the "
-         "highest LOD.  This setting can have a huge impact on performance in "
-         "mesh heavy scenes.  The default value is 1.\n"
-         "@ingroup Rendering\n" );
-
-      Con::addVariable("$pref::TS::skipLoadDLs", TypeS32, &TSShape::smNumSkipLoadDetails,
-         "@brief User perference which causes TSShapes to skip loading higher lods.\n"
-         "This potentialy reduces the GPU resources and materials generated as well as "
-         "limits the LODs rendered.  The default value is 0.\n"
-         "@see $pref::TS::skipRenderDLs\n"
-         "@ingroup Rendering\n" );
-
-      Con::addVariable("$pref::TS::skipRenderDLs", TypeS32, &TSShapeInstance::smNumSkipRenderDetails,
-         "@brief User perference which causes TSShapes to skip rendering higher lods.\n"
-         "This will reduce the number of draw calls and triangles rendered and improve "
-         "rendering performance when proper LODs have been created for your models. "
-         "The default value is 0.\n"
-         "@see $pref::TS::skipLoadDLs\n"
-         "@ingroup Rendering\n" );
-
-      Con::addVariable("$pref::TS::smallestVisiblePixelSize", TypeF32, &TSShapeInstance::smSmallestVisiblePixelSize,
-         "@brief User perference which sets the smallest pixel size at which TSShapes will skip rendering.\n"
-         "This will force all shapes to stop rendering when they get smaller than this size. "
-         "The default value is -1 which disables it.\n"
-         "@ingroup Rendering\n" );
-
-      Con::addVariable("$pref::TS::maxInstancingVerts", TypeS32, &TSMesh::smMaxInstancingVerts,
-         "@brief Enables mesh instancing on non-skin meshes that have less that this count of verts.\n"
-         "The default value is 200.  Higher values can degrade performance.\n"
-         "@ingroup Rendering\n" );
-   }
-
-MODULE_END;
+#include "math/util/frustum.h"
 
 
 F32                           TSShapeInstance::smDetailAdjust = 1.0f;
@@ -105,23 +62,6 @@ Vector<TSThread*>             TSShapeInstance::smScaleThreads(__FILE__, __LINE__
 // constructors, destructors, initialization
 //-------------------------------------------------------------------------------------
 
-TSShapeInstance::TSShapeInstance( const Resource<TSShape> &shape, bool loadMaterials )
-{
-   VECTOR_SET_ASSOCIATION(mMeshObjects);
-   VECTOR_SET_ASSOCIATION(mNodeTransforms);
-   VECTOR_SET_ASSOCIATION(mNodeReferenceRotations);
-   VECTOR_SET_ASSOCIATION(mNodeReferenceTranslations);
-   VECTOR_SET_ASSOCIATION(mNodeReferenceUniformScales);
-   VECTOR_SET_ASSOCIATION(mNodeReferenceScaleFactors);
-   VECTOR_SET_ASSOCIATION(mNodeReferenceArbitraryScaleRots);
-   VECTOR_SET_ASSOCIATION(mThreadList);
-   VECTOR_SET_ASSOCIATION(mTransitionThreads);
-
-   mShapeResource = shape;
-   mShape = mShapeResource;
-   buildInstanceData( mShape, loadMaterials );
-}
-
 TSShapeInstance::TSShapeInstance( TSShape *shape, bool loadMaterials )
 {
    VECTOR_SET_ASSOCIATION(mMeshObjects);
@@ -134,13 +74,20 @@ TSShapeInstance::TSShapeInstance( TSShape *shape, bool loadMaterials )
    VECTOR_SET_ASSOCIATION(mThreadList);
    VECTOR_SET_ASSOCIATION(mTransitionThreads);
 
-   mShapeResource = NULL;
    mShape = shape;
    buildInstanceData( mShape, loadMaterials );
 }
 
 TSShapeInstance::~TSShapeInstance()
 {
+   // Clear render data for mesh objects
+   for (S32 i=0; i<mMeshObjects.size(); i++)
+   {
+      MeshObjectInstance * objInst = &mMeshObjects[i];
+      if (objInst->renderInstData)
+         delete objInst->renderInstData;
+   }
+   
    mMeshObjects.clear();
 
    while (mThreadList.size())
@@ -194,8 +141,8 @@ void TSShapeInstance::buildInstanceData(TSShape * _shape, bool loadMaterials)
    animateSubtrees();
 
    // Construct billboards if not done already
-   if ( loadMaterials && mShapeResource && GFXDevice::devicePresent() )
-      mShape->setupBillboardDetails( mShapeResource.getPath().getFullPath() );
+   if ( loadMaterials && mShape )
+      mShape->setupBillboardDetails( mShape->getPath().getFullPath() );
 }
 
 void TSShapeInstance::initNodeTransforms()
@@ -227,6 +174,8 @@ void TSShapeInstance::initMeshObjects()
 
       objInst->object = obj;
       objInst->forceHidden = false;
+      
+      objInst->renderInstData = TSMeshInstanceRenderData::create();
    }
 }
 
@@ -246,35 +195,29 @@ void TSShapeInstance::setMaterialList( TSMaterialList *matList )
    // materials appended
    if ( mMaterialList && !mMaterialList->getMaterialInst( mMaterialList->size()-1 ) )
    {
-      mMaterialList->setTextureLookupPath( mShapeResource.getPath().getPath() );
+      mMaterialList->setTextureLookupPath( mShape->getPath().getPath() );
       mMaterialList->mapMaterials();
-      Material::sAllowTextureTargetAssignment = true;
+      //Material::sAllowTextureTargetAssignment = true;
       initMaterialList();
-      Material::sAllowTextureTargetAssignment = false;
+      //Material::sAllowTextureTargetAssignment = false;
    }
 }
 
-void TSShapeInstance::cloneMaterialList( const FeatureSet *features )
+void TSShapeInstance::cloneMaterialList()
 {
    if ( mOwnMaterialList )
       return;
 
-   Material::sAllowTextureTargetAssignment = true;
    mMaterialList = new TSMaterialList(mMaterialList);
-   initMaterialList( features );
-   Material::sAllowTextureTargetAssignment = false;
+   initMaterialList();
 
    mOwnMaterialList = true;
 }
 
-void TSShapeInstance::initMaterialList( const FeatureSet *features )
+void TSShapeInstance::initMaterialList( )
 {
-   // If we don't have features then use the default.
-   if ( !features )
-      features = &MATMGR->getDefaultFeatures();
-
    // Initialize the materials.
-   mMaterialList->initMatInstances( *features, mShape->getVertexFormat() );
+   mMaterialList->initMatInstances( mShape->getVertexFormat() );
 
    // TODO: It would be good to go thru all the meshes and
    // pre-create all the active material hooks for shadows,
@@ -299,7 +242,7 @@ void TSShapeInstance::reSkin( String newBaseName, String oldBaseName )
       cloneMaterialList();
 
    TSMaterialList* pMatList = getMaterialList();
-   pMatList->setTextureLookupPath( mShapeResource.getPath().getPath() );
+   pMatList->setTextureLookupPath( mShape->getPath().getPath() );
 
    // Cycle through the materials
    const Vector<String> &materialNames = pMatList->getMaterialNameList();
@@ -325,6 +268,7 @@ void TSShapeInstance::reSkin( String newBaseName, String oldBaseName )
 
 void TSShapeInstance::renderDebugNormals( F32 normalScalar, S32 dl )
 {
+#if 0
    if ( dl < 0 )
       return;
 
@@ -384,10 +328,12 @@ void TSShapeInstance::renderDebugNormals( F32 normalScalar, S32 dl )
          PrimBuild::end();
       }
    }
+#endif
 }
 
 void TSShapeInstance::renderDebugNodes()
 {
+#if 0
    GFXDrawUtil *drawUtil = GFX->getDrawUtil();
    ColorI color( 255, 0, 0, 255 );
 
@@ -397,6 +343,7 @@ void TSShapeInstance::renderDebugNodes()
 
    for ( U32 i = 0; i < mNodeTransforms.size(); i++ )
       drawUtil->drawTransform( desc, mNodeTransforms[i], NULL, NULL );
+#endif
 }
 
 void TSShapeInstance::listMeshes( const String &state ) const
@@ -406,7 +353,7 @@ void TSShapeInstance::listMeshes( const String &state ) const
       for ( U32 i = 0; i < mMeshObjects.size(); i++ )
       {
          const MeshObjectInstance &mesh = mMeshObjects[i];
-         Con::warnf( "meshidx %3d, %8s, %s", i, ( mesh.forceHidden ) ? "Hidden" : "Visible", mShape->getMeshName(i).c_str() );         
+         Log::warnf( "meshidx %3d, %8s, %s", i, ( mesh.forceHidden ) ? "Hidden" : "Visible", mShape->getMeshName(i).c_str() );         
       }
    }
    else if ( state.equal( "Hidden", String::NoCase ) )
@@ -415,7 +362,7 @@ void TSShapeInstance::listMeshes( const String &state ) const
       {
          const MeshObjectInstance &mesh = mMeshObjects[i];
          if ( mesh.forceHidden )
-            Con::warnf( "meshidx %3d, %8s, %s", i, "Visible", mShape->getMeshName(i).c_str() );         
+            Log::warnf( "meshidx %3d, %8s, %s", i, "Visible", mShape->getMeshName(i).c_str() );         
       }
    }
    else if ( state.equal( "Visible", String::NoCase ) )
@@ -424,16 +371,16 @@ void TSShapeInstance::listMeshes( const String &state ) const
       {
          const MeshObjectInstance &mesh = mMeshObjects[i];
          if ( !mesh.forceHidden )
-            Con::warnf( "meshidx %3d, %8s, %s", i, "Hidden", mShape->getMeshName(i).c_str() );         
+            Log::warnf( "meshidx %3d, %8s, %s", i, "Hidden", mShape->getMeshName(i).c_str() );         
       }
    }
    else
    {
-      Con::warnf( "TSShapeInstance::listMeshes( %s ) - only All/Hidden/Visible are valid parameters." );
+      Log::warnf( "TSShapeInstance::listMeshes( %s ) - only All/Hidden/Visible are valid parameters." );
    }
 }
 
-void TSShapeInstance::render( const TSRenderState &rdata )
+void TSShapeInstance::render( TSRenderState &rdata )
 {
    if (mCurrentDetailLevel<0)
       return;
@@ -507,7 +454,7 @@ void TSShapeInstance::setMeshForceHidden( S32 meshIndex, bool hidden )
    mMeshObjects[meshIndex].forceHidden = hidden;
 }
 
-void TSShapeInstance::render( const TSRenderState &rdata, S32 dl, F32 intraDL )
+void TSShapeInstance::render( TSRenderState &rdata, S32 dl, F32 intraDL )
 {
    AssertFatal( dl >= 0 && dl < mShape->details.size(),"TSShapeInstance::render" );
 
@@ -558,7 +505,7 @@ void TSShapeInstance::setCurrentDetail( S32 dl, F32 intraDL )
    }
 }
 
-S32 TSShapeInstance::setDetailFromPosAndScale(  const SceneRenderState *state,
+S32 TSShapeInstance::setDetailFromPosAndScale(  const TSSceneRenderState *state,
                                                 const Point3F &pos, 
                                                 const Point3F &scale )
 {
@@ -569,7 +516,7 @@ S32 TSShapeInstance::setDetailFromPosAndScale(  const SceneRenderState *state,
    return setDetailFromDistance( state, dist * invScale );
 }
 
-S32 TSShapeInstance::setDetailFromDistance( const SceneRenderState *state, F32 scaledDistance )
+S32 TSShapeInstance::setDetailFromDistance( const TSSceneRenderState *state, F32 scaledDistance )
 {
    PROFILE_SCOPE( TSShapeInstance_setDetailFromDistance );
 
@@ -606,12 +553,12 @@ S32 TSShapeInstance::setDetailFromDistance( const SceneRenderState *state, F32 s
    if ( mShape->mUseDetailFromScreenError )
    {
       // The pixel size of 1 meter at the input distance.
-      F32 pixelRadius = state->projectRadius( scaledDistance, 1.0f ) * pixelScale;
+      F32 pixelRadius = 1.0f;//TODOstate->projectRadius( scaledDistance, 1.0f ) * pixelScale;
       static const F32 smScreenError = 5.0f;
       return setDetailFromScreenError( smScreenError / pixelRadius );
    }
 
-   // We're inlining SceneRenderState::projectRadius here to 
+   // We're inlining TSSceneRenderState::projectRadius here to 
    // skip the unnessasary divide by zero protection.
    F32 pixelRadius = ( mShape->radius / scaledDistance ) * state->getWorldToScreenScale().y * pixelScale;
    F32 pixelSize = pixelRadius * smDetailAdjust;
@@ -707,14 +654,14 @@ S32 TSShapeInstance::setDetailFromScreenError( F32 errorTolerance )
 // Object (MeshObjectInstance & PluginObjectInstance) render methods
 //-------------------------------------------------------------------------------------
 
-void TSShapeInstance::ObjectInstance::render( S32, TSMaterialList *, const TSRenderState &rdata, F32 alpha )
+void TSShapeInstance::ObjectInstance::render( S32, TSMaterialList *, TSRenderState &rdata, F32 alpha )
 {
    AssertFatal(0,"TSShapeInstance::ObjectInstance::render:  no default render method.");
 }
 
 void TSShapeInstance::MeshObjectInstance::render(  S32 objectDetail, 
                                                    TSMaterialList *materials, 
-                                                   const TSRenderState &rdata, 
+                                                   TSRenderState &rdata, 
                                                    F32 alpha )
 {
    PROFILE_SCOPE( TSShapeInstance_MeshObjectInstance_render );
@@ -736,28 +683,28 @@ void TSShapeInstance::MeshObjectInstance::render(  S32 objectDetail,
          return;
    }
 
-   GFX->pushWorldMatrix();
-   GFX->multWorld( transform );
+   //const MatrixF *worldMatrix = rdata.getSceneState()->getWorldMatrix();
+   //rdata.mWorldMatrix = *worldMatrix;
+   rdata.mWorldMatrix = transform;//.mul(transform);
 
    mesh->setFade( visible * alpha );
+   
+   rdata.setCurrentRenderData(renderInstData);
 
    // Pass a hint to the mesh that time has advanced and that the
    // skin is dirty and needs to be updated.  This should result
    // in the skin only updating once per frame in most cases.
-   const U32 currTime = Sim::getCurrentTime();
-   bool isSkinDirty = currTime != mLastTime;
+   const U32 currTime = 0;// TODOSim::getCurrentTime();
+   bool isSkinDirty = true;//currTime != mLastTime;
 
    mesh->render(  materials, 
                   rdata, 
                   isSkinDirty,
-                  *mTransforms, 
-                  mVertexBuffer,
-                  mPrimitiveBuffer );
+                  *mTransforms,
+                  *mesh->mRenderer );
 
    // Update the last render time.
    mLastTime = currTime;
-
-   GFX->popWorldMatrix();
 }
 
 TSShapeInstance::MeshObjectInstance::MeshObjectInstance() 
@@ -769,12 +716,5 @@ TSShapeInstance::MeshObjectInstance::MeshObjectInstance()
 void TSShapeInstance::prepCollision()
 {
    PROFILE_SCOPE( TSShapeInstance_PrepCollision );
-
-   // Iterate over all our meshes and call prepCollision on them...
-   for(S32 i=0; i<mShape->meshes.size(); i++)
-   {
-      if(mShape->meshes[i])
-         mShape->meshes[i]->prepOpcodeCollision();
-   }
 }
 

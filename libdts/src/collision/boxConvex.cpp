@@ -22,7 +22,6 @@
 
 #include "platform/platform.h"
 #include "math/mMath.h"
-#include "T3D/gameBase/gameBase.h"
 #include "collision/boxConvex.h"
 #include "abstractPolyList.h"
 

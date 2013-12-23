@@ -27,7 +27,7 @@
 // Ported to TGE by DAW, 2005-7-15
 //-----------------------------------------------------------------------------
 
-#include "util/triRayCheck.h"
+#include "math/util/triRayCheck.h"
 #include "math/mPlane.h"
 
 #define EPSILON 0.000001

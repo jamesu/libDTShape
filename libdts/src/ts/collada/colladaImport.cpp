@@ -22,12 +22,11 @@
 
 #include "platform/platform.h"
 
-#include "core/volume.h"
 #include "ts/collada/colladaUtils.h"
 #include "ts/collada/colladaAppNode.h"
 #include "ts/collada/colladaShapeLoader.h"
 
-#include "gui/controls/guiTreeViewCtrl.h"
+//#include "gui/controls/guiTreeViewCtrl.h"
 
 // Helper struct for counting nodes, meshes and polygons down through the scene
 // hierarchy
@@ -43,6 +42,7 @@ struct SceneStats
    SceneStats() : numNodes(0), numMeshes(0), numPolygons(0), numMaterials(0), numLights(0), numClips(0) { }
 };
 
+#if 0
 // Recurse through the <visual_scene> adding nodes and geometry to the GuiTreeView control
 static void processNode(GuiTreeViewCtrl* tree, domNode* node, S32 parentID, SceneStats& stats)
 {
@@ -139,13 +139,13 @@ ConsoleFunction( enumColladaForImport, bool, 3, 3,
    GuiTreeViewCtrl* tree;
    if (!Sim::findObject(argv[2], tree))
    {
-      Con::errorf("enumColladaScene::Could not find GuiTreeViewCtrl '%s'", argv[2]);
+      Log::errorf("enumColladaScene::Could not find GuiTreeViewCtrl '%s'", (const char*)argv[2]);
       return false;
    }
 
    // Check if a cached DTS is available => no need to import the collada file
    // if we can load the DTS instead
-   Torque::Path path(argv[1]);
+   Torque::Path path((const char*)argv[1]);
    if (ColladaShapeLoader::canLoadCachedDTS(path))
       return false;
 
@@ -240,20 +240,22 @@ ConsoleFunction( enumColladaForImport, bool, 3, 3,
    TSShapeLoader::updateProgress(TSShapeLoader::Load_Complete, "Load complete");
 
    // Store shape information in the tree control
-   tree->setDataField(StringTable->insert("_nodeCount"), 0, avar("%d", stats.numNodes));
-   tree->setDataField(StringTable->insert("_meshCount"), 0, avar("%d", stats.numMeshes));
-   tree->setDataField(StringTable->insert("_polygonCount"), 0, avar("%d", stats.numPolygons));
-   tree->setDataField(StringTable->insert("_materialCount"), 0, avar("%d", stats.numMaterials));
-   tree->setDataField(StringTable->insert("_lightCount"), 0, avar("%d", stats.numLights));
-   tree->setDataField(StringTable->insert("_animCount"), 0, avar("%d", stats.numClips));
-   tree->setDataField(StringTable->insert("_unit"), 0, avar("%g", unit));
+   tree->setDataField("_nodeCount", 0, avar("%d", stats.numNodes));
+   tree->setDataField("_meshCount", 0, avar("%d", stats.numMeshes));
+   tree->setDataField("_polygonCount", 0, avar("%d", stats.numPolygons));
+   tree->setDataField("_materialCount", 0, avar("%d", stats.numMaterials));
+   tree->setDataField("_lightCount", 0, avar("%d", stats.numLights));
+   tree->setDataField("_animCount", 0, avar("%d", stats.numClips));
+   tree->setDataField("_unit", 0, avar("%g", unit));
 
    if (upAxis == UPAXISTYPE_X_UP)
-      tree->setDataField(StringTable->insert("_upAxis"), 0, "X_AXIS");
+      tree->setDataField("_upAxis", 0, "X_AXIS");
    else if (upAxis == UPAXISTYPE_Y_UP)
-      tree->setDataField(StringTable->insert("_upAxis"), 0, "Y_AXIS");
+      tree->setDataField("_upAxis", 0, "Y_AXIS");
    else
-      tree->setDataField(StringTable->insert("_upAxis"), 0, "Z_AXIS");
+      tree->setDataField("_upAxis", 0, "Z_AXIS");
 
    return true;
 }
+
+#endif

@@ -23,7 +23,7 @@
 #include <stdarg.h>
 
 #include "core/strings/stringFunctions.h"
-#include "console/console.h"
+#include "platform/platform.h"
 
 
 //-------------------------------------- STATIC Declaration
@@ -102,21 +102,17 @@ bool PlatformAssert::process(Type         assertType,
    bool ret = true;
 
    // always dump to the Assert to the Console
-   if (Con::isActive())
+   /*if (Log::isActive())
    {
       if (assertType == Warning)
-         Con::warnf(ConsoleLogEntry::Assert, "%s(%ld) : %s - %s", filename, lineNumber, typeName[assertType], message);
+         Log::warnf(LogEntry::Assert, "%s(%ld) : %s - %s", filename, lineNumber, typeName[assertType], message);
       else
-	      Con::errorf(ConsoleLogEntry::Assert, "%s(%ld) : %s - %s", filename, lineNumber, typeName[assertType], message);
-   }
+	      Log::errorf(LogEntry::Assert, "%s(%ld) : %s - %s", filename, lineNumber, typeName[assertType], message);
+   }*/
 
    // if not a WARNING pop-up a dialog box
    if (assertType != Warning)
    {
-      // used for processing navGraphs (an assert won't botch the whole build)
-      if(Con::getBoolVariable("$FP::DisableAsserts", false) == true)
-         Platform::forceShutdown(1);
-
       char buffer[2048];
       dSprintf(buffer, 2048, "%s(%ld) : %s", filename, lineNumber, typeName[assertType] );
 
@@ -127,7 +123,7 @@ bool PlatformAssert::process(Type         assertType,
       bool retry = displayMessageBox(buffer, message, ((assertType == Fatal) ? true : false) );
 #endif
       if(!retry)
-         Platform::forceShutdown(1);
+         Platform::onFatalError(1);
       
       ret = askToEnterDebugger(message);
    }
@@ -156,7 +152,7 @@ bool PlatformAssert::processAssert(Type        assertType,
    // this could also be platform-specific: OutputDebugString on PC, DebugStr on Mac.
    // Will raw printfs do the job?  In the worst case, it's a break-pointable line of code.
    // would have preferred Con but due to race conditions, it might not be around...
-   // Con::errorf(ConsoleLogEntry::Assert, "%s: (%s @ %ld) %s", typeName[assertType], filename, lineNumber, message);
+   // Log::errorf(LogEntry::Assert, "%s: (%s @ %ld) %s", typeName[assertType], filename, lineNumber, message);
 
    return true;
 }

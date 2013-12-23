@@ -111,9 +111,9 @@ public:
    void enableMarker(const char *marker, bool enabled);
 #ifdef TORQUE_ENABLE_PROFILE_PATH
    /// Get current profile path
-   const char * getProfilePath();
+   String getProfilePath();
    /// Construct profile path of given profiler data
-   const char * constructProfilePath(ProfilerData * pd);
+   String constructProfilePath(ProfilerData * pd);
 #endif
 };
 
@@ -157,7 +157,7 @@ struct ProfilerData
    F64 mTotalTime;
    F64 mSubTime;
 #ifdef TORQUE_ENABLE_PROFILE_PATH
-   const char * mPath;
+   String mPath;
 #endif
 };
 

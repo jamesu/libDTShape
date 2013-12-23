@@ -55,7 +55,7 @@ public:
    struct Poly {
       PlaneF plane;
       SceneObject* object;
-      BaseMatInstance* material;
+      TSMaterialInstance* material;
 
       U32 vertexStart;
       U32 vertexCount;
@@ -121,7 +121,7 @@ public:
    U32 addPoint(const Point3F& p);
    U32 addPointAndNormal(const Point3F& p, const Point3F& normal);
    U32 addPlane(const PlaneF& plane);
-   void begin(BaseMatInstance* material,U32 surfaceKey);
+   void begin(TSMaterialInstance* material,U32 surfaceKey);
    void plane(U32 v1,U32 v2,U32 v3);
    void plane(const PlaneF& p);
    void plane(const U32 index);

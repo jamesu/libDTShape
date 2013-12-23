@@ -22,30 +22,103 @@
 
 #include "platform/platform.h"
 #include "ts/tsRenderState.h"
+#include "ts/tsMesh.h"
+#include "ts/tsMaterial.h"
+#include "ts/tsShapeInstance.h"
 
 
 TSRenderState::TSRenderState()
    :  mState( NULL ),
-      mCubemap( NULL ),
+      mWorldMatrix(1),
       mFadeOverride( 1.0f ),
       mNoRenderTranslucent( false ),
       mNoRenderNonTranslucent( false ),
       mMaterialHint( NULL ),
       mCuller( NULL ),
-      mLightQuery( NULL ),
       mUseOriginSort( false )
 {
 }
 
-TSRenderState::TSRenderState( const TSRenderState &state )
+TSRenderState::TSRenderState( TSRenderState &state )
    :  mState( state.mState ),
-      mCubemap( state.mCubemap ),
+      mWorldMatrix(1),
       mFadeOverride( state.mFadeOverride ),
       mNoRenderTranslucent( state.mNoRenderTranslucent ),
       mNoRenderNonTranslucent( state.mNoRenderNonTranslucent ),
       mMaterialHint( state.mMaterialHint ),
       mCuller( state.mCuller ),
-      mLightQuery( state.mLightQuery ),
-      mUseOriginSort( state.mUseOriginSort )
+      mUseOriginSort( state.mUseOriginSort )//,
+      //mMeshRenderInfos( state.mMeshRenderInfos )
 {
 }
+
+void TSRenderState::reset()
+{
+   mRenderInsts.clear();
+   mTranslucentRenderInsts.clear();
+   mChunker.clear();
+}
+
+
+/// Allocates a new TSRenderInst
+TSRenderInst *TSRenderState::allocRenderInst()
+{
+   TSRenderInst *inst = mChunker.alloc<TSRenderInst>();
+   inst->clear();
+   return inst;
+}
+
+/// Allocates a new world matrix
+MatrixF *TSRenderState::allocMatrix(const MatrixF &transform)
+{
+   MatrixF *mat = mChunker.alloc<MatrixF>();
+   *mat = transform;
+   return mat;
+}
+
+/// Adds a new TSRenderInst to the rendering pool
+void TSRenderState::addRenderInst(TSRenderInst *inst)
+{
+   // Place in the correct bin
+   if (!inst->translucentSort) {
+      // Inverse sort
+      const F32 invSortDistSq = F32_MAX - inst->sortDistSq;
+      inst->defaultKey = *((U32*)&invSortDistSq);
+      mRenderInsts.push_back(inst);
+   } else {
+      inst->defaultKey = inst->sortDistSq;
+      mTranslucentRenderInsts.push_back(inst);
+   }
+   
+   // Sort by material if present
+   if (inst->matInst)
+      inst->defaultKey2 = inst->matInst->getStateHint();
+}
+
+static S32 RenderStateSortFunc(const void *p1, const void *p2)
+{
+   const TSRenderInst* ri1 = (const TSRenderInst*)p1;
+   const TSRenderInst* ri2 = (const TSRenderInst*)p2;
+   
+   S32 test1 = ri2->defaultKey - ri1->defaultKey;
+   
+   return ( test1 == 0 ) ? S32(ri1->defaultKey2) - S32(ri2->defaultKey2) : test1;
+}
+
+void TSRenderState::sortRenderInsts()
+{
+   dQsort(mRenderInsts.address(), mRenderInsts.size(), sizeof(TSRenderState*), RenderStateSortFunc);
+   dQsort(mTranslucentRenderInsts.address(), mTranslucentRenderInsts.size(), sizeof(TSRenderState*), RenderStateSortFunc);
+}
+
+void TSRenderInst::clear()
+{
+   dMemset(this, '\0', sizeof(TSRenderInst));
+}
+
+void TSRenderInst::render(TSRenderState *renderState)
+{
+   mesh->mRenderer->doRenderInst(mesh, this, renderState);
+}
+
+

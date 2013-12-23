@@ -24,7 +24,7 @@
 #define _COLLADA_APPNODE_H_
 
 #ifndef _TDICTIONARY_H_
-#include "core/tDictionary.h"
+#include "core/util/tDictionary.h"
 #endif
 #ifndef _APPNODE_H_
 #include "ts/loader/appNode.h"
@@ -50,7 +50,7 @@ protected:
    Vector<AnimatedFloatList>  nodeTransforms;   ///< Ordered vector of node transform elements (scale, translate etc)
    bool                       invertMeshes;     ///< True if this node's coordinate space is inverted (left handed)
 
-   Map<StringTableEntry, F32> mProps;           ///< Hash of float properties (converted to int or bool as needed)
+   Map<String, F32> mProps;           ///< Hash of float properties (converted to int or bool as needed)
 
    F32                        lastTransformTime;      ///< Time of the last transform lookup (getTransform)
    MatrixF                    lastTransform;          ///< Last transform lookup (getTransform)
@@ -82,7 +82,7 @@ public:
    // converted from floats as needed
    bool getFloat(const char* propName, F32& defaultVal)
    {
-      Map<StringTableEntry,F32>::Iterator itr = mProps.find(propName);
+      Map<String,F32>::Iterator itr = mProps.find(propName);
       if (itr != mProps.end())
          defaultVal = itr->value;
       return false;

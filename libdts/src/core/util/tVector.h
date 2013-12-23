@@ -159,6 +159,8 @@ class Vector
    void compact();
    void sort(compare_func f);
    void fill( const T& value );
+   
+   S32 indexOf(const T& value);
 
    /// Finds the first matching element and erases it.   
    /// @return Returns true if a match is found.
@@ -467,6 +469,17 @@ template< class T > inline void Vector< T >::fill( const T& value )
 {
    for( U32 i = 0; i < size(); ++ i )
       mArray[ i ] = value;
+}
+
+template< class T > inline S32 Vector< T >::indexOf( const T& value )
+{
+   for ( U32 i = 0; i < size(); i ++ )
+   {
+      if (mArray[i] == value)
+         return i;
+   }
+   
+   return -1;
 }
 
 template<class T> inline T& Vector<T>::first()
@@ -959,6 +972,14 @@ public:
 #ifndef _VECTORSPEC_H_
 #include "core/util/tVectorSpecializations.h"
 #endif
+
+template <class Iterator, class Value>
+Iterator find(Iterator first, Iterator last, Value value)
+{
+   while (first != last && *first != value)
+      ++first;
+   return first;
+}
 
 #endif //_TVECTOR_H_
 

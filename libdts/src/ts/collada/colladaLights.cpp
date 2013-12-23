@@ -26,8 +26,8 @@
 #include "ts/collada/colladaAppNode.h"
 #include "ts/collada/colladaShapeLoader.h"
 
-#include "T3D/pointLight.h"
-#include "T3D/spotLight.h"
+//#include "T3D/pointLight.h"
+//#include "T3D/spotLight.h"
 
 
 //-----------------------------------------------------------------------------
@@ -54,6 +54,9 @@ template<class T> static void resolveLightAttenuation(T* light, Point3F& attenua
       attenuationRatio.z = light->getQuadratic_attenuation()->getValue();
 }
 
+
+#if 0
+
 //-----------------------------------------------------------------------------
 // Recurse through the collada scene to add <light>s to the Torque scene
 static void processNodeLights(AppNode* appNode, const MatrixF& offset, SimGroup* group)
@@ -65,7 +68,7 @@ static void processNodeLights(AppNode* appNode, const MatrixF& offset, SimGroup*
       domInstance_light* instLight = node->getInstance_light_array()[iLight];
       domLight* p_domLight = daeSafeCast<domLight>(instLight->getUrl().getElement());
       if (!p_domLight) {
-         Con::warnf("Failed to find light for URL \"%s\"", instLight->getUrl().getOriginalURI());
+         Log::warnf("Failed to find light for URL \"%s\"", instLight->getUrl().getOriginalURI());
          continue;
       }
 
@@ -74,7 +77,7 @@ static void processNodeLights(AppNode* appNode, const MatrixF& offset, SimGroup*
 
       domLight::domTechnique_common* technique = p_domLight->getTechnique_common();
       if (!technique) {
-         Con::warnf("No <technique_common> for light \"%s\"", lightName.c_str());
+         Log::warnf("No <technique_common> for light \"%s\"", lightName.c_str());
          continue;
       }
 
@@ -113,19 +116,19 @@ static void processNodeLights(AppNode* appNode, const MatrixF& offset, SimGroup*
       else
          continue;
 
-      Con::printf("Adding <%s> light \"%s\" as a %s", lightType, lightName.c_str(), pLight->getClassName());
+      Log::printf("Adding <%s> light \"%s\" as a %s", lightType, lightName.c_str(), pLight->getClassName());
 
       MatrixF mat(offset);
       mat.mul(appNode->getNodeTransform(TSShapeLoader::DefaultTime));
 
-      pLight->setDataField(StringTable->insert("color"), 0,
+      pLight->setDataField("color", 0,
          avar("%f %f %f %f", color.red, color.green, color.blue, color.alpha));
-      pLight->setDataField(StringTable->insert("attenuationRatio"), 0,
+      pLight->setDataField("attenuationRatio", 0,
          avar("%f %f %f", attenuation.x, attenuation.y, attenuation.z));
       pLight->setTransform(mat);
 
       if (!pLight->registerObject(lightName)) {
-         Con::errorf(ConsoleLogEntry::General, "Failed to register light for \"%s\"", lightName.c_str());
+         Log::errorf(LogEntry::General, "Failed to register light for \"%s\"", lightName.c_str());
          delete pLight;
       }
 
@@ -137,7 +140,7 @@ static void processNodeLights(AppNode* appNode, const MatrixF& offset, SimGroup*
    for (S32 iChild = 0; iChild < appNode->getNumChildNodes(); iChild++)
       processNodeLights(appNode->getChildNode(iChild), offset, group);
 }
-
+#if 0
 // Load lights from a collada file and add to the scene.
 ConsoleFunction( loadColladaLights, bool, 2, 4,
    "(string filename, SimGroup parentGroup=MissionGroup, SimObject baseObject=-1)"
@@ -162,7 +165,7 @@ ConsoleFunction( loadColladaLights, bool, 2, 4,
    "@ingroup Editors\n"
    "@internal")
 {
-   Torque::Path path(argv[1]);
+   Torque::Path path((const char*)argv[1]);
 
    // Optional group to add the lights to. Create if it does not exist, and use
    // the MissionGroup if not specified.
@@ -172,7 +175,7 @@ ConsoleFunction( loadColladaLights, bool, 2, 4,
       if (!Sim::findObject(argv[2], group)) {
          // Create the group if it could not be found
          group = new SimGroup;
-         if (group->registerObject(argv[2])) {
+         if (group->registerObject((const char*)argv[2])) {
             if (missionGroup)
                missionGroup->addObject(group);
          }
@@ -234,3 +237,7 @@ ConsoleFunction( loadColladaLights, bool, 2, 4,
 
    return true;
 }
+
+#endif
+
+#endif

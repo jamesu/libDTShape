@@ -23,10 +23,10 @@
 // This file is Mac specific.
 #if defined( __APPLE__ )
 
-#include <vecLib/vecLib.h>
+#include <Accelerate/Accelerate.h>
 #include "math/mMathFn.h"
-#include "console/console.h"
 #include "platform/profiler.h"
+#include "core/log.h"
 
 #if defined( __VEC__ )
 
@@ -129,7 +129,7 @@ void mInstallLibrary_Vec()
 #else // defined(__VEC__)
 void mInstallLibrary_Vec()
 {
-   Con::warnf("Cannot use altivec math, this build does not support altivec.");
+   Log::warnf("Cannot use altivec math, this build does not support altivec.");
 }
 #endif// defined(__VEC__)
 
