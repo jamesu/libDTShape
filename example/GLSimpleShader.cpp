@@ -1,4 +1,83 @@
+/*
+Copyright (C) 2013 James S Urquhart
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include "GLSimpleShader.h"
+#include "core/log.h"
+
+const char sVertexProgram[] = "\n\
+#version 120\n\
+\n\
+attribute vec4 aPosition;\n\
+attribute vec4 aColor;\n\
+attribute vec2 aTexCoord0;\n\
+attribute vec3 aNormal;\n\
+\n\
+uniform mat4 worldMatrixProjection;\n\
+uniform mat4 worldMatrix;\n\
+uniform vec3 lightPos;\n\
+uniform vec3 lightColor;\n\
+\n\
+varying vec2 vTexCoord0;\n\
+varying vec4 vColor0;\n\
+\n\
+void main()\n\
+{\n\
+vec3 normal, lightDir;\n\
+vec4 diffuse;\n\
+float NdotL;\n\
+\n\
+normal = normalize(mat3(worldMatrix) * aNormal);\n\
+\n\
+lightDir = normalize(vec3(lightPos));\n\
+\n\
+NdotL = max(dot(normal, lightDir), 0.0);\n\
+\n\
+diffuse = vec4(lightColor, 1.0);\n\
+\n\
+gl_Position = worldMatrixProjection * aPosition;\n\
+vTexCoord0 = aTexCoord0;\n\
+vColor0 = NdotL * diffuse;\n\
+vColor0.a = 1.0;\n\
+}\n\
+";
+
+const char sFragmentProgram[] = "\n\
+#version 120\n\
+\n\
+varying vec2 vTexCoord0;\n\
+varying vec4 vColor0;\n\
+uniform sampler2D texture0;\n\
+\n\
+void main()\n\
+{\n\
+gl_FragColor = texture2D(texture0, vTexCoord0);\n\
+gl_FragColor.r = gl_FragColor.r * vColor0.r * vColor0.a;\n\
+gl_FragColor.g = gl_FragColor.g * vColor0.g * vColor0.a;\n\
+gl_FragColor.b = gl_FragColor.b * vColor0.b * vColor0.a;\n\
+}\n\
+";
 
 GLSimpleShader::GLSimpleShader() :
 mProjectionMatrix(1),
@@ -135,55 +214,3 @@ void GLSimpleShader::updateTransforms()
   glUniform3fv(mUniforms[kGLSimpleUniformLightPos], 1, mLightPos);
 }
 
-const char sVertexProgram[] = "\n\
-#version 120\n\
-\n\
-attribute vec4 aPosition;\n\
-attribute vec4 aColor;\n\
-attribute vec2 aTexCoord0;\n\
-attribute vec3 aNormal;\n\
-\n\
-uniform mat4 worldMatrixProjection;\n\
-uniform mat4 worldMatrix;\n\
-uniform vec3 lightPos;\n\
-uniform vec3 lightColor;\n\
-\n\
-varying vec2 vTexCoord0;\n\
-varying vec4 vColor0;\n\
-\n\
-void main()\n\
-{\n\
-vec3 normal, lightDir;\n\
-vec4 diffuse;\n\
-float NdotL;\n\
-\n\
-normal = normalize(mat3(worldMatrix) * aNormal);\n\
-\n\
-lightDir = normalize(vec3(lightPos));\n\
-\n\
-NdotL = max(dot(normal, lightDir), 0.0);\n\
-\n\
-diffuse = vec4(lightColor, 1.0);\n\
-\n\
-gl_Position = worldMatrixProjection * aPosition;\n\
-vTexCoord0 = aTexCoord0;\n\
-vColor0 = NdotL * diffuse;\n\
-vColor0.a = 1.0;\n\
-}\n\
-";
-
-const char sFragmentProgram[] = "\n\
-#version 120\n\
-\n\
-varying vec2 vTexCoord0;\n\
-varying vec4 vColor0;\n\
-uniform sampler2D texture0;\n\
-\n\
-void main()\n\
-{\n\
-   gl_FragColor = texture2D(texture0, vTexCoord0);\n\
-   gl_FragColor.r = gl_FragColor.r * vColor0.r * vColor0.a;\n\
-   gl_FragColor.g = gl_FragColor.g * vColor0.g * vColor0.a;\n\
-   gl_FragColor.b = gl_FragColor.b * vColor0.b * vColor0.a;\n\
-}\n\
-";
