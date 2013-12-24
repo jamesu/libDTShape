@@ -45,7 +45,6 @@
 #include "ts/tsShapeInstance.h"
 #include "ts/tsMaterialManager.h"
 //#include "console/persistenceManager.h"
-#include "ts/tsShapeConstruct.h"
 //#include "core/util/zip/zipVolume.h"
 //#include "gfx/bitmap/gBitmap.h"
 
@@ -662,7 +661,7 @@ TSShape* loadColladaShape(const Torque::Path &path)
             delete shape;
       }
 
-      Log::warnf("Failed to load cached COLLADA shape from %s", cachedPath.getFullPath());
+      Log::warnf("Failed to load cached COLLADA shape from %s", cachedPath.getFullPath().c_str());
    }
 
    if (!Platform::isFile(path.getFullFileName()))

@@ -17,13 +17,13 @@ Swizzle<U8, 4> *TSVertexColor::mDeviceSwizzle = NULL;
 
 namespace GFXSemantic
 {
-   const String POSITION = String( "POSITION" ).intern();
-   const String NORMAL = String( "NORMAL" ).intern();
-   const String BINORMAL = String( "BINORMAL" ).intern();
-   const String TANGENT = String( "TANGENT" ).intern();
-   const String TANGENTW = String( "TANGENTW" ).intern();
-   const String COLOR = String( "COLOR" ).intern();
-   const String TEXCOORD = String( "TEXCOORD" ).intern();
+   const String POSITION = String( "POSITION" );
+   const String NORMAL = String( "NORMAL" );
+   const String BINORMAL = String( "BINORMAL" );
+   const String TANGENT = String( "TANGENT" );
+   const String TANGENTW = String( "TANGENTW" );
+   const String COLOR = String( "COLOR" );
+   const String TEXCOORD = String( "TEXCOORD" );
 }
 
 
@@ -72,7 +72,6 @@ void GFXVertexFormat::copy( const GFXVertexFormat &format )
    mHasColor = format.mHasColor;
    mTexCoordCount = format.mTexCoordCount;
    mSizeInBytes = format.mSizeInBytes;
-   mDescription = format.mDescription;
    mElements = format.mElements;
    mDecl = format.mDecl;
 }
@@ -102,17 +101,9 @@ void GFXVertexFormat::addElement( const String& semantic, GFXDeclType type, U32 
    mDirty = true;
    mElements.increment();
    mElements.last().mStreamIndex = stream;
-   mElements.last().mSemantic = semantic.intern();
+   mElements.last().mSemantic = semantic;
    mElements.last().mSemanticIndex = index;
    mElements.last().mType = type;
-}
-
-const String& GFXVertexFormat::getDescription() const
-{
-   if ( mDirty )
-      const_cast<GFXVertexFormat*>(this)->_updateDirty();
-   
-   return mDescription;
 }
 
 GFXVertexDecl* GFXVertexFormat::getDecl() const
@@ -174,16 +165,9 @@ void GFXVertexFormat::_updateDirty()
    mHasTangent = false;
    mSizeInBytes = 0;
    
-   String desc;
-   
    for ( U32 i=0; i < mElements.size(); i++ )
    {
       const GFXVertexElement &element = mElements[i];
-      
-      desc += String::ToString( "%d,%s,%d,%d\n",   element.mStreamIndex,
-                               element.mSemantic.c_str(),
-                               element.mSemanticIndex,
-                               element.mType );
       
       if ( element.isSemantic( GFXSemantic::NORMAL ) )
          mHasNormal = true;
@@ -196,9 +180,6 @@ void GFXVertexFormat::_updateDirty()
       
       mSizeInBytes += element.getSizeInBytes();
    }
-   
-   // Intern the string for fast compares later.
-   mDescription = desc.intern();
    
    mDirty = false;
 }

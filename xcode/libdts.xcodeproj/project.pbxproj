@@ -464,6 +464,8 @@
 		3264AC7D186678CF009E6458 /* ucp.h in Headers */ = {isa = PBXBuildFile; fileRef = 3264AC4E186678CF009E6458 /* ucp.h */; };
 		3264AC7E186678CF009E6458 /* ucpinternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 3264AC4F186678CF009E6458 /* ucpinternal.h */; };
 		3264AC7F186678CF009E6458 /* ucptable.h in Headers */ = {isa = PBXBuildFile; fileRef = 3264AC50186678CF009E6458 /* ucptable.h */; };
+		32A8AA7D186907E7003D9168 /* str.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32A8AA7B186907E7003D9168 /* str.cpp */; };
+		32A8AA7E186907E7003D9168 /* str.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A8AA7C186907E7003D9168 /* str.h */; };
 		32B08CF518670E5E00CF7CBB /* libdtshape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32B08CF318670E5E00CF7CBB /* libdtshape.cpp */; };
 		32B08CF618670E5E00CF7CBB /* libdtshape.h in Headers */ = {isa = PBXBuildFile; fileRef = 32B08CF418670E5E00CF7CBB /* libdtshape.h */; };
 		32EFB623184A547800D93F75 /* abstractPolyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB4F4184A547800D93F75 /* abstractPolyList.cpp */; };
@@ -1192,6 +1194,8 @@
 		3264AC4E186678CF009E6458 /* ucp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ucp.h; sourceTree = "<group>"; };
 		3264AC4F186678CF009E6458 /* ucpinternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ucpinternal.h; sourceTree = "<group>"; };
 		3264AC50186678CF009E6458 /* ucptable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ucptable.h; sourceTree = "<group>"; };
+		32A8AA7B186907E7003D9168 /* str.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = str.cpp; sourceTree = "<group>"; };
+		32A8AA7C186907E7003D9168 /* str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = str.h; sourceTree = "<group>"; };
 		32B08CF318670E5E00CF7CBB /* libdtshape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libdtshape.cpp; sourceTree = "<group>"; };
 		32B08CF418670E5E00CF7CBB /* libdtshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libdtshape.h; sourceTree = "<group>"; };
 		32EFB4F4184A547800D93F75 /* abstractPolyList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abstractPolyList.cpp; sourceTree = "<group>"; };
@@ -2235,6 +2239,8 @@
 		32EFB538184A547800D93F75 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				32A8AA7B186907E7003D9168 /* str.cpp */,
+				32A8AA7C186907E7003D9168 /* str.h */,
 				32EFB539184A547800D93F75 /* autoPtr.h */,
 				32EFB53A184A547800D93F75 /* byteswap.h */,
 				32EFB53B184A547800D93F75 /* commonSwizzles.cpp */,
@@ -2610,6 +2616,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32A8AA7E186907E7003D9168 /* str.h in Headers */,
 				3264AB151866783E009E6458 /* domSphere.h in Headers */,
 				3264AB391866783E009E6458 /* daeMetaSequence.h in Headers */,
 				3264AAFC1866783E009E6458 /* domMatrix.h in Headers */,
@@ -3160,6 +3167,7 @@
 				32EFB77E184A54A000D93F75 /* NvMeshIslandGeneration.cpp in Sources */,
 				3264ABE21866783F009E6458 /* domProfile_GLSL.cpp in Sources */,
 				32EFB716184A547800D93F75 /* tsDummyInterface.cpp in Sources */,
+				32A8AA7D186907E7003D9168 /* str.cpp in Sources */,
 				32EFB6B9184A547800D93F75 /* mQuat.cpp in Sources */,
 				32EFB701184A547800D93F75 /* colladaImport.cpp in Sources */,
 				32EFB655184A547800D93F75 /* memStream.cpp in Sources */,

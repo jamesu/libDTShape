@@ -26,6 +26,9 @@
 #ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
+#ifndef _TWISTFORK_STRING_H_
+#include "core/util/str.h"
+#endif
 #ifndef _ENDIAN_H_
 #include "core/util/endian.h"
 #endif

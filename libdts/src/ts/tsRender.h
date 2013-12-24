@@ -224,9 +224,6 @@ public:
    /// Used to append a vertex format to the end of this one.
    void append( const GFXVertexFormat &format, U32 streamIndex = -1 );
    
-   /// Returns a unique description string for this vertex format.
-   const String& getDescription() const;
-   
    /// Clears all the vertex elements.
    void clear();
    
@@ -297,9 +294,6 @@ protected:
    /// The size in bytes of the vertex format as described.
    U32 mSizeInBytes;
    
-   /// An interned string which uniquely identifies the format.
-   String mDescription;
-   
    /// The elements of the vertex format.
    Vector<GFXVertexElement> mElements;
    
@@ -313,7 +307,9 @@ inline bool GFXVertexFormat::isEqual( const GFXVertexFormat &format ) const
    // Comparing the strings works because we know both
    // these are interned strings.  This saves one comparison
    // over the string equality operator.
-   return getDescription().c_str() == format.getDescription().c_str(); 
+   
+   return mElements.size() == format.mElements.size() &&
+   dMemcmp(mElements.begin(), format.mElements.begin(), format.mElements.size() * sizeof(GFXVertexElement)) == 0;
 }
 
 #endif // _TSRENDER_H_

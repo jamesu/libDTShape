@@ -34,5 +34,4 @@
 // Allow DTS files to be generated from collada files
 #define TWISTFORK_INCLUDE_COLLADA
 
-
 #endif

@@ -34,6 +34,9 @@
 #ifndef _PLATFORMASSERT_H_
 #include "platform/platformAssert.h"
 #endif
+#ifndef _TWISTFORK_STRING_H_
+#include "core/util/str.h"
+#endif
 #ifndef _TWISTFORK_SAFEDELETE_H_
 #include "core/util/safeDelete.h"
 #endif
