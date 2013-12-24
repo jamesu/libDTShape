@@ -304,8 +304,8 @@ void MaterialList::mapMaterial( U32 i )
 
    // IF we didn't find it, then look for a PolyStatic generated Material
    //  [a little cheesy, but we need to allow for user override of generated Materials]
-   if ( materialName.isEmpty() )
-      materialName = MATMGR->getMapEntry( String::ToString( "polyMat_%s", matName.c_str() ) );
+   //if ( materialName.isEmpty() )
+   //   materialName = MATMGR->getMapEntry( String::ToString( "polyMat_%s", (const char*)matName ) );
 
    if ( materialName.isNotEmpty() )
    {

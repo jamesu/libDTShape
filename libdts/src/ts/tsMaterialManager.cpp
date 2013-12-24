@@ -48,7 +48,7 @@ String TSMaterialManager::getMapEntry(const String & textureName) const
 {
    MaterialMap::ConstIterator iter = mMaterialMap.find(String::ToLower(textureName));
    if ( iter == mMaterialMap.end() )
-      return String();
+      return String("");
    return iter->value;
 }
 

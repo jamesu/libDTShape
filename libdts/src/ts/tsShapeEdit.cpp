@@ -1768,7 +1768,9 @@ bool TSShape::addSequence(const DTShape::Path& path, const String& fromSeq,
       seq.dirtyFlags |= TSShapeInstance::MatFrameDirty;
 
    // Store information about how this sequence was created
-   seq.sourceData.from = String::ToString("%s\t%s", path.getFullPath().c_str(), oldName.c_str());
+   char buf[1024];
+   dSprintf(buf, sizeof(buf), "%s\t%s", path.getFullPath().c_str(), oldName.c_str());
+   seq.sourceData.from = buf;
    seq.sourceData.total = srcSeq->numKeyframes;
    seq.sourceData.start = startFrame;
    seq.sourceData.end = endFrame;

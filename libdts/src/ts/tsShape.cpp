@@ -1216,7 +1216,7 @@ void TSShape::assembleShape()
          }
       }
    }
-   meshes.set(ptr32,numMeshes);
+   meshes.set(ptrmesh,numMeshes);
 
    tsalloc.checkGuard();
 

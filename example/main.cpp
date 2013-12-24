@@ -64,11 +64,11 @@ enum TSAppSequences {
 };
 
 const char* sTSAppSequenceNames[] = {
-   "root",
-   "forward",
-   "back",
-   "side",
-   "jump",
+   "Root",
+   "Run",
+   "Crouch_Backward",
+   "Side",
+   "Jump",
    "invalid"
 };
 
@@ -220,7 +220,8 @@ void AppState::onKeyChanged(int key, int state)
                sCurrentSequenceIdx = kNumTSAppSequences-1;
             else
                sCurrentSequenceIdx--;
-            SwitchToSequence(sSequences[sCurrentSequenceIdx], 0.5f, true);
+            if (sSequences[sCurrentSequenceIdx] != -1)
+               SwitchToSequence(sSequences[sCurrentSequenceIdx], 0.5f, true);
          }
          break;
       case SDLK_l:
@@ -231,7 +232,8 @@ void AppState::onKeyChanged(int key, int state)
                sCurrentSequenceIdx = 0;
             else
                sCurrentSequenceIdx++;
-            SwitchToSequence(sSequences[sCurrentSequenceIdx], 0.5f, true);
+            if (sSequences[sCurrentSequenceIdx] != -1)
+               SwitchToSequence(sSequences[sCurrentSequenceIdx], 0.5f, true);
          }
          break;
    }
@@ -305,10 +307,14 @@ bool AppState::LoadShape()
    // Load all dsq files
    for (int i=0; i<kNumTSAppSequences; i++)
    {
-      FileStream dsqFile;
+      //FileStream dsqFile;
       char pathName[64];
-      dSprintf(pathName, 64, "player_%s.dsq", sTSAppSequenceNames[i]);
-      if (dsqFile.open(GetAssetPath(pathName), FileStream::Read) && sShape->importSequences(&dsqFile, ""))
+      dSprintf(pathName, 64, "player_%s.dts", sTSAppSequenceNames[i]);
+      /*if (dsqFile.open(GetAssetPath(pathName), FileStream::Read) && sShape->importSequences(&dsqFile, ""))
+      {
+         Log::printf("Sequence file %s loaded", pathName);
+      }*/
+      if (sShape->addSequence(GetAssetPath(pathName), "", sTSAppSequenceNames[i], 0, -1, false, false))
       {
          Log::printf("Sequence file %s loaded", pathName);
       }
@@ -318,11 +324,18 @@ bool AppState::LoadShape()
    for (int i=0; i<kNumTSAppSequences; i++)
    {
       sSequences[i] = sShape->findSequence(sTSAppSequenceNames[i]);
+      if (sSequences[i] != -1)
+      {
+         sShape->sequences[sSequences[i]].flags |= TSShape::Cyclic;
+      }
    }
    
    sThread = sShapeInstance->addThread();
-   sShapeInstance->setSequence(sThread, sSequences[kTSRootAnim], 0);
-   sShapeInstance->setTimeScale(sThread, 1.0f);
+   if (sSequences[kTSRootAnim] != -1)
+   {
+      sShapeInstance->setSequence(sThread, sSequences[kTSRootAnim], 0);
+      sShapeInstance->setTimeScale(sThread, 1.0f);
+   }
    
    // Load DTS
    sShape->initRender();
