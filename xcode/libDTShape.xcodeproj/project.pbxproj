@@ -720,7 +720,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		320CB6A01666DFF70032E196 /* liblibdts.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibdts.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		320CB6A01666DFF70032E196 /* libDTShape.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDTShape.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3264A8BF1866715B009E6458 /* fileio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fileio.cpp; sourceTree = "<group>"; };
 		3264A8C1186671EB009E6458 /* fileio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileio.h; sourceTree = "<group>"; };
 		3264A8C41866783D009E6458 /* changes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changes.txt; sourceTree = "<group>"; };
@@ -1521,7 +1521,7 @@
 		320CB6A11666DFF70032E196 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				320CB6A01666DFF70032E196 /* liblibdts.a */,
+				320CB6A01666DFF70032E196 /* libDTShape.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2932,9 +2932,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		320CB69F1666DFF70032E196 /* libdts */ = {
+		320CB69F1666DFF70032E196 /* libDTShape */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 320CB6A41666DFF70032E196 /* Build configuration list for PBXNativeTarget "libdts" */;
+			buildConfigurationList = 320CB6A41666DFF70032E196 /* Build configuration list for PBXNativeTarget "libDTShape" */;
 			buildPhases = (
 				320CB69C1666DFF70032E196 /* Sources */,
 				320CB69D1666DFF70032E196 /* Frameworks */,
@@ -2944,9 +2944,9 @@
 			);
 			dependencies = (
 			);
-			name = libdts;
-			productName = libdts;
-			productReference = 320CB6A01666DFF70032E196 /* liblibdts.a */;
+			name = libDTShape;
+			productName = libDTShape;
+			productReference = 320CB6A01666DFF70032E196 /* libDTShape.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -2958,7 +2958,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "James Urquhart";
 			};
-			buildConfigurationList = 320CB69A1666DFF70032E196 /* Build configuration list for PBXProject "libdts" */;
+			buildConfigurationList = 320CB69A1666DFF70032E196 /* Build configuration list for PBXProject "libDTShape" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -2970,7 +2970,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				320CB69F1666DFF70032E196 /* libdts */,
+				320CB69F1666DFF70032E196 /* libDTShape */,
 			);
 		};
 /* End PBXProject section */
