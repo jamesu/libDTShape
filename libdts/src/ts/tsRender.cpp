@@ -15,18 +15,6 @@ Swizzle<U8, 4> *TSVertexColor::mDeviceSwizzle = NULL;
 #include "core/util/hashFunction.h"
 
 
-namespace GFXSemantic
-{
-   const String POSITION = String( "POSITION" );
-   const String NORMAL = String( "NORMAL" );
-   const String BINORMAL = String( "BINORMAL" );
-   const String TANGENT = String( "TANGENT" );
-   const String TANGENTW = String( "TANGENTW" );
-   const String COLOR = String( "COLOR" );
-   const String TEXCOORD = String( "TEXCOORD" );
-}
-
-
 U32 GFXVertexElement::getSizeInBytes() const
 {
    switch ( mType )
@@ -96,7 +84,7 @@ void GFXVertexFormat::clear()
    mDecl = NULL;
 }
 
-void GFXVertexFormat::addElement( const String& semantic, GFXDeclType type, U32 index, U32 stream )
+void GFXVertexFormat::addElement( const GFXSemantic::GFXSemantic semantic, GFXDeclType type, U32 index, U32 stream )
 {
    mDirty = true;
    mElements.increment();

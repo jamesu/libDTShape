@@ -103,13 +103,16 @@ enum GFXPrimitiveType
 /// @see GFXVertexFormat
 namespace GFXSemantic
 {
-   extern const String POSITION;
-   extern const String NORMAL;
-   extern const String BINORMAL;
-   extern const String TANGENT;
-   extern const String TANGENTW;
-   extern const String COLOR;
-   extern const String TEXCOORD;
+   enum GFXSemantic
+   {
+      POSITION = 0,
+      NORMAL = 1,
+      BINORMAL = 2,
+      TANGENT = 3,
+      TANGENTW = 4,
+      COLOR = 5,
+      TEXCOORD = 6
+   };
 }
 
 
@@ -144,7 +147,7 @@ protected:
    
    /// A valid Torque shader symantic.
    /// @see GFXSemantic
-   String mSemantic;
+   GFXSemantic::GFXSemantic mSemantic;
    
    /// The semantic index is used where there are
    /// multiple semantics of the same type.  For
@@ -179,7 +182,7 @@ public:
    /// Returns the semantic name which is usually a
    /// valid Torque semantic.
    /// @see GFXSemantic
-   const String& getSemantic() const { return mSemantic; }
+   const GFXSemantic::GFXSemantic& getSemantic() const { return mSemantic; }
    
    /// Returns the semantic index which is used where there
    /// are multiple semantics of the same type.  For instance
@@ -190,7 +193,7 @@ public:
    GFXDeclType getType() const { return mType; }
    
    /// Returns true of the semantic matches.
-   bool isSemantic( const String& str ) const { return ( mSemantic == str ); }
+   bool isSemantic( const GFXSemantic::GFXSemantic sm ) const { return ( mSemantic == sm ); }
    
    /// Returns the size in bytes of the semantic type.
    U32 getSizeInBytes() const;
@@ -233,7 +236,7 @@ public:
    /// @param type The element type.
    /// @param index The semantic index which is typically only used for texcoords.
    ///
-   void addElement( const String& semantic, GFXDeclType type, U32 index = 0, U32 stream = 0 );
+   void addElement( const GFXSemantic::GFXSemantic semantic, GFXDeclType type, U32 index = 0, U32 stream = 0 );
    
    /// Returns true if there is a NORMAL semantic in this vertex format.
    bool hasNormal() const;
