@@ -20,8 +20,8 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TWISTFORK_PLATFORM_PLATFORMCPUCOUNT_H_
-#define _TWISTFORK_PLATFORM_PLATFORMCPUCOUNT_H_
+#ifndef _LIBDTSHAPE_PLATFORM_PLATFORMCPUCOUNT_H_
+#define _LIBDTSHAPE_PLATFORM_PLATFORMCPUCOUNT_H_
 
 #include "platform/platform.h"
 
@@ -81,5 +81,5 @@ namespace CPUInfo
 
 END_NS
 
-#endif // _TWISTFORK_PLATFORM_PLATFORMCOUNT_H_
+#endif // _LIBDTSHAPE_PLATFORM_PLATFORMCOUNT_H_
 

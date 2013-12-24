@@ -69,7 +69,7 @@ public:
 };
 
 
-#ifdef TWISTFORK_ENABLE_ASSERTS
+#ifdef LIBDTSHAPE_ENABLE_ASSERTS
    /*!
       Assert that the statement x is true, and continue processing.
 

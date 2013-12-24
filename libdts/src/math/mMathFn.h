@@ -113,7 +113,7 @@ inline void m_matF_x_point3F(const F32 *m, const F32 *p, F32 *presult)
 {
    AssertFatal(p != presult, "Error, aliasing matrix mul pointers not allowed here!");
    
-#ifdef TWISTFORK_COMPILER_GCC
+#ifdef LIBDTSHAPE_COMPILER_GCC
    const F32   p0 = p[0], p1 = p[1], p2 = p[2];
    const F32   m0 = m[0], m1 = m[1], m2 = m[2];
    const F32   m3 = m[3], m4 = m[4], m5 = m[5];
@@ -136,7 +136,7 @@ inline void m_matF_x_vectorF(const F32 *m, const F32 *v, F32 *vresult)
 {
    AssertFatal(v != vresult, "Error, aliasing matrix mul pointers not allowed here!");
 
-#ifdef TWISTFORK_COMPILER_GCC
+#ifdef LIBDTSHAPE_COMPILER_GCC
    const F32   v0 = v[0], v1 = v[1], v2 = v[2];
    const F32   m0 = m[0], m1 = m[1], m2 = m[2];
    const F32   m4 = m[4], m5 = m[5], m6 = m[6];

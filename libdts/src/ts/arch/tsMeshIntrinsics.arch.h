@@ -29,7 +29,7 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-#if defined(TWISTFORK_CPU_X86)
+#if defined(LIBDTSHAPE_CPU_X86)
 # // x86 CPU family implementations
 extern void zero_vert_normal_bulk_SSE(const dsize_t count, U8 * __restrict const outPtr, const dsize_t outStride);
 extern void m_matF_x_BatchedVertWeightList_SSE(const MatrixF &mat, const dsize_t count, const TSSkinMesh::BatchData::BatchedVertWeight * __restrict batch, U8 * const __restrict outPtr, const dsize_t outStride);
@@ -37,9 +37,9 @@ extern void m_matF_x_BatchedVertWeightList_SSE(const MatrixF &mat, const dsize_t
 extern void m_matF_x_BatchedVertWeightList_SSE4(const MatrixF &mat, const dsize_t count, const TSSkinMesh::BatchData::BatchedVertWeight * __restrict batch, U8 * const __restrict outPtr, const dsize_t outStride);
 #endif
 #
-#elif defined(TWISTFORK_CPU_PPC)
+#elif defined(LIBDTSHAPE_CPU_PPC)
 # // PPC CPU family implementations
-#  if defined(TWISTFORK_OS_XENON)
+#  if defined(LIBDTSHAPE_OS_XENON)
 extern void zero_vert_normal_bulk_X360(const dsize_t count, U8 * __restrict const outPtr, const dsize_t outStride);
 extern void m_matF_x_BatchedVertWeightList_X360(const MatrixF &mat, const dsize_t count, const TSSkinMesh::BatchData::BatchedVertWeight * __restrict batch, U8 * const __restrict outPtr, const dsize_t outStride);
 #  else

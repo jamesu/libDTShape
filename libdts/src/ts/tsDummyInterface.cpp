@@ -23,7 +23,7 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-#ifdef TWISTFORK_DUMMY_RENDER
+#ifdef LIBDTSHAPE_DUMMY_RENDER
 
 class TSDummyMaterial;
 

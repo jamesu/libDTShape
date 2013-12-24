@@ -20,8 +20,8 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TWISTFORK_CORE_UTIL_SAFECAST_H_
-#define _TWISTFORK_CORE_UTIL_SAFECAST_H_
+#ifndef _LIBDTSHAPE_CORE_UTIL_SAFECAST_H_
+#define _LIBDTSHAPE_CORE_UTIL_SAFECAST_H_
 
 #include "platform/platform.h"
 
@@ -65,4 +65,4 @@ inline T* safeCastISV( I* inPtr )
 
 END_NS
 
-#endif // _TWISTFORK_CORE_UTIL_SAFECAST_H_
+#endif // _LIBDTSHAPE_CORE_UTIL_SAFECAST_H_

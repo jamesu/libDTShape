@@ -30,7 +30,7 @@
 
 BEGIN_NS(DTShape)
 
-#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
 // This standard function is not defined when compiling with VC7...
 #define vsnprintf	_vsnprintf
 #endif
@@ -332,7 +332,7 @@ char* dStrcpyl(char *dst, dsize_t dstSize, ...)
 
 int dStrcmp( const UTF16 *str1, const UTF16 *str2)
 {
-#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
    return wcscmp( reinterpret_cast<const wchar_t *>( str1 ), reinterpret_cast<const wchar_t *>( str2 ) );
 #else
    int ret;
@@ -349,7 +349,7 @@ int dStrcmp( const UTF16 *str1, const UTF16 *str2)
 
 char* dStrupr(char *str)
 {
-#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
    return _strupr(str);
 #else
    if (str == NULL)
@@ -367,7 +367,7 @@ char* dStrupr(char *str)
 
 char* dStrlwr(char *str)
 {
-#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
    return _strlwr(str);
 #else
    if (str == NULL)
@@ -423,7 +423,7 @@ S32 dVsprintf(char *buffer, U32 bufferSize, const char *format, va_list arglist)
 
 S32 dSscanf(const char *buffer, const char *format, ...)
 {
-#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
    va_list args;
    va_start(args, format);
 

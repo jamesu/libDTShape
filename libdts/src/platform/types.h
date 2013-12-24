@@ -21,11 +21,11 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TWISTFORK_TYPES_H_
-#define _TWISTFORK_TYPES_H_
+#ifndef _LIBDTSHAPE_TYPES_H_
+#define _LIBDTSHAPE_TYPES_H_
 
-#ifndef _TWISTFORK_CONFIG_H_
-#include "twistforkConfig.h"
+#ifndef _LIBDTSHAPE_CONFIG_H_
+#include "libDTShapeConfig.h"
 #endif
 
 //------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ typedef double             F64;     ///< Compiler independent 64-bit float
 
 struct EmptyType {};             ///< "Null" type used by templates
 
-#define TWISTFORK_UNUSED(var) (void)var
+#define LIBDTSHAPE_UNUSED(var) (void)var
 
 //------------------------------------------------------------------------------
 //------------------------------------- String Types
@@ -108,7 +108,7 @@ static const F32 F32_MAX = F32(3.402823466e+38F);                 ///< Constant 
 #endif
 
 /// Integral type matching the host's memory address width.
-#ifdef TWISTFORK_64
+#ifdef LIBDTSHAPE_64
    typedef U64 MEM_ADDRESS;
 #else
    typedef U32 MEM_ADDRESS;
@@ -118,7 +118,7 @@ static const F32 F32_MAX = F32(3.402823466e+38F);                 ///< Constant 
 // --------------------------------------------------------
 // size, time, null...
 
-#ifdef TWISTFORK_OS_XENON
+#ifdef LIBDTSHAPE_OS_XENON
 
 ///< Calling convention
 #ifdef FN_CDECL
@@ -144,7 +144,7 @@ struct FileTime
 
 #else
 
-#ifdef TWISTFORK_OS_WIN32
+#ifdef LIBDTSHAPE_OS_WIN32
 
 #define FN_CDECL __cdecl            ///< Calling convention
 
@@ -171,7 +171,7 @@ struct FileTime
 #endif
 
 
-#ifdef TWISTFORK_OS_DARWIN
+#ifdef LIBDTSHAPE_OS_DARWIN
 
 
 ///< Calling convention
@@ -200,7 +200,7 @@ typedef U64 FileTime;
 
 #else
 
-#ifdef TWISTFORK_OS_POSIX
+#ifdef LIBDTSHAPE_OS_POSIX
 
 #define FN_CDECL     ///< Calling convention
 
@@ -400,10 +400,10 @@ inline double getMax(double a, double b)
 
 #define BIT(x) (1 << (x))                       ///< Returns value with bit x set (2^x)
 
-#if defined(TWISTFORK_OS_WIN32)
+#if defined(LIBDTSHAPE_OS_WIN32)
 #define STDCALL __stdcall
 #else
 #define STDCALL
 #endif
 
-#endif //_TWISTFORK_TYPES_H_
+#endif //_LIBDTSHAPE_TYPES_H_

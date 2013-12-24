@@ -21,7 +21,7 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#include "twistforkConfig.h"
+#include "libDTShapeConfig.h"
 #include "platform/platform.h"
 #include "platform/fileio.h"
 #include "core/strings/unicode.h"

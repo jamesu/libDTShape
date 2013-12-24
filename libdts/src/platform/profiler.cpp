@@ -22,11 +22,11 @@
 
 #include "platform/platform.h"
 
-#if defined(TWISTFORK_OS_WIN32)
+#if defined(LIBDTSHAPE_OS_WIN32)
 #include<Windows.h> // for SetThreadAffinityMask
 #endif
 
-#if defined(TWISTFORK_OS_MAC)
+#if defined(LIBDTSHAPE_OS_MAC)
 #include <CoreServices/CoreServices.h> // For high resolution timer
 #endif
 
@@ -45,30 +45,30 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-#ifdef TWISTFORK_ENABLE_PROFILER
+#ifdef LIBDTSHAPE_ENABLE_PROFILER
 ProfilerRootData *ProfilerRootData::sRootList = NULL;
 Profiler *gProfiler = NULL;
 
 // Uncomment the following line to enable a debugging aid for mismatched profiler blocks.
-//#define TWISTFORK_PROFILER_DEBUG
+//#define LIBDTSHAPE_PROFILER_DEBUG
 
 // Machinery to record the stack of node names, as a debugging aid to find
 // mismatched PROFILE_START and PROFILE_END blocks. We profile from the 
 // beginning to catch profile block errors that occur when torque is starting up.
-#ifdef TWISTFORK_PROFILER_DEBUG
+#ifdef LIBDTSHAPE_PROFILER_DEBUG
 Vector<const char*> gProfilerNodeStack;
-#define TWISTFORK_PROFILE_AT_ENGINE_START true
+#define LIBDTSHAPE_PROFILE_AT_ENGINE_START true
 #define PROFILER_DEBUG_PUSH_NODE( nodename ) \
    gProfilerNodeStack.push_back( nodename );
 #define PROFILER_DEBUG_POP_NODE() \
    gProfilerNodeStack.pop_back();
 #else
-#define TWISTFORK_PROFILE_AT_ENGINE_START false
+#define LIBDTSHAPE_PROFILE_AT_ENGINE_START false
 #define PROFILER_DEBUG_PUSH_NODE( nodename ) ;
 #define PROFILER_DEBUG_POP_NODE() ;
 #endif
 
-#if defined(TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM)
+#if defined(LIBDTSHAPE_SUPPORTS_VC_INLINE_X86_ASM)
 // platform specific get hires times...
 void startHighResolutionTimer(U32 time[2])
 {
@@ -113,7 +113,7 @@ U32 endHighResolutionTimer(U32 time[2])
    return ticks;
 }
 
-#elif defined(TWISTFORK_SUPPORTS_GCC_INLINE_X86_ASM)
+#elif defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
 
 // platform specific get hires times...
 void startHighResolutionTimer(U32 time[2])
@@ -136,7 +136,7 @@ U32 endHighResolutionTimer(U32 time[2])
    return ticks;
 }
 
-#elif defined(TWISTFORK_OS_MAC)
+#elif defined(LIBDTSHAPE_OS_MAC)
 
 
 #import <mach/mach_time.h>
@@ -181,7 +181,7 @@ Profiler::Profiler()
    mCurrentProfilerData->mInvokeCount = 0;
    mCurrentProfilerData->mTotalTime = 0;
    mCurrentProfilerData->mSubTime = 0;
-#ifdef TWISTFORK_ENABLE_PROFILE_PATH   
+#ifdef LIBDTSHAPE_ENABLE_PROFILE_PATH   
    mCurrentProfilerData->mPath = "";
 #endif
    mRootProfilerData = mCurrentProfilerData;
@@ -191,8 +191,8 @@ Profiler::Profiler()
 
    mProfileList = NULL;
 
-   mEnabled = TWISTFORK_PROFILE_AT_ENGINE_START;   
-   mNextEnable = TWISTFORK_PROFILE_AT_ENGINE_START;
+   mEnabled = LIBDTSHAPE_PROFILE_AT_ENGINE_START;   
+   mNextEnable = LIBDTSHAPE_PROFILE_AT_ENGINE_START;
    mStackDepth = 0;
    gProfiler = this;
    mDumpToConsole   = false;
@@ -277,10 +277,10 @@ void Profiler::validate()
    }
 }
 
-#ifdef TWISTFORK_ENABLE_PROFILE_PATH
+#ifdef LIBDTSHAPE_ENABLE_PROFILE_PATH
 String Profiler::getProfilePath()
 {
-#ifdef TWISTFORK_MULTITHREAD
+#ifdef LIBDTSHAPE_MULTITHREAD
    // Ignore non-main-thread profiler activity.
    if( !ThreadManager::isMainThread() )
       return "[non-main thread]";
@@ -290,7 +290,7 @@ String Profiler::getProfilePath()
 }
 #endif
 
-#ifdef TWISTFORK_ENABLE_PROFILE_PATH
+#ifdef LIBDTSHAPE_ENABLE_PROFILE_PATH
 String Profiler::constructProfilePath(ProfilerData * pd)
 {
    if (pd->mParent)
@@ -322,7 +322,7 @@ String Profiler::constructProfilePath(ProfilerData * pd)
 #endif
 void Profiler::hashPush(ProfilerRootData *root)
 {
-#ifdef TWISTFORK_MULTITHREAD
+#ifdef LIBDTSHAPE_MULTITHREAD
    // Ignore non-main-thread profiler activity.
    if( !ThreadManager::isMainThread() )
       return;
@@ -383,7 +383,7 @@ void Profiler::hashPush(ProfilerRootData *root)
          nextProfiler->mTotalTime = 0;
          nextProfiler->mSubTime = 0;
          nextProfiler->mSubDepth = 0;
-#ifdef TWISTFORK_ENABLE_PROFILE_PATH
+#ifdef LIBDTSHAPE_ENABLE_PROFILE_PATH
          nextProfiler->mPath = constructProfilePath(nextProfiler);
 #endif
       }
@@ -417,7 +417,7 @@ void Profiler::dumpToFile(const char* fileName)
 
 void Profiler::hashPop(ProfilerRootData *expected)
 {
-#ifdef TWISTFORK_MULTITHREAD
+#ifdef LIBDTSHAPE_MULTITHREAD
    // Ignore non-main-thread profiler activity.
    if( !ThreadManager::isMainThread() )
       return;
@@ -460,7 +460,7 @@ void Profiler::hashPop(ProfilerRootData *expected)
       if(!mEnabled && mNextEnable)
          startHighResolutionTimer(mCurrentProfilerData->mStartTime);
 
-#if defined(TWISTFORK_OS_WIN32)
+#if defined(LIBDTSHAPE_OS_WIN32)
       // The high performance counters under win32 are unreliable when running on multiple
       // processors. When the profiler is enabled, we restrict Torque to a single processor.
       if(mNextEnable != mEnabled)

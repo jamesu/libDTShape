@@ -62,7 +62,7 @@ class FrameAllocator
    static U32   smHighWaterMark;
    static U32   smWaterMark;
 
-#ifdef TWISTFORK_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
    static U32 smMaxFrameAllocation;
 #endif
 
@@ -76,7 +76,7 @@ class FrameAllocator
    inline static U32  getWaterMark();
    inline static U32  getHighWaterMark();
 
-#ifdef TWISTFORK_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
    static U32 getMaxFrameAllocation() { return smMaxFrameAllocation; }
 #endif
 };
@@ -118,7 +118,7 @@ void* FrameAllocator::alloc(const U32 allocSize)
    U8* p = &smBuffer[smWaterMark];
    smWaterMark += _allocSize;
 
-#ifdef TWISTFORK_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
    if (smWaterMark > smMaxFrameAllocation)
       smMaxFrameAllocation = smWaterMark;
 #endif

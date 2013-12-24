@@ -23,19 +23,19 @@
 #ifndef _PLATFORMINTRINSICS_H_
 #define _PLATFORMINTRINSICS_H_
 
-#ifndef _TWISTFORK_TYPES_H_
+#ifndef _LIBDTSHAPE_TYPES_H_
 #  include "platform/types.h"
 #endif
 
-#if defined( TWISTFORK_COMPILER_VISUALC )
+#if defined( LIBDTSHAPE_COMPILER_VISUALC )
 #  include "platform/platformIntrinsics.visualc.h"
-#elif defined ( TWISTFORK_COMPILER_GCC )
+#elif defined ( LIBDTSHAPE_COMPILER_GCC )
 #  include "platform/platformIntrinsics.gcc.h"
 #else
 #  error No intrinsics implemented for compiler.
 #endif
 
-#ifndef TWISTFORK_64
+#ifndef LIBDTSHAPE_64
 
 template< typename T >
 inline bool dCompareAndSwap( T* volatile& refPtr, T* oldPtr, T* newPtr )

@@ -23,7 +23,7 @@
 #include "platform/platform.h"
 #include "ts/tsMesh.h"
 
-#if defined(TWISTFORK_CPU_X86) && (_MSC_VER >= 1500)
+#if defined(LIBDTSHAPE_CPU_X86) && (_MSC_VER >= 1500)
 #include "ts/tsMeshIntrinsics.h"
 #include <smmintrin.h>
 
@@ -117,4 +117,4 @@ void m_matF_x_BatchedVertWeightList_SSE4(const MatrixF &mat,
 
 END_NS
 
-#endif // TWISTFORK_CPU_X86
+#endif // LIBDTSHAPE_CPU_X86

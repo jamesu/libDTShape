@@ -23,7 +23,7 @@
 #ifndef _HASHFUNCTION_H_
 #define _HASHFUNCTION_H_
 
-#ifndef _TWISTFORK_TYPES_H_
+#ifndef _LIBDTSHAPE_TYPES_H_
 #include "platform/types.h"
 #endif
 

@@ -42,7 +42,7 @@
 #include "core/util/triListOpt.h"
 #include "math/util/triRayCheck.h"
 
-#if defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_XENON)
 #  include "platformXbox/platformXbox.h"
 #endif
 
@@ -122,8 +122,8 @@ void TSMesh::render( TSMaterialList *materials,
                      TSMeshRenderer &renderer )
 {
    // These are only used by TSSkinMesh.
-   TWISTFORK_UNUSED( isSkinDirty );   
-   TWISTFORK_UNUSED( transforms );
+   LIBDTSHAPE_UNUSED( isSkinDirty );   
+   LIBDTSHAPE_UNUSED( transforms );
    
    const bool renderDirty = mRenderer->isDirty(this, rdata.getCurrentRenderData());
    
@@ -205,7 +205,7 @@ void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMes
       if ( draw.matIndex & TSDrawPrimitive::NoMaterial )
          continue;
 
-#ifdef TWISTFORK_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
       // for inspection if you happen to be running in a debugger and can't do bit 
       // operations in your head.
       S32 triangles = draw.matIndex & TSDrawPrimitive::Triangles;
@@ -213,11 +213,11 @@ void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMes
       S32 fan = draw.matIndex & TSDrawPrimitive::Fan;
       S32 indexed = draw.matIndex & TSDrawPrimitive::Indexed;
       S32 type = draw.matIndex & TSDrawPrimitive::TypeMask;
-      TWISTFORK_UNUSED(triangles);
-      TWISTFORK_UNUSED(strip);
-      TWISTFORK_UNUSED(fan);
-      TWISTFORK_UNUSED(indexed);
-      TWISTFORK_UNUSED(type);
+      LIBDTSHAPE_UNUSED(triangles);
+      LIBDTSHAPE_UNUSED(strip);
+      LIBDTSHAPE_UNUSED(fan);
+      LIBDTSHAPE_UNUSED(indexed);
+      LIBDTSHAPE_UNUSED(type);
 #endif
 
       const U32 matIndex = draw.matIndex & TSDrawPrimitive::MaterialMask;
@@ -1157,7 +1157,7 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSMeshInstanceRe
    AssertFatal(batchDataInitialized, "Batch data not initialized. Call createBatchData() before any skin update is called.");
 
    // set arrays
-#if defined(TWISTFORK_MAX_LIB)
+#if defined(LIBDTSHAPE_MAX_LIB)
    verts.setSize(batchData.initialVerts.size());
    norms.setSize(batchData.initialNorms.size());
 #else
@@ -1492,11 +1492,11 @@ bool TSSkinMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surf
 
 bool TSSkinMesh::castRay( S32 frame, const Point3F &start, const Point3F &end, RayInfo *rayInfo, TSMaterialList *materials )
 {
-   TWISTFORK_UNUSED(frame);
-   TWISTFORK_UNUSED(start);
-   TWISTFORK_UNUSED(end);
-   TWISTFORK_UNUSED(rayInfo);
-   TWISTFORK_UNUSED(materials);
+   LIBDTSHAPE_UNUSED(frame);
+   LIBDTSHAPE_UNUSED(start);
+   LIBDTSHAPE_UNUSED(end);
+   LIBDTSHAPE_UNUSED(rayInfo);
+   LIBDTSHAPE_UNUSED(materials);
 
    return false;
 }
@@ -1508,7 +1508,7 @@ bool TSSkinMesh::buildConvexHull()
 
 void TSSkinMesh::computeBounds( const MatrixF &transform, Box3F &bounds, S32 frame, Point3F *center, F32 *radius )
 {
-   TWISTFORK_UNUSED(frame);
+   LIBDTSHAPE_UNUSED(frame);
 
    if (frame < 0)
    {
@@ -2940,7 +2940,7 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
       vertexData.set(aligned_mem, mVertSize, mNumVerts);
       vertexData.setReady(true);
 
-#if defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_XENON)
       XMemCpyStreaming(vertexData.address(), mVertexData.address(), vertexData.mem_size() );
 #else
       dMemcpy(vertexData.address(), mVertexData.address(), vertexData.mem_size());

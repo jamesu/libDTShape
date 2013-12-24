@@ -27,11 +27,11 @@
 
 // If using the IDE detect if DEBUG build was requested
 #if __ide_target("Torque-W32-Debug")
-   #define TWISTFORK_DEBUG
+   #define LIBDTSHAPE_DEBUG
 #elif __ide_target("Torque-MacCarb-Debug")
-   #define TWISTFORK_DEBUG
+   #define LIBDTSHAPE_DEBUG
 #elif __ide_target("Torque-MacX-Debug")
-   #define TWISTFORK_DEBUG
+   #define LIBDTSHAPE_DEBUG
 #endif
 
 
@@ -44,23 +44,23 @@ typedef unsigned long long U64;     ///< Compiler independent Unsigned 64-bit in
 
 //--------------------------------------
 // Compiler Version
-#define TWISTFORK_COMPILER_CODEWARRIOR __MWERKS__
+#define LIBDTSHAPE_COMPILER_CODEWARRIOR __MWERKS__
 
-#define TWISTFORK_COMPILER_STRING "CODEWARRIOR"
+#define LIBDTSHAPE_COMPILER_STRING "CODEWARRIOR"
 
 
 //--------------------------------------
 // Identify the Operating System
 #if defined(_WIN32)
-#  define TWISTFORK_OS_STRING "Win32"
-#  define TWISTFORK_OS_WIN32
+#  define LIBDTSHAPE_OS_STRING "Win32"
+#  define LIBDTSHAPE_OS_WIN32
 
 #elif defined(macintosh) || defined(__APPLE__)
-#  define TWISTFORK_OS_STRING "Mac"
-#  define TWISTFORK_OS_MAC
-#  define TWISTFORK_OS_DARWIN
+#  define LIBDTSHAPE_OS_STRING "Mac"
+#  define LIBDTSHAPE_OS_MAC
+#  define LIBDTSHAPE_OS_DARWIN
 #  if defined(__MACH__)
-#     define TWISTFORK_OS_MAC
+#     define LIBDTSHAPE_OS_MAC
 #  endif
 
 #else
@@ -71,23 +71,23 @@ typedef unsigned long long U64;     ///< Compiler independent Unsigned 64-bit in
 //--------------------------------------
 // Identify the CPU
 #if defined(_M_IX86)
-#  define TWISTFORK_CPU_STRING "x86"
-#  define TWISTFORK_CPU_X86
-#  define TWISTFORK_LITTLE_ENDIAN
-#  define TWISTFORK_SUPPORTS_NASM
-#  define TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM
+#  define LIBDTSHAPE_CPU_STRING "x86"
+#  define LIBDTSHAPE_CPU_X86
+#  define LIBDTSHAPE_LITTLE_ENDIAN
+#  define LIBDTSHAPE_SUPPORTS_NASM
+#  define LIBDTSHAPE_SUPPORTS_VC_INLINE_X86_ASM
 
    // Compiling with the CW IDE we cannot use NASM :(
 #  if __ide_target("Torque-W32-Debug")
-#     undef TWISTFORK_SUPPORTS_NASM
+#     undef LIBDTSHAPE_SUPPORTS_NASM
 #  elif __ide_target("Torque-W32-Release")
-#     undef TWISTFORK_SUPPORTS_NASM
+#     undef LIBDTSHAPE_SUPPORTS_NASM
 #  endif
 
 #elif defined(__POWERPC__)
-#  define TWISTFORK_CPU_STRING "PowerPC"
-#  define TWISTFORK_CPU_PPC
-#  define TWISTFORK_BIG_ENDIAN
+#  define LIBDTSHAPE_CPU_STRING "PowerPC"
+#  define LIBDTSHAPE_CPU_PPC
+#  define LIBDTSHAPE_BIG_ENDIAN
 
 #else
 #  error "CW: Unsupported Target CPU"

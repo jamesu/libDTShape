@@ -36,7 +36,7 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-#if defined(TWISTFORK_MAX_LIB)
+#if defined(LIBDTSHAPE_MAX_LIB)
 #define MAX_TS_SET_DWORDS 32
 #else
 #define MAX_TS_SET_DWORDS 64

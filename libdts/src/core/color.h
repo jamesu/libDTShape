@@ -559,7 +559,7 @@ inline U32 ColorI::getRGBPack() const
 
 inline U32 ColorI::getRGBEndian() const
 {
-#if defined(TWISTFORK_BIG_ENDIAN)
+#if defined(LIBDTSHAPE_BIG_ENDIAN)
       return(getRGBPack());
 #else
       return(getBGRPack());
@@ -568,7 +568,7 @@ inline U32 ColorI::getRGBEndian() const
 
 inline U32 ColorI::getARGBEndian() const
 {
-#if defined(TWISTFORK_BIG_ENDIAN)
+#if defined(LIBDTSHAPE_BIG_ENDIAN)
    return(getABGRPack());
 #else
    return(getARGBPack());

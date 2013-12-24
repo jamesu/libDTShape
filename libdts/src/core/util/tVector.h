@@ -38,7 +38,7 @@ BEGIN_NS(DTShape)
 
 /// Size of memory blocks to allocate at a time for vectors.
 const static S32 VectorBlockSize = 16;
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
 extern bool VectorResize(U32 *aSize, U32 *aCount, void **arrayPtr, U32 newCount, U32 elemSize,
                          const char* fileName,
                          const U32   lineNum);
@@ -48,7 +48,7 @@ extern bool VectorResize(U32 *aSize, U32 *aCount, void **arrayPtr, U32 newCount,
 
 /// Use the following macro to bind a vector to a particular line
 ///  of the owning class for memory tracking purposes
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
 #define VECTOR_SET_ASSOCIATION(x) x.setFileAssociation(__FILE__, __LINE__)
 #else
 #define VECTOR_SET_ASSOCIATION(x)
@@ -71,7 +71,7 @@ class Vector
    U32 mArraySize;    ///< Number of elements allocated for the Vector.
    T*  mArray;        ///< Pointer to the Vector elements.
 
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    const char* mFileAssociation;
    U32         mLineAssociation;
 #endif
@@ -87,7 +87,7 @@ class Vector
    Vector(const Vector&);
    ~Vector();
 
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    void setFileAssociation(const char* file, const U32 line);
 #endif
 
@@ -198,7 +198,7 @@ template<class T> inline Vector<T>::~Vector()
 
 template<class T> inline Vector<T>::Vector(const U32 initialSize)
 {
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    mFileAssociation = NULL;
    mLineAssociation = 0;
 #endif
@@ -214,12 +214,12 @@ template<class T> inline Vector<T>::Vector(const U32 initialSize,
                                            const char* fileName,
                                            const U32   lineNum)
 {
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    mFileAssociation = fileName;
    mLineAssociation = lineNum;
 #else
-//   TWISTFORK_UNUSED(fileName);
-//   TWISTFORK_UNUSED(lineNum);
+//   LIBDTSHAPE_UNUSED(fileName);
+//   LIBDTSHAPE_UNUSED(lineNum);
 #endif
 
    mArray        = 0;
@@ -232,12 +232,12 @@ template<class T> inline Vector<T>::Vector(const U32 initialSize,
 template<class T> inline Vector<T>::Vector(const char* fileName,
                                            const U32   lineNum)
 {
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    mFileAssociation = fileName;
    mLineAssociation = lineNum;
 #else
-//   TWISTFORK_UNUSED(fileName);
-//   TWISTFORK_UNUSED(lineNum);
+//   LIBDTSHAPE_UNUSED(fileName);
+//   LIBDTSHAPE_UNUSED(lineNum);
 #endif
 
    mArray        = 0;
@@ -247,7 +247,7 @@ template<class T> inline Vector<T>::Vector(const char* fileName,
 
 template<class T> inline Vector<T>::Vector(const Vector& p)
 {
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    mFileAssociation = p.mFileAssociation;
    mLineAssociation = p.mLineAssociation;
 #endif
@@ -258,7 +258,7 @@ template<class T> inline Vector<T>::Vector(const Vector& p)
 }
 
 
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
 template<class T> inline void Vector<T>::setFileAssociation(const char* file,
                                                             const U32   line)
 {
@@ -737,7 +737,7 @@ template<class T> inline void Vector<T>::set(void * addr, U32 sz)
 
 template<class T> inline bool Vector<T>::resize(U32 ecount)
 {
-#ifdef TWISTFORK_DEBUG_GUARD
+#ifdef LIBDTSHAPE_DEBUG_GUARD
    return VectorResize(&mArraySize, &mElementCount, (void**) &mArray, ecount, sizeof(T),
                        mFileAssociation, mLineAssociation);
 #else

@@ -687,7 +687,7 @@
 		32EFB73A184A547800D93F75 /* tsThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB61F184A547800D93F75 /* tsThread.cpp */; };
 		32EFB73B184A547800D93F75 /* tsTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB620184A547800D93F75 /* tsTransform.cpp */; };
 		32EFB73C184A547800D93F75 /* tsTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB621184A547800D93F75 /* tsTransform.h */; };
-		32EFB73D184A547800D93F75 /* twistforkConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB622184A547800D93F75 /* twistforkConfig.h */; };
+		32EFB73D184A547800D93F75 /* libDTShapeConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB622184A547800D93F75 /* libDTShapeConfig.h */; };
 		32EFB777184A54A000D93F75 /* NvConcavityVolume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB73F184A54A000D93F75 /* NvConcavityVolume.cpp */; };
 		32EFB778184A54A000D93F75 /* NvConcavityVolume.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB740184A54A000D93F75 /* NvConcavityVolume.h */; };
 		32EFB779184A54A000D93F75 /* NvConvexDecomposition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB741184A54A000D93F75 /* NvConvexDecomposition.cpp */; };
@@ -1404,7 +1404,7 @@
 		32EFB61F184A547800D93F75 /* tsThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsThread.cpp; sourceTree = "<group>"; };
 		32EFB620184A547800D93F75 /* tsTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsTransform.cpp; sourceTree = "<group>"; };
 		32EFB621184A547800D93F75 /* tsTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsTransform.h; sourceTree = "<group>"; };
-		32EFB622184A547800D93F75 /* twistforkConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = twistforkConfig.h; sourceTree = "<group>"; };
+		32EFB622184A547800D93F75 /* libDTShapeConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libDTShapeConfig.h; sourceTree = "<group>"; };
 		32EFB73F184A54A000D93F75 /* NvConcavityVolume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NvConcavityVolume.cpp; sourceTree = "<group>"; };
 		32EFB740184A54A000D93F75 /* NvConcavityVolume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NvConcavityVolume.h; sourceTree = "<group>"; };
 		32EFB741184A54A000D93F75 /* NvConvexDecomposition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NvConvexDecomposition.cpp; sourceTree = "<group>"; };
@@ -2122,7 +2122,7 @@
 				32EFB571184A547800D93F75 /* math */,
 				32EFB5AD184A547800D93F75 /* platform */,
 				32EFB5D5184A547800D93F75 /* ts */,
-				32EFB622184A547800D93F75 /* twistforkConfig.h */,
+				32EFB622184A547800D93F75 /* libDTShapeConfig.h */,
 			);
 			name = src;
 			path = ../libdts/src;
@@ -2683,7 +2683,7 @@
 				3264AB161866783E009E6458 /* domSpline.h in Headers */,
 				3264AB341866783E009E6458 /* daeMetaChoice.h in Headers */,
 				3264AAAD1866783E009E6458 /* domFx_samplerCUBE_common.h in Headers */,
-				32EFB73D184A547800D93F75 /* twistforkConfig.h in Headers */,
+				32EFB73D184A547800D93F75 /* libDTShapeConfig.h in Headers */,
 				3264AB1A1866783E009E6458 /* domTargetableFloat3.h in Headers */,
 				3264AB171866783E009E6458 /* domTapered_capsule.h in Headers */,
 				3264AA9D1866783E009E6458 /* domForce_field.h in Headers */,

@@ -318,7 +318,7 @@ char * Platform::makeFullPathName(const char *path, char *buffer, U32 size, cons
    if(Platform::isFullPath(bspath))
    {
       // Already a full path
-#if defined(TWISTFORK_OS_WIN32)
+#if defined(LIBDTSHAPE_OS_WIN32)
       _resolveLeadingSlash(bspath, sizeof(bspath));
 #endif
       dStrncpy(buffer, bspath, size);

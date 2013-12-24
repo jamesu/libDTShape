@@ -78,7 +78,7 @@ void Processor::init()
    {
       const U32 MS_INTERVAL = 750;
 
-#if defined(TWISTFORK_COMPILER_GCC) && ((__GNUC__ >= 3) && (__GNUC_MINOR__ >=4)) || ((__GNUC__ >= 4) && (__GNUC_MINOR__ >=0))
+#if defined(LIBDTSHAPE_COMPILER_GCC) && ((__GNUC__ >= 3) && (__GNUC_MINOR__ >=4)) || ((__GNUC__ >= 4) && (__GNUC_MINOR__ >=0))
       asm("rdtsc" : "=a" (timeLo), "=d" (timeHi));
 #else
       __asm__(
@@ -95,7 +95,7 @@ void Processor::init()
       while ( Platform::getRealMilliseconds() < ms+MS_INTERVAL )
       { /* empty */ }
       ms = Platform::getRealMilliseconds()-ms;
-#if defined(TWISTFORK_COMPILER_GCC) && ((__GNUC__ >= 3) && (__GNUC_MINOR__ >= 4)) || ((__GNUC__ >= 4) && (__GNUC_MINOR__ >=0))
+#if defined(LIBDTSHAPE_COMPILER_GCC) && ((__GNUC__ >= 3) && (__GNUC_MINOR__ >= 4)) || ((__GNUC__ >= 4) && (__GNUC_MINOR__ >=0))
       asm(
          "pushl  %eax\n"
          "pushl  %edx\n"

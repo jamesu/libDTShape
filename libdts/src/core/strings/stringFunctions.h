@@ -31,7 +31,7 @@
 #ifndef _PLATFORM_H_
 #include "platform/platform.h"
 #endif
-#ifndef _TWISTFORK_TYPES_H_
+#ifndef _LIBDTSHAPE_TYPES_H_
 #include "platform/types.h"
 #endif
 
@@ -39,7 +39,7 @@
 
 BEGIN_NS(DTShape)
 
-#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
 // These standard functions are not defined on Win32 and other Microsoft platforms...
 #define strcasecmp   _stricmp
 #define strncasecmp  _strnicmp

@@ -37,7 +37,7 @@ BEGIN_NS(DTShape)
 
 void TSShape::fixupOldSkins(S32 numMeshes, S32 numSkins, S32 numDetails, S32 * detailFirstSkin, S32 * detailNumSkins)
 {
-#if !defined(TWISTFORK_MAX_LIB)
+#if !defined(LIBDTSHAPE_MAX_LIB)
    // this method not necessary in exporter, and a couple lines won't compile for exporter
    if (!objects.address() || !meshes.address() || !numSkins)
       // not ready for this yet, will catch it on the next pass

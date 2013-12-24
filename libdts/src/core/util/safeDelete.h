@@ -20,8 +20,8 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TWISTFORK_SAFEDELETE_H_
-#define _TWISTFORK_SAFEDELETE_H_
+#ifndef _LIBDTSHAPE_SAFEDELETE_H_
+#define _LIBDTSHAPE_SAFEDELETE_H_
 
 /// @addtogroup utility_macros Utility Macros
 // @{
@@ -94,5 +94,5 @@
 
 // @}
 
-#endif // _TWISTFORK_SAFEDELETE_H_
+#endif // _LIBDTSHAPE_SAFEDELETE_H_
 

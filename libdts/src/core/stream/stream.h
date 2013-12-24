@@ -24,10 +24,10 @@
 #ifndef _STREAM_H_
 #define _STREAM_H_
 
-#ifndef _TWISTFORK_TYPES_H_
+#ifndef _LIBDTSHAPE_TYPES_H_
 #include "platform/types.h"
 #endif
-#ifndef _TWISTFORK_STRING_H_
+#ifndef _LIBDTSHAPE_STRING_H_
 #include "core/util/str.h"
 #endif
 #ifndef _ENDIAN_H_

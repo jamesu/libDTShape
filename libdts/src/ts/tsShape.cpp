@@ -41,7 +41,7 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-#ifdef TWISTFORK_INCLUDE_COLLADA
+#ifdef LIBDTSHAPE_INCLUDE_COLLADA
 extern TSShape* loadColladaShape(const DTShape::Path &path);
 #endif
 
@@ -668,7 +668,7 @@ void TSShape::setupBillboardDetails( const String &cachePath )
 void TSShape::initMaterialList()
 {
    S32 numSubShapes = subShapeFirstObject.size();
-   #if defined(TWISTFORK_MAX_LIB)
+   #if defined(LIBDTSHAPE_MAX_LIB)
    subShapeFirstTranslucentObject.setSize(numSubShapes);
    #endif
 
@@ -2023,7 +2023,7 @@ TSShape *TSShape::createFromPath(const DTShape::Path &path)
    }
    else if ( extension.equal( "dae", String::NoCase ) || extension.equal( "kmz", String::NoCase ) )
    {
-#ifdef TWISTFORK_INCLUDE_COLLADA
+#ifdef LIBDTSHAPE_INCLUDE_COLLADA
       // Attempt to load the DAE file
       ret = loadColladaShape(path);
       readSuccess = (ret != NULL);

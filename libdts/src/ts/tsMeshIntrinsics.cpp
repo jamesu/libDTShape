@@ -98,14 +98,14 @@ void DTShapeInit::initMeshIntrinsics()
       zero_vert_normal_bulk = zero_vert_normal_bulk_C;
       m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_C;
 
-   #if defined(TWISTFORK_OS_XENON)
+   #if defined(LIBDTSHAPE_OS_XENON)
       zero_vert_normal_bulk = zero_vert_normal_bulk_X360;
       m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_X360;
    #else
       // Find the best implementation for the current CPU
       if(Platform::SystemInfo.processor.properties & CPU_PROP_SSE)
       {
-   #if defined(TWISTFORK_CPU_X86)
+   #if defined(LIBDTSHAPE_CPU_X86)
          
          zero_vert_normal_bulk = zero_vert_normal_bulk_SSE;
          m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_SSE;
@@ -120,7 +120,7 @@ void DTShapeInit::initMeshIntrinsics()
       }
       else if(Platform::SystemInfo.processor.properties & CPU_PROP_ALTIVEC)
       {
-   #if !defined(TWISTFORK_OS_XENON) && defined(TWISTFORK_CPU_PPC)
+   #if !defined(LIBDTSHAPE_OS_XENON) && defined(LIBDTSHAPE_CPU_PPC)
          zero_vert_normal_bulk = zero_vert_normal_bulk_gccvec;
          m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_gccvec;
    #endif

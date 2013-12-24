@@ -443,10 +443,10 @@ void TSShapeInstance::computeBounds(S32 dl, Box3F & bounds)
 
 bool TSShapeInstance::ObjectInstance::buildPolyList(S32 objectDetail, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials )
 {
-   TWISTFORK_UNUSED( objectDetail );
-   TWISTFORK_UNUSED( polyList );
-   TWISTFORK_UNUSED( surfaceKey );
-   TWISTFORK_UNUSED( materials );
+   LIBDTSHAPE_UNUSED( objectDetail );
+   LIBDTSHAPE_UNUSED( polyList );
+   LIBDTSHAPE_UNUSED( surfaceKey );
+   LIBDTSHAPE_UNUSED( materials );
 
    AssertFatal(0,"TSShapeInstance::ObjectInstance::buildPolyList:  no default method.");
    return false;
@@ -454,11 +454,11 @@ bool TSShapeInstance::ObjectInstance::buildPolyList(S32 objectDetail, AbstractPo
 
 bool TSShapeInstance::ObjectInstance::getFeatures(S32 objectDetail, const MatrixF& mat, const Point3F& n, ConvexFeature* cf, U32& surfaceKey)
 {
-   TWISTFORK_UNUSED( objectDetail );
-   TWISTFORK_UNUSED( mat );
-   TWISTFORK_UNUSED( n );
-   TWISTFORK_UNUSED( cf );
-   TWISTFORK_UNUSED( surfaceKey );
+   LIBDTSHAPE_UNUSED( objectDetail );
+   LIBDTSHAPE_UNUSED( mat );
+   LIBDTSHAPE_UNUSED( n );
+   LIBDTSHAPE_UNUSED( cf );
+   LIBDTSHAPE_UNUSED( surfaceKey );
 
    AssertFatal(0,"TSShapeInstance::ObjectInstance::buildPolyList:  no default method.");
    return false;
@@ -471,10 +471,10 @@ void TSShapeInstance::ObjectInstance::support(S32, const Point3F&, F32*, Point3F
 
 bool TSShapeInstance::ObjectInstance::castRay( S32 objectDetail, const Point3F &start, const Point3F &end, RayInfo *rayInfo, TSMaterialList *materials )
 {
-   TWISTFORK_UNUSED( objectDetail );
-   TWISTFORK_UNUSED( start );
-   TWISTFORK_UNUSED( end );
-   TWISTFORK_UNUSED( rayInfo );
+   LIBDTSHAPE_UNUSED( objectDetail );
+   LIBDTSHAPE_UNUSED( start );
+   LIBDTSHAPE_UNUSED( end );
+   LIBDTSHAPE_UNUSED( rayInfo );
 
    AssertFatal(0,"TSShapeInstance::ObjectInstance::castRay:  no default method.");
    return false;

@@ -36,7 +36,7 @@ typedef unsigned _int64 U64;
 
 //--------------------------------------
 // Compiler Version
-#define TWISTFORK_COMPILER_VISUALC _MSC_VER
+#define LIBDTSHAPE_COMPILER_VISUALC _MSC_VER
 
 //--------------------------------------
 // Identify the compiler string
@@ -44,23 +44,23 @@ typedef unsigned _int64 U64;
    // No support for old compilers
 #  error "VC: Minimum VisualC++ 6.0 or newer required"
 #else _MSC_VER >= 1200
-#  define TWISTFORK_COMPILER_STRING "VisualC++"
+#  define LIBDTSHAPE_COMPILER_STRING "VisualC++"
 #endif
 
 
 //--------------------------------------
 // Identify the Operating System
 #if _XBOX_VER >= 200 
-#  define TWISTFORK_OS_STRING "Xenon"
-#  ifndef TWISTFORK_OS_XENON
-#     define TWISTFORK_OS_XENON
+#  define LIBDTSHAPE_OS_STRING "Xenon"
+#  ifndef LIBDTSHAPE_OS_XENON
+#     define LIBDTSHAPE_OS_XENON
 #  endif
 #elif defined( _XBOX_VER )
-#  define TWISTFORK_OS_STRING "Xbox"
-#  define TWISTFORK_OS_XBOX
+#  define LIBDTSHAPE_OS_STRING "Xbox"
+#  define LIBDTSHAPE_OS_XBOX
 #elif defined(_WIN32)
-#  define TWISTFORK_OS_STRING "Win32"
-#  define TWISTFORK_OS_WIN32
+#  define LIBDTSHAPE_OS_STRING "Win32"
+#  define LIBDTSHAPE_OS_WIN32
 #else 
 #  error "VC: Unsupported Operating System"
 #endif
@@ -68,15 +68,15 @@ typedef unsigned _int64 U64;
 //--------------------------------------
 // Identify the CPU
 #if defined(_M_IX86)
-#  define TWISTFORK_CPU_STRING "x86"
-#  define TWISTFORK_CPU_X86
-#  define TWISTFORK_LITTLE_ENDIAN
-#  define TWISTFORK_SUPPORTS_NASM
-#  define TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM
-#elif defined(TWISTFORK_OS_XENON)
-#  define TWISTFORK_CPU_STRING "ppc"
-#  define TWISTFORK_CPU_PPC
-#  define TWISTFORK_BIG_ENDIAN
+#  define LIBDTSHAPE_CPU_STRING "x86"
+#  define LIBDTSHAPE_CPU_X86
+#  define LIBDTSHAPE_LITTLE_ENDIAN
+#  define LIBDTSHAPE_SUPPORTS_NASM
+#  define LIBDTSHAPE_SUPPORTS_VC_INLINE_X86_ASM
+#elif defined(LIBDTSHAPE_OS_XENON)
+#  define LIBDTSHAPE_CPU_STRING "ppc"
+#  define LIBDTSHAPE_CPU_PPC
+#  define LIBDTSHAPE_BIG_ENDIAN
 #else
 #  error "VC: Unsupported Target CPU"
 #endif

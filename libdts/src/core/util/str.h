@@ -20,12 +20,12 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TWISTFORK_STRING_H_
-#define _TWISTFORK_STRING_H_
+#ifndef _LIBDTSHAPE_STRING_H_
+#define _LIBDTSHAPE_STRING_H_
 
 #include <cstdarg>
 
-#ifndef _TWISTFORK_TYPES_H_
+#ifndef _LIBDTSHAPE_TYPES_H_
 #include "platform/types.h"
 #endif
 

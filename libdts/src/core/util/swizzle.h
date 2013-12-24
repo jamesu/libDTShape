@@ -167,7 +167,7 @@ END_NS
 // Template specializations for certain swizzles
 //#include "core/util/swizzleSpec.h"
 
-#ifdef TWISTFORK_OS_XENON
+#ifdef LIBDTSHAPE_OS_XENON
 #  include "platformXbox/altivecSwizzle.h"
 #endif
 
