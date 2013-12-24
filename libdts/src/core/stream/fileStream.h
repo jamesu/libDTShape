@@ -24,7 +24,7 @@
 #define _FILESTREAM_H_
 
 #ifndef _FILEIO_H_
-#include "core/fileio.h"
+#include "platform/fileio.h"
 #endif
 #ifndef _STREAM_H_
 #include "core/stream/stream.h"

@@ -35,8 +35,8 @@
 #ifndef _TSSHAPEALLOC_H_
 #include "ts/tsShapeAlloc.h"
 #endif
-#ifndef _ENGINEOBJECT_H_
-#include "core/engineObject.h"
+#ifndef _REFBASE_H_
+#include "core/util/refBase.h"
 #endif
 
 #include "core/util/path.h"
@@ -68,7 +68,7 @@ struct CollisionShapeInfo
 /// lists are still loaded in TSShapeInstance.
 ///
 /// @see TSShapeInstance for a further discussion of the 3space system.
-class TSShape : public EngineObject
+class TSShape : public StrongRefBase
 {
   public:
       enum
@@ -669,6 +669,8 @@ class TSShape : public EngineObject
    /// Interface to reuse loaded shapes
    static TSShape *loadShape(const String& filename);
 };
+
+typedef StrongRefPtr<TSShape> TSShapeRef;
 
 
 #define TSNode TSShape::Node

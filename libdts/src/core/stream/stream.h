@@ -23,7 +23,7 @@
 #ifndef _STREAM_H_
 #define _STREAM_H_
 
-#ifndef _TORQUE_TYPES_H_
+#ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
 #ifndef _ENDIAN_H_
@@ -42,7 +42,6 @@ class ColorI;
 class ColorF;
 struct NetAddress;
 class RawData;
-class String;
 
 namespace Torque {
    class ByteBuffer;

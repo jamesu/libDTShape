@@ -20,8 +20,8 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TORQUE_SAFEDELETE_H_
-#define _TORQUE_SAFEDELETE_H_
+#ifndef _TWISTFORK_SAFEDELETE_H_
+#define _TWISTFORK_SAFEDELETE_H_
 
 /// @addtogroup utility_macros Utility Macros
 // @{
@@ -94,5 +94,5 @@
 
 // @}
 
-#endif // _TORQUE_SAFEDELETE_H_
+#endif // _TWISTFORK_SAFEDELETE_H_
 

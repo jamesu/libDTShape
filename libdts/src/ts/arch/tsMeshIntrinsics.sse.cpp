@@ -21,7 +21,7 @@
 //-----------------------------------------------------------------------------
 #include "ts/tsMesh.h"
 
-#if defined(TORQUE_CPU_X86)
+#if defined(TWISTFORK_CPU_X86)
 #include "ts/tsMeshIntrinsics.h"
 #include <xmmintrin.h>
 
@@ -180,4 +180,4 @@ void m_matF_x_BatchedVertWeightList_SSE(const MatrixF &mat,
    }
 }
 
-#endif // TORQUE_CPU_X86
+#endif // TWISTFORK_CPU_X86

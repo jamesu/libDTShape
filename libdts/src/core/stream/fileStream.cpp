@@ -22,7 +22,6 @@
 
 #include "platform/platform.h"
 #include "core/stream/fileStream.h"
-#include "core/util/path.h"
 
 
 //-----------------------------------------------------------------------------
@@ -39,18 +38,18 @@ FileStream::FileStream()
 FileStream *FileStream::createAndOpen(const String &inFileName, FileStream::AccessMode inMode)
 {
    FileStream  *newStream = new FileStream;
-
+   
    if ( newStream )
    {
-      bool success = newStream->open( inFileName, inMode );
-
+      bool success = newStream->open( inFileName.c_str(), inMode );
+      
       if ( !success )
       {
          delete newStream;
          newStream = NULL;
       }
    }
-
+   
    return newStream;
 }
 
@@ -72,7 +71,7 @@ U32 FileStream::getPosition() const
 {
    AssertFatal(0 != mStreamCaps, "FileStream::getPosition: the stream isn't open");
    //AssertFatal(true == hasCapability(StreamPosition), "FileStream::getPosition(): lacks positioning capability");
-
+   
    // return the position inside the buffer if its valid, otherwise return the underlying file position
    return((BUFFER_INVALID != mBuffHead) ? mBuffPos : mFile->getPosition());
 }
@@ -82,7 +81,7 @@ bool FileStream::setPosition(const U32 i_newPosition)
 {
    AssertFatal(0 != mStreamCaps, "FileStream::setPosition: the stream isn't open");
    AssertFatal(hasCapability(StreamPosition), "FileStream::setPosition: lacks positioning capability");
-
+   
    // if the buffer is valid, test the new position against the bounds of the buffer
    if ((BUFFER_INVALID != mBuffHead) && (i_newPosition >= mBuffHead) && (i_newPosition <= mBuffTail))
    {
@@ -104,16 +103,16 @@ bool FileStream::setPosition(const U32 i_newPosition)
    {
       if (mDirty)
          flush();
-
+      
       clearBuffer();
-
+      
       mFile->setPosition(i_newPosition, File::Begin);
-
+      
       setStatus();
       
       if (mFile->getStatus() == File::EOS)
          mEOF = true;
-
+      
       return(Ok == getStatus() || EOS == getStatus());
    }
 }
@@ -123,7 +122,7 @@ U32 FileStream::getStreamSize()
 {
    AssertWarn(0 != mStreamCaps, "FileStream::getStreamSize: the stream isn't open");
    AssertFatal((BUFFER_INVALID != mBuffHead && true == mDirty) || false == mDirty, "FileStream::getStreamSize: buffer must be valid if its dirty");
-
+   
    // the stream size may not match the size on-disk if its been written to...
    if (mDirty)
       return(getMax((U32)(mFile->getSize()), mBuffTail + 1));  ///<@todo U64 vs U32 issue
@@ -136,11 +135,11 @@ U32 FileStream::getStreamSize()
 bool FileStream::open(const String &inFileName, FileStream::AccessMode inMode)
 {
    AssertWarn(0 == mStreamCaps, "FileStream::setPosition: the stream is already open");
-   AssertFatal(inFileName.isNotEmpty(), "FileStream::open: empty filename");
-
+   //AssertFatal(inFileName.isNotEmpty(), "FileStream::open: empty filename");
+   
    // make sure the file stream's state is clean
    clearBuffer();
-
+   
    if ((mFile = File::openFile(inFileName, (File::AccessMode)inMode)) != NULL)
    {
       setStatus();
@@ -148,20 +147,21 @@ bool FileStream::open(const String &inFileName, FileStream::AccessMode inMode)
       {
          case FileStream::Read:
             mStreamCaps = U32(StreamRead) |
-                          U32(StreamPosition);
+            U32(StreamPosition);
             break;
          case FileStream::Write:
          case FileStream::WriteAppend:
             mStreamCaps = U32(StreamWrite) |
-                          U32(StreamPosition);
+            U32(StreamPosition);
             break;
          case FileStream::ReadWrite:
             mStreamCaps = U32(StreamRead)  |
-                          U32(StreamWrite) |
-                          U32(StreamPosition);
+            U32(StreamWrite) |
+            U32(StreamPosition);
             break;
          default:
-            AssertFatal(false, String::ToString( "FileStream::open: bad access mode on %s", inFileName.c_str() ));
+            //AssertFatal(false, String::ToString( "FileStream::open: bad access mode on %s", inFileName.c_str() ));
+            break;
       }
    }
    else
@@ -169,7 +169,7 @@ bool FileStream::open(const String &inFileName, FileStream::AccessMode inMode)
       Stream::setStatus(IOError);
       return(false);
    }
-
+   
    return getStatus() == Ok;
 }
 
@@ -178,23 +178,23 @@ void FileStream::close()
 {
    if (getStatus() == Closed)
       return;
-
+   
    if (mFile != NULL )
    {
       // make sure nothing in the buffer differs from what is on disk
       if (mDirty)
          flush();
-
+      
       // and close the file
       mFile->close();
-
+      
       AssertFatal(mFile->getStatus() == File::Closed, "FileStream::close: close failed");
       
       delete mFile;
-
+      
       mFile = NULL;
    }
-
+   
    // clear the file stream's state
    init();
 }
@@ -204,7 +204,7 @@ bool FileStream::flush()
 {
    AssertWarn(0 != mStreamCaps, "FileStream::flush: the stream isn't open");
    AssertFatal(false == mDirty || BUFFER_INVALID != mBuffHead, "FileStream::flush: buffer must be valid if its dirty");
-
+   
    // if the buffer is dirty
    if (mDirty)
    {
@@ -217,7 +217,7 @@ bool FileStream::flush()
          if (mFile->getStatus() != File::Ok && mFile->getStatus() != File::EOS)
             return(false);
       }
-
+      
       // write contents of the buffer to disk
       U32 blockHead;
       calcBlockHead(mBuffHead, &blockHead);
@@ -226,7 +226,7 @@ bool FileStream::flush()
       setStatus();
       if (EOS == getStatus())
          mEOF = true;
-
+      
       if (Ok == getStatus() || EOS == getStatus())
          // and update the status of the buffer
          mDirty = false;
@@ -241,18 +241,18 @@ bool FileStream::_read(const U32 i_numBytes, void *o_pBuffer)
 {
    AssertFatal(0 != mStreamCaps, "FileStream::_read: the stream isn't open");
    AssertFatal(NULL != o_pBuffer || i_numBytes == 0, "FileStream::_read: NULL destination pointer with non-zero read request");
-
+   
    if (!hasCapability(Stream::StreamRead))
    {
       AssertFatal(false, "FileStream::_read: file stream lacks capability");
       Stream::setStatus(IllegalCall);
       return(false);
    }
-
+   
    // exit on pre-existing errors
    if (Ok != getStatus())
       return(false);
-
+   
    // if a request of non-zero length was made
    if (0 != i_numBytes)
    {
@@ -262,7 +262,7 @@ bool FileStream::_read(const U32 i_numBytes, void *o_pBuffer)
       U32 bytesRead;
       U32 blockHead;
       U32 blockTail;
-
+      
       // check if the buffer has some data in it
       if (BUFFER_INVALID != mBuffHead)
       {
@@ -276,7 +276,7 @@ bool FileStream::_read(const U32 i_numBytes, void *o_pBuffer)
          // advance the buffer pointers
          mBuffPos += readSize;
          pDst += readSize;
-
+         
          if (mBuffPos > mBuffTail && remaining != 0)
          {
             flush();
@@ -285,18 +285,18 @@ bool FileStream::_read(const U32 i_numBytes, void *o_pBuffer)
                Stream::setStatus(EOS);
          }
       }
-
+      
       // if the request wasn't satisfied by the buffer and the file has more data
       if (false == mEOF && 0 < remaining)
       {
          // flush the buffer if its dirty, since we now need to go to disk
          if (true == mDirty)
             flush();
-
+         
          // make sure we know the current read location in the underlying file
          mBuffPos = mFile->getPosition();
          calcBlockBounds(mBuffPos, &blockHead, &blockTail);
-
+         
          // check if the data to be read falls within a single block
          if ((mBuffPos + remaining) <= blockTail)
          {
@@ -342,18 +342,18 @@ bool FileStream::_write(const U32 i_numBytes, const void *i_pBuffer)
 {
    AssertFatal(0 != mStreamCaps, "FileStream::_write: the stream isn't open");
    AssertFatal(NULL != i_pBuffer || i_numBytes == 0, "FileStream::_write: NULL source buffer pointer on non-zero write request");
-
+   
    if (!hasCapability(Stream::StreamWrite))
    {
       AssertFatal(false, "FileStream::_write: file stream lacks capability");
       Stream::setStatus(IllegalCall);
       return(false);
    }
-
+   
    // exit on pre-existing errors
    if (Ok != getStatus() && EOS != getStatus())
       return(false);
-
+   
    // if a request of non-zero length was made
    if (0 != i_numBytes)
    {
@@ -363,7 +363,7 @@ bool FileStream::_write(const U32 i_numBytes, const void *i_pBuffer)
       U32 bytesWrit;
       U32 blockHead;
       U32 blockTail;
-
+      
       // check if the buffer is valid
       if (BUFFER_INVALID != mBuffHead)
       {
@@ -371,7 +371,7 @@ bool FileStream::_write(const U32 i_numBytes, const void *i_pBuffer)
          calcBlockBounds(mBuffHead, &blockHead, &blockTail);
          writeSize = (mBuffPos > blockTail) ? 0 : blockTail - mBuffPos + 1;
          writeSize = getMin(writeSize, remaining);
-
+         
          AssertFatal(0 == writeSize || (mBuffPos - blockHead) < BUFFER_SIZE, "FileStream::_write: out of bounds buffer position");
          dMemcpy(mBuffer + (mBuffPos - blockHead), pSrc, writeSize);
          // reduce the remaining amount to be written
@@ -384,18 +384,18 @@ bool FileStream::_write(const U32 i_numBytes, const void *i_pBuffer)
          if (0 < writeSize)
             mDirty = true;
       }
-
+      
       // if the request wasn't satisfied by the buffer
       if (0 < remaining)
       {
          // flush the buffer if its dirty, since we now need to go to disk
          if (mDirty)
             flush();
-
+         
          // make sure we know the current write location in the underlying file
          mBuffPos = mFile->getPosition();
          calcBlockBounds(mBuffPos, &blockHead, &blockTail);
-
+         
          // check if the data to be written falls within a single block
          if ((mBuffPos + remaining) <= blockTail)
          {
@@ -413,7 +413,7 @@ bool FileStream::_write(const U32 i_numBytes, const void *i_pBuffer)
          {
             clearBuffer();
             // write to disk directly from the source
-            bytesWrit = mFile->write(remaining, (char *)pSrc);
+            mFile->write(remaining, (char *)pSrc, &bytesWrit);
             setStatus();
             return(Ok == getStatus() || EOS == getStatus());
          }
@@ -435,7 +435,7 @@ bool FileStream::fillBuffer(const U32 i_startPosition)
 {
    AssertFatal(0 != mStreamCaps, "FileStream::fillBuffer: the stream isn't open");
    AssertFatal(false == mDirty, "FileStream::fillBuffer: buffer must be clean to fill");
-
+   
    // make sure start position and file pointer jive
    if (i_startPosition != mFile->getPosition())
    {
@@ -449,7 +449,7 @@ bool FileStream::fillBuffer(const U32 i_startPosition)
          // update buffer pointer
          mBuffPos = i_startPosition;
    }
-
+   
    // check if file pointer is at end-of-file
    if (EOS == getStatus())
    {
@@ -465,7 +465,8 @@ bool FileStream::fillBuffer(const U32 i_startPosition)
       // locate bounds of buffer containing current position
       calcBlockHead(mBuffPos, &blockHead);
       // read as much as possible from input file
-      U32 bytesRead = mFile->read(BUFFER_SIZE - (i_startPosition - blockHead), (char *)mBuffer + (i_startPosition - blockHead));
+      U32 bytesRead;
+      mFile->read(BUFFER_SIZE - (i_startPosition - blockHead), (char *)mBuffer + (i_startPosition - blockHead), &bytesRead);
       setStatus();
       if (Ok == getStatus() || EOS == getStatus())
       {
@@ -503,7 +504,7 @@ void FileStream::clearBuffer()
 void FileStream::calcBlockHead(const U32 i_position, U32 *o_blockHead)
 {
    AssertFatal(NULL != o_blockHead, "FileStream::calcBlockHead: NULL pointer passed for block head");
-
+   
    *o_blockHead = i_position/BUFFER_SIZE * BUFFER_SIZE;
 }
 
@@ -512,7 +513,7 @@ void FileStream::calcBlockBounds(const U32 i_position, U32 *o_blockHead, U32 *o_
 {
    AssertFatal(NULL != o_blockHead, "FileStream::calcBlockBounds: NULL pointer passed for block head");
    AssertFatal(NULL != o_blockTail, "FileStream::calcBlockBounds: NULL pointer passed for block tail");
-
+   
    *o_blockHead = i_position/BUFFER_SIZE * BUFFER_SIZE;
    *o_blockTail = *o_blockHead + BUFFER_SIZE - 1;
 }
@@ -525,27 +526,27 @@ void FileStream::setStatus()
       case File::Ok:
          Stream::setStatus(Ok);
          break;
-
+         
       case File::Closed:
          Stream::setStatus(Closed);
          break;
-
+         
       case File::EOS:
          Stream::setStatus(EOS);
          break;
-
+         
       case File::IOError:
          Stream::setStatus(IOError);
          break;
-
+         
       case File::IllegalCall:
          Stream::setStatus(IllegalCall);
          break;
-
+         
       case File::UnknownError:
          Stream::setStatus(UnknownError);
          break;
-
+         
       default:
          AssertFatal(false, "FileStream::setStatus: invalid error mode");
    }

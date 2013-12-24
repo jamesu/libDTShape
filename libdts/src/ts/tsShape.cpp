@@ -33,11 +33,8 @@
 #include "math/mathIO.h"
 #include "core/util/endian.h"
 #include "core/stream/fileStream.h"
-#include "core/util/fourcc.h"
 
-#include "core/module.h"
-
-#ifdef TORQUE_COLLADA
+#ifdef TWISTFORK_INCLUDE_COLLADA
 extern TSShape* loadColladaShape(const Torque::Path &path);
 #endif
 
@@ -664,7 +661,7 @@ void TSShape::setupBillboardDetails( const String &cachePath )
 void TSShape::initMaterialList()
 {
    S32 numSubShapes = subShapeFirstObject.size();
-   #if defined(TORQUE_MAX_LIB)
+   #if defined(TWISTFORK_MAX_LIB)
    subShapeFirstTranslucentObject.setSize(numSubShapes);
    #endif
 
@@ -2307,14 +2304,3 @@ void TSShape::computeAccelerator(S32 dl)
    }
 }
 
-
-
-
-MODULE_BEGIN( TSCore )
-
-MODULE_INIT
-{
-   TSVertexColor::mDeviceSwizzle = &Swizzles::rgba;
-}
-
-MODULE_END;

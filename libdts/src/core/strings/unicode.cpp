@@ -28,9 +28,9 @@
 
 #include "platform/profiler.h"
 
-#define TORQUE_ENABLE_UTF16_CACHE
+#define TWISTFORK_ENABLE_UTF16_CACHE
 
-#ifdef TORQUE_ENABLE_UTF16_CACHE
+#ifdef TWISTFORK_ENABLE_UTF16_CACHE
 #include "core/util/tDictionary.h"
 #include "core/util/hashFunction.h"
 #endif
@@ -75,7 +75,7 @@ static const U16 sgByteMaskLow10 = 0x03ff;
 
 //-----------------------------------------------------------------------------
 
-#ifdef TORQUE_ENABLE_UTF16_CACHE
+#ifdef TWISTFORK_ENABLE_UTF16_CACHE
 
 /// Cache data for UTF16 strings. This is wrapped in a class so that data is
 /// automatically freed when the hash table is deleted.
@@ -133,7 +133,7 @@ struct UTF16Cache
 typedef HashTable<U32, UTF16Cache> UTF16CacheTable;
 static UTF16CacheTable sgUTF16Cache;
 
-#endif // TORQUE_ENABLE_UTF16_CACHE
+#endif // TWISTFORK_ENABLE_UTF16_CACHE
 
 //-----------------------------------------------------------------------------
 inline bool isSurrogateRange(U32 codepoint)
@@ -152,7 +152,7 @@ U32 convertUTF8toUTF16(const UTF8 *unistring, UTF16 *outbuffer, U32 len)
    AssertFatal(len >= 1, "Buffer for unicode conversion must be large enough to hold at least the null terminator.");
    PROFILE_SCOPE(convertUTF8toUTF16);
 
-#ifdef TORQUE_ENABLE_UTF16_CACHE
+#ifdef TWISTFORK_ENABLE_UTF16_CACHE
    // If we have cached this conversion already, don't do it again
    U32 hashKey = Torque::hash((const U8 *)unistring, dStrlen(unistring), 0);
    UTF16CacheTable::Iterator cacheItr = sgUTF16Cache.find(hashKey);
@@ -181,7 +181,7 @@ U32 convertUTF8toUTF16(const UTF8 *unistring, UTF16 *outbuffer, U32 len)
    nCodepoints = getMin(nCodepoints,len - 1);
    outbuffer[nCodepoints] = '\0';
 
-#ifdef TORQUE_ENABLE_UTF16_CACHE
+#ifdef TWISTFORK_ENABLE_UTF16_CACHE
    // Cache the results.
    // FIXME As written, this will result in some unnecessary memory copying due to copy constructor calls.
    UTF16Cache cache(outbuffer, nCodepoints);

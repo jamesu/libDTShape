@@ -35,7 +35,7 @@ public:
    // This method was re-written to prevent load-hit-stores during the simple-case.
    void push_back_noresize(const T &x)
    {
-#ifdef TORQUE_DEBUG
+#ifdef TWISTFORK_DEBUG
       AssertFatal(Vector<T>::mElementCount < Vector<T>::mArraySize, "use of push_back_noresize requires that you reserve enough space in the FastVector");
 #endif
       Vector<T>::mArray[Vector<T>::mElementCount++] = x;

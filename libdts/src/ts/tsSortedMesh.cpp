@@ -53,21 +53,21 @@ void TSSortedMesh::render(S32 frame, S32 matFrame, TSMaterialList * materials)
 
 bool TSSortedMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surfaceKey, TSMaterialList *materials )
 {
-   TORQUE_UNUSED(frame);
-   TORQUE_UNUSED(polyList);
-   TORQUE_UNUSED(surfaceKey);
-   TORQUE_UNUSED(materials);
+   TWISTFORK_UNUSED(frame);
+   TWISTFORK_UNUSED(polyList);
+   TWISTFORK_UNUSED(surfaceKey);
+   TWISTFORK_UNUSED(materials);
 
    return false;
 }
 
 bool TSSortedMesh::castRay( S32 frame, const Point3F &start, const Point3F &end, RayInfo *rayInfo, TSMaterialList *materials )
 {
-   TORQUE_UNUSED(frame);
-   TORQUE_UNUSED(start);
-   TORQUE_UNUSED(end);
-   TORQUE_UNUSED(rayInfo);
-   TORQUE_UNUSED(materials);
+   TWISTFORK_UNUSED(frame);
+   TWISTFORK_UNUSED(start);
+   TWISTFORK_UNUSED(end);
+   TWISTFORK_UNUSED(rayInfo);
+   TWISTFORK_UNUSED(materials);
 
    return false;
 }

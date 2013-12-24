@@ -27,11 +27,11 @@
 
 // If using the IDE detect if DEBUG build was requested
 #if __ide_target("Torque-W32-Debug")
-   #define TORQUE_DEBUG
+   #define TWISTFORK_DEBUG
 #elif __ide_target("Torque-MacCarb-Debug")
-   #define TORQUE_DEBUG
+   #define TWISTFORK_DEBUG
 #elif __ide_target("Torque-MacX-Debug")
-   #define TORQUE_DEBUG
+   #define TWISTFORK_DEBUG
 #endif
 
 
@@ -44,23 +44,23 @@ typedef unsigned long long U64;     ///< Compiler independent Unsigned 64-bit in
 
 //--------------------------------------
 // Compiler Version
-#define TORQUE_COMPILER_CODEWARRIOR __MWERKS__
+#define TWISTFORK_COMPILER_CODEWARRIOR __MWERKS__
 
-#define TORQUE_COMPILER_STRING "CODEWARRIOR"
+#define TWISTFORK_COMPILER_STRING "CODEWARRIOR"
 
 
 //--------------------------------------
 // Identify the Operating System
 #if defined(_WIN32)
-#  define TORQUE_OS_STRING "Win32"
-#  define TORQUE_OS_WIN32
+#  define TWISTFORK_OS_STRING "Win32"
+#  define TWISTFORK_OS_WIN32
 
 #elif defined(macintosh) || defined(__APPLE__)
-#  define TORQUE_OS_STRING "Mac"
-#  define TORQUE_OS_MAC
-#  define TORQUE_OS_DARWIN
+#  define TWISTFORK_OS_STRING "Mac"
+#  define TWISTFORK_OS_MAC
+#  define TWISTFORK_OS_DARWIN
 #  if defined(__MACH__)
-#     define TORQUE_OS_MAC
+#     define TWISTFORK_OS_MAC
 #  endif
 
 #else
@@ -71,23 +71,23 @@ typedef unsigned long long U64;     ///< Compiler independent Unsigned 64-bit in
 //--------------------------------------
 // Identify the CPU
 #if defined(_M_IX86)
-#  define TORQUE_CPU_STRING "x86"
-#  define TORQUE_CPU_X86
-#  define TORQUE_LITTLE_ENDIAN
-#  define TORQUE_SUPPORTS_NASM
-#  define TORQUE_SUPPORTS_VC_INLINE_X86_ASM
+#  define TWISTFORK_CPU_STRING "x86"
+#  define TWISTFORK_CPU_X86
+#  define TWISTFORK_LITTLE_ENDIAN
+#  define TWISTFORK_SUPPORTS_NASM
+#  define TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM
 
    // Compiling with the CW IDE we cannot use NASM :(
 #  if __ide_target("Torque-W32-Debug")
-#     undef TORQUE_SUPPORTS_NASM
+#     undef TWISTFORK_SUPPORTS_NASM
 #  elif __ide_target("Torque-W32-Release")
-#     undef TORQUE_SUPPORTS_NASM
+#     undef TWISTFORK_SUPPORTS_NASM
 #  endif
 
 #elif defined(__POWERPC__)
-#  define TORQUE_CPU_STRING "PowerPC"
-#  define TORQUE_CPU_PPC
-#  define TORQUE_BIG_ENDIAN
+#  define TWISTFORK_CPU_STRING "PowerPC"
+#  define TWISTFORK_CPU_PPC
+#  define TWISTFORK_BIG_ENDIAN
 
 #else
 #  error "CW: Unsupported Target CPU"

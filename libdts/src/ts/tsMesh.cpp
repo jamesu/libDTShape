@@ -42,7 +42,7 @@
 #include "core/util/triListOpt.h"
 #include "math/util/triRayCheck.h"
 
-#if defined(TORQUE_OS_XENON)
+#if defined(TWISTFORK_OS_XENON)
 #  include "platformXbox/platformXbox.h"
 #endif
 
@@ -105,10 +105,6 @@ void TSMesh::render( TSMeshRenderer &renderer )
 
 void TSMesh::innerRender( TSMeshRenderer &renderer )
 {
-   //if ( !vb.isValid() || !pb.isValid() )
-   //   return;
-   
-   // NULL == guess state
    renderer.doRenderInst(this, NULL, NULL);
 }
 
@@ -120,8 +116,8 @@ void TSMesh::render( TSMaterialList *materials,
                      TSMeshRenderer &renderer )
 {
    // These are only used by TSSkinMesh.
-   TORQUE_UNUSED( isSkinDirty );   
-   TORQUE_UNUSED( transforms );
+   TWISTFORK_UNUSED( isSkinDirty );   
+   TWISTFORK_UNUSED( transforms );
    
    const bool renderDirty = mRenderer->isDirty(this, rdata.getCurrentRenderData());
    
@@ -203,7 +199,7 @@ void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMes
       if ( draw.matIndex & TSDrawPrimitive::NoMaterial )
          continue;
 
-#ifdef TORQUE_DEBUG
+#ifdef TWISTFORK_DEBUG
       // for inspection if you happen to be running in a debugger and can't do bit 
       // operations in your head.
       S32 triangles = draw.matIndex & TSDrawPrimitive::Triangles;
@@ -211,24 +207,16 @@ void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMes
       S32 fan = draw.matIndex & TSDrawPrimitive::Fan;
       S32 indexed = draw.matIndex & TSDrawPrimitive::Indexed;
       S32 type = draw.matIndex & TSDrawPrimitive::TypeMask;
-      TORQUE_UNUSED(triangles);
-      TORQUE_UNUSED(strip);
-      TORQUE_UNUSED(fan);
-      TORQUE_UNUSED(indexed);
-      TORQUE_UNUSED(type);
+      TWISTFORK_UNUSED(triangles);
+      TWISTFORK_UNUSED(strip);
+      TWISTFORK_UNUSED(fan);
+      TWISTFORK_UNUSED(indexed);
+      TWISTFORK_UNUSED(type);
 #endif
 
       const U32 matIndex = draw.matIndex & TSDrawPrimitive::MaterialMask;
       TSMaterialInstance *matInst = materials->getMaterialInst( matIndex );
-/*
-#ifndef TORQUE_OS_MAC
 
-      // Get the instancing material if this mesh qualifies.
-      if ( meshType != SkinMeshType && pb->mPrimitiveArray[i].numVertices < smMaxInstancingVerts )
-         matInst = InstancingMaterialHook::getInstancingMat( matInst );
-
-#endif
-*/
       // If we don't have a material instance after the overload then
       // there is nothing to render... skip this primitive.
       matInst = state->getOverrideMaterial( matInst );
@@ -1163,7 +1151,7 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSMeshInstanceRe
    AssertFatal(batchDataInitialized, "Batch data not initialized. Call createBatchData() before any skin update is called.");
 
    // set arrays
-#if defined(TORQUE_MAX_LIB)
+#if defined(TWISTFORK_MAX_LIB)
    verts.setSize(batchData.initialVerts.size());
    norms.setSize(batchData.initialNorms.size());
 #else
@@ -1498,11 +1486,11 @@ bool TSSkinMesh::buildPolyList( S32 frame, AbstractPolyList *polyList, U32 &surf
 
 bool TSSkinMesh::castRay( S32 frame, const Point3F &start, const Point3F &end, RayInfo *rayInfo, TSMaterialList *materials )
 {
-   TORQUE_UNUSED(frame);
-   TORQUE_UNUSED(start);
-   TORQUE_UNUSED(end);
-   TORQUE_UNUSED(rayInfo);
-   TORQUE_UNUSED(materials);
+   TWISTFORK_UNUSED(frame);
+   TWISTFORK_UNUSED(start);
+   TWISTFORK_UNUSED(end);
+   TWISTFORK_UNUSED(rayInfo);
+   TWISTFORK_UNUSED(materials);
 
    return false;
 }
@@ -1514,7 +1502,7 @@ bool TSSkinMesh::buildConvexHull()
 
 void TSSkinMesh::computeBounds( const MatrixF &transform, Box3F &bounds, S32 frame, Point3F *center, F32 *radius )
 {
-   TORQUE_UNUSED(frame);
+   TWISTFORK_UNUSED(frame);
 
    if (frame < 0)
    {
@@ -2946,7 +2934,7 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
       vertexData.set(aligned_mem, mVertSize, mNumVerts);
       vertexData.setReady(true);
 
-#if defined(TORQUE_OS_XENON)
+#if defined(TWISTFORK_OS_XENON)
       XMemCpyStreaming(vertexData.address(), mVertexData.address(), vertexData.mem_size() );
 #else
       dMemcpy(vertexData.address(), mVertexData.address(), vertexData.mem_size());

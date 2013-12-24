@@ -25,26 +25,23 @@
 
 #include <stdlib.h>
 
-#ifndef _TORQUECONFIG_H_
-#include "torqueConfig.h"
+#ifndef _TWISTFORKCONFIG_H_
+#include "twistforkConfig.h"
 #endif
-#ifndef _TORQUE_TYPES_H_
+#ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
 #ifndef _PLATFORMASSERT_H_
 #include "platform/platformAssert.h"
 #endif
-#ifndef _TORQUE_STRING_H_
-#include "core/util/str.h"
-#endif
-#ifndef _TORQUE_SAFEDELETE_H_
+#ifndef _TWISTFORK_SAFEDELETE_H_
 #include "core/util/safeDelete.h"
 #endif
 
 #include <new>
 #include <typeinfo>
 
-#define BEGIN_NS(ns) namespace ns
+#define BEGIN_NS(ns) namespace ns {
 #define END_NS }
 
 /// Global processor identifiers.
@@ -126,13 +123,13 @@ struct Processor
    static void init();
 };
 
-#if defined(TORQUE_SUPPORTS_GCC_INLINE_X86_ASM)
-#define TORQUE_DEBUGBREAK() { asm ( "int 3"); }
-#elif defined (TORQUE_SUPPORTS_VC_INLINE_X86_ASM) // put this test second so that the __asm syntax doesn't break the Visual Studio Intellisense parser
-#define TORQUE_DEBUGBREAK() { __asm { int 3 }; } 
+#if defined(TWISTFORK_SUPPORTS_GCC_INLINE_X86_ASM)
+#define TWISTFORK_DEBUGBREAK() { asm ( "int 3"); }
+#elif defined (TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM) // put this test second so that the __asm syntax doesn't break the Visual Studio Intellisense parser
+#define TWISTFORK_DEBUGBREAK() { __asm { int 3 }; } 
 #else
 /// Macro to do in-line debug breaks, used for asserts.  Does inline assembly when possible.
-#define TORQUE_DEBUGBREAK() Platform::debugBreak();
+#define TWISTFORK_DEBUGBREAK() Platform::debugBreak();
 #endif
 
 // Some forward declares for later.
@@ -169,8 +166,6 @@ namespace Platform
    /// not depend on this for high precision timing.
    /// @see PlatformTimer
    U32 getRealMilliseconds();
-
-   S32 getBackgroundSleepTime();
    
    // Process control
    void sleep(U32 ms);
@@ -187,6 +182,9 @@ namespace Platform
    
    void onFatalError(int code);
    
+   bool isFile(const char *path);
+   bool isDirectory(const char *path);
+   
    bool isFullPath(const char *path);
    bool createPath(const char *pathName);
    String makeRelativePathName(const char *path, const char *to);
@@ -195,6 +193,7 @@ namespace Platform
    S32 compareFileTimes(const FileTime &a, const FileTime &b);
    bool getFileTimes(const char *filePath, FileTime *createTime, FileTime *modifyTime);
    
+   bool fileDelete(const char *name);
    bool deletePath(const char *filename);
 
    // Alerts
@@ -301,9 +300,9 @@ inline void destructInPlace(T* p)
 /// Memory functions
 
 
-#  define TORQUE_TMM_ARGS_DECL
-#  define TORQUE_TMM_ARGS
-#  define TORQUE_TMM_LOC
+#  define TWISTFORK_TMM_ARGS_DECL
+#  define TWISTFORK_TMM_ARGS
+#  define TWISTFORK_TMM_LOC
 
 #define dMalloc(x) dMalloc_r(x, __FILE__, __LINE__)
 #define dRealloc(x, y) dRealloc_r(x, y, __FILE__, __LINE__)
@@ -345,11 +344,11 @@ template<class T> void dCopyArray(T *dst, const T *src, dsize_t size)
 
 /// The dALIGN macro ensures the passed declaration is
 /// data aligned at 16 byte boundaries.
-#if defined( TORQUE_COMPILER_VISUALC )
+#if defined( TWISTFORK_COMPILER_VISUALC )
    #define dALIGN( decl ) __declspec( align( 16 ) ) decl
    #define dALIGN_BEGIN __declspec( align( 16 ) )
    #define dALIGN_END
-#elif defined( TORQUE_COMPILER_GCC )
+#elif defined( TWISTFORK_COMPILER_GCC )
    #define dALIGN( decl ) decl __attribute__( ( aligned( 16 ) ) )
    #define dALIGN_BEGIN
    #define dALIGN_END __attribute__( ( aligned( 16 ) ) )

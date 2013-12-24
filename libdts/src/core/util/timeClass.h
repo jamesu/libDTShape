@@ -23,17 +23,17 @@
 #ifndef _TIMECLASS_H_
 #define _TIMECLASS_H_
 
-#ifndef _TORQUE_TYPES_H_
+#ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
 
 
-#if defined(TORQUE_COMPILER_VISUALC)
-   #define TORQUE_CONSTANT_S64(a) (a##I64)
-   #define TORQUE_CONSTANT_U64(a) (a##UI64)
+#if defined(TWISTFORK_COMPILER_VISUALC)
+   #define TWISTFORK_CONSTANT_S64(a) (a##I64)
+   #define TWISTFORK_CONSTANT_U64(a) (a##UI64)
 #else
-   #define TORQUE_CONSTANT_S64(a) (a##LL)      ///< Used to declare signed 64 bit constants  @hideinitializer
-   #define TORQUE_CONSTANT_U64(a) (a##ULL)     ///< Used to declare unsigned 64 bit constants @hideinitializer
+   #define TWISTFORK_CONSTANT_S64(a) (a##LL)      ///< Used to declare signed 64 bit constants  @hideinitializer
+   #define TWISTFORK_CONSTANT_U64(a) (a##ULL)     ///< Used to declare unsigned 64 bit constants @hideinitializer
 #endif
 
 namespace Torque
@@ -60,11 +60,11 @@ public:
    static void getCurrentDateTime(DateTime &dateTime);
    static Time getCurrentTime();
 
-   static const S64 OneDay          = TORQUE_CONSTANT_S64(8640000000);
-   static const S64 OneHour         = TORQUE_CONSTANT_S64( 360000000);
-   static const S64 OneMinute       = TORQUE_CONSTANT_S64(   6000000);
-   static const S64 OneSecond       = TORQUE_CONSTANT_S64(    100000);
-   static const S64 OneMillisecond  = TORQUE_CONSTANT_S64(       100);
+   static const S64 OneDay          = TWISTFORK_CONSTANT_S64(8640000000);
+   static const S64 OneHour         = TWISTFORK_CONSTANT_S64( 360000000);
+   static const S64 OneMinute       = TWISTFORK_CONSTANT_S64(   6000000);
+   static const S64 OneSecond       = TWISTFORK_CONSTANT_S64(    100000);
+   static const S64 OneMillisecond  = TWISTFORK_CONSTANT_S64(       100);
 
    Time();
    explicit Time(S64 time);
@@ -262,14 +262,14 @@ template<class S> inline bool write(S &stream, const Time &theTime)
 inline Time UnixTimeToTime(U32 t)
 {
    // Converts "unix" time, seconds since 00:00:00 UTC, January 1, 1970
-   return Time(((S64)(t)) * 100000 + TORQUE_CONSTANT_S64(6213568320000000));
+   return Time(((S64)(t)) * 100000 + TWISTFORK_CONSTANT_S64(6213568320000000));
 }
 
 inline Time Win32FileTimeToTime(U32 low,U32 high)
 {
    // Converts Win32 "file" time, 100 nanosecond intervals since 00:00:00 UTC, January 1, 1601
    S64 t = (((S64)high) << 32) + low;
-   return Time(t / 100 + TORQUE_CONSTANT_S64(5049120960000000));
+   return Time(t / 100 + TWISTFORK_CONSTANT_S64(5049120960000000));
 }
 
 

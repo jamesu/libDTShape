@@ -28,11 +28,11 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#ifndef _TORQUE_TYPES_H_
+#ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
 
-#if defined(TORQUE_OS_WIN32) || defined(TORQUE_OS_XBOX) || defined(TORQUE_OS_XENON)
+#if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
 // These standard functions are not defined on Win32 and other Microsoft platforms...
 #define strcasecmp   _stricmp
 #define strncasecmp  _strnicmp

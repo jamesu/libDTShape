@@ -22,8 +22,9 @@
 
 #include "platform/platform.h"
 
-#include "ts/tsShapeConstruct.h"
-#include "core/engineObject.h"
+#include "core/log.h"
+#include "core/util/refBase.h"
+#include "ts/tsShape.h"
 
 // define macros required for ConvexDecomp headers
 #if defined( _WIN32 )
@@ -307,7 +308,7 @@ void MeshFit::addSourceMesh( const TSShape::Object& obj, const TSMesh* mesh )
 TSMesh* MeshFit::initMeshFromFile( const String& filename ) const
 {
    // Open the source shape file and make a copy of the mesh
-   EngineObjectRef hShape = TSShape::loadShape(filename);
+   TSShapeRef hShape = TSShape::loadShape(filename);
    if (!bool(hShape) || !((TSShape*)hShape.getPointer())->meshes.size())
    {
       Log::errorf("TSShape::createMesh: Could not load source mesh from %s", filename.c_str());

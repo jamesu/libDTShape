@@ -62,7 +62,7 @@ public:
 };
 
 
-#ifdef TORQUE_ENABLE_ASSERTS
+#ifdef TWISTFORK_ENABLE_ASSERTS
    /*!
       Assert that the statement x is true, and continue processing.
 

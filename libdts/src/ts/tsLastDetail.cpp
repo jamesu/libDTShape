@@ -23,24 +23,10 @@
 #include "platform/platform.h"
 #include "ts/tsLastDetail.h"
 
-//#include "renderInstance/renderPassManager.h"
 #include "ts/tsShapeInstance.h"
-//#include "scene/sceneManager.h"
-//#include "scene/sceneRenderState.h"
-//#include "lighting/lightInfo.h"
-//#include "renderInstance/renderImposterMgr.h"
-//#include "gfx/gfxTransformSaver.h"
-//#include "gfx/bitmap/ddsFile.h"
-//#include "gfx/bitmap/ddsUtils.h"
-//#include "gfx/gfxTextureManager.h"
 #include "math/mRandom.h"
 #include "core/stream/fileStream.h"
-//#include "util/imposterCapture.h"
 #include "ts/tsMaterialManager.h"
-
-
-//#include "gfx/bitmap/gBitmap.h"
-
 
 #if 0
 GFXImplementVertexFormat( ImposterState )

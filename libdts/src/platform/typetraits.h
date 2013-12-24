@@ -221,7 +221,7 @@ struct _TypeTraits< T* >
    typedef _ConstructPtr Construct;
    typedef _DestructPtr Destruct;
 
-#ifdef TORQUE_64
+#ifdef TWISTFORK_64
    template< typename A >
    static bool isTaggedPtr( A* ptr ) { return ( U64( ptr ) & 0x1 ); } //TODO: 64bits
    template< typename A >

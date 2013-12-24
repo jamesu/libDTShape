@@ -25,7 +25,7 @@
 #include "math/mMatrix.h"
 
 
-#if defined(TORQUE_SUPPORTS_VC_INLINE_X86_ASM)
+#if defined(TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM)
 #define ADD_SSE_FN
 // inlined version here.
 void SSE_MatrixF_x_MatrixF(const F32 *matA, const F32 *matB, F32 *result)
@@ -194,7 +194,7 @@ void SSE_MatrixF_x_MatrixF_Aligned(const F32 *matA, const F32 *matB, F32 *result
 // EXCEPT if we're in an old version of Codewarrior that can't handle SSE code.
 // TODO: the NASM implementation of SSE_MatrixF_x_MatrixF_Aligned is missing,
 // so we temporary disable this until fixed (needed for linux dedicated build)
-//#elif defined(TORQUE_SUPPORTS_NASM)
+//#elif defined(TWISTFORK_SUPPORTS_NASM)
 #elif 0
 #define ADD_SSE_FN
 extern "C"
@@ -203,7 +203,7 @@ extern "C"
    void SSE_MatrixF_x_MatrixF_Aligned(const F32 *matA, const F32 *matB, F32 *result);
 }
 
-#elif defined( TORQUE_COMPILER_GCC ) && defined( TORQUE_CPU_X86 )
+#elif defined( TWISTFORK_COMPILER_GCC ) && defined( TWISTFORK_CPU_X86 )
 #define ADD_SSE_FN
 
 void SSE_MatrixF_x_MatrixF(const F32 *matA, const F32 *matB, F32 *result)

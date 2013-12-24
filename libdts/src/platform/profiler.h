@@ -23,11 +23,11 @@
 #ifndef _PROFILER_H_
 #define _PROFILER_H_
 
-#ifndef _TORQUECONFIG_H_
-#include "torqueConfig.h"
+#ifndef _TWISTFORKCONFIG_H_
+#include "twistforkConfig.h"
 #endif
 
-#ifdef TORQUE_ENABLE_PROFILER
+#ifdef TWISTFORK_ENABLE_PROFILER
 
 struct ProfilerData;
 struct ProfilerRootData;
@@ -35,7 +35,7 @@ struct ProfilerRootData;
 /// All values outputted by the profiler are percentages of the time that it takes
 /// to run entire main loop.
 ///
-/// First, you must #define TORQUE_ENABLE_PROFILER in profiler.h in order to
+/// First, you must #define TWISTFORK_ENABLE_PROFILER in profiler.h in order to
 /// active it.  Examples of script use:
 /// @code
 /// //enables or disables profiling.  Data is only gathered when the profiler is enabled.
@@ -109,7 +109,7 @@ public:
    void hashPop(ProfilerRootData *expected=NULL);
    /// Enable a profiler marker
    void enableMarker(const char *marker, bool enabled);
-#ifdef TORQUE_ENABLE_PROFILE_PATH
+#ifdef TWISTFORK_ENABLE_PROFILE_PATH
    /// Get current profile path
    String getProfilePath();
    /// Construct profile path of given profiler data
@@ -156,7 +156,7 @@ struct ProfilerData
    U32 mStartTime[2];
    F64 mTotalTime;
    F64 mSubTime;
-#ifdef TORQUE_ENABLE_PROFILE_PATH
+#ifdef TWISTFORK_ENABLE_PROFILE_PATH
    String mPath;
 #endif
 };

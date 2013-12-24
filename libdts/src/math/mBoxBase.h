@@ -205,6 +205,7 @@ class BoxBase
                }
                break;
          }
+         return NearBottomLeft;
       }
 
       /// Indices for the edges of the box.

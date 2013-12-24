@@ -26,15 +26,11 @@
 #include "ts/tsMaterial.h"
 #endif
 
-#ifndef _TSINGLETON_H_
-#include "core/util/tSingleton.h"
-#endif
-
 #ifndef _TDICTIONARY_H_
 #include "core/util/tDictionary.h"
 #endif
 
-class TSMaterialManager : public EngineObject
+class TSMaterialManager : public StrongRefBase
 {
 public:
    typedef Map<String, String> MaterialMap;

@@ -20,8 +20,8 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TORQUE_CORE_UTIL_SAFECAST_H_
-#define _TORQUE_CORE_UTIL_SAFECAST_H_
+#ifndef _TWISTFORK_CORE_UTIL_SAFECAST_H_
+#define _TWISTFORK_CORE_UTIL_SAFECAST_H_
 
 #include "platform/platform.h"
 
@@ -57,4 +57,4 @@ inline T* safeCastISV( I* inPtr )
    }
 }
 
-#endif // _TORQUE_CORE_UTIL_SAFECAST_H_
+#endif // _TWISTFORK_CORE_UTIL_SAFECAST_H_

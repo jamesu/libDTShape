@@ -101,7 +101,7 @@ inline void SparseArray<T>::insert(T* pObject, U32 key)
    pNew->next    = mSentryTables[insert].next;
    mSentryTables[insert].next = pNew;
 
-#ifdef TORQUE_DEBUG
+#ifdef TWISTFORK_DEBUG
    Node* probe = pNew->next;
    while (probe != NULL) {
       AssertFatal(probe->key != key, "error, duplicate keys in sparse array!");

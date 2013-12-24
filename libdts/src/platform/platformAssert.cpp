@@ -116,7 +116,7 @@ bool PlatformAssert::process(Type         assertType,
       char buffer[2048];
       dSprintf(buffer, 2048, "%s(%ld) : %s", filename, lineNumber, typeName[assertType] );
 
-#ifdef TORQUE_DEBUG
+#ifdef TWISTFORK_DEBUG
       // In debug versions, allow a retry even for ISVs...
       bool retry = displayMessageBox(buffer, message, true);
 #else

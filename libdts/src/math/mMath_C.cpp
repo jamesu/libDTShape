@@ -149,7 +149,7 @@ static void m_point3F_normalize_f_C(F32 *p, F32 val)
 //--------------------------------------
 static void m_point3F_interpolate_C(const F32 *from, const F32 *to, F32 factor, F32 *result )
 {
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
 // remove possibility of aliases
    const F32 inverse = 1.0f - factor;
    const F32	from0 = from[0], from1 = from[1], from2 = from[2];
@@ -179,7 +179,7 @@ static void m_point3D_normalize_C(F64 *p)
 //--------------------------------------
 static void m_point3D_interpolate_C(const F64 *from, const F64 *to, F64 factor, F64 *result )
 {
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
 // remove possibility of aliases
    const F64 inverse = 1.0f - factor;
    const F64	from0 = from[0], from1 = from[1], from2 = from[2];

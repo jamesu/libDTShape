@@ -1426,7 +1426,7 @@ bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
       return false;
    }
 
-   EngineObjectRef hSrcShape;
+   TSShapeRef hSrcShape;
    TSShape* srcShape = this;        // Assume we are copying an existing sequence
 
    if (path.getExtension().equal("dts", String::NoCase) ||

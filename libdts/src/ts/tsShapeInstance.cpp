@@ -34,7 +34,6 @@
 //#include "scene/sceneRenderState.h"
 //#include "gfx/primBuilder.h"
 //#include "gfx/gfxDrawUtil.h"
-#include "core/module.h"
 #include "math/util/frustum.h"
 
 

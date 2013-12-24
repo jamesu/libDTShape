@@ -22,8 +22,7 @@
 #include "ts/tsMesh.h"
 #include "ts/tsMeshIntrinsics.h"
 #include "ts/arch/tsMeshIntrinsics.arch.h"
-#include "core/module.h"
-
+#include "libdtshape.h"
 
 void (*zero_vert_normal_bulk)(const dsize_t count, U8 * __restrict const outPtr, const dsize_t outStride) = NULL;
 void (*m_matF_x_BatchedVertWeightList)(const MatrixF &mat, const dsize_t count, const TSSkinMesh::BatchData::BatchedVertWeight * __restrict batch, U8 * const __restrict outPtr, const dsize_t outStride) = NULL;
@@ -78,24 +77,21 @@ void m_matF_x_BatchedVertWeightList_C(const MatrixF &mat,
 // Initializer.
 //------------------------------------------------------------------------------
 
-MODULE_BEGIN( TSMeshIntrinsics )
 
-   MODULE_INIT_AFTER( Platform )
-   
-   MODULE_INIT
-   {
+void DTSLib::initMeshIntrinsics()
+{
       // Assign defaults (C++ versions)
       zero_vert_normal_bulk = zero_vert_normal_bulk_C;
       m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_C;
 
-   #if defined(TORQUE_OS_XENON)
+   #if defined(TWISTFORK_OS_XENON)
       zero_vert_normal_bulk = zero_vert_normal_bulk_X360;
       m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_X360;
    #else
       // Find the best implementation for the current CPU
       if(Platform::SystemInfo.processor.properties & CPU_PROP_SSE)
       {
-   #if defined(TORQUE_CPU_X86)
+   #if defined(TWISTFORK_CPU_X86)
          
          zero_vert_normal_bulk = zero_vert_normal_bulk_SSE;
          m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_SSE;
@@ -110,12 +106,11 @@ MODULE_BEGIN( TSMeshIntrinsics )
       }
       else if(Platform::SystemInfo.processor.properties & CPU_PROP_ALTIVEC)
       {
-   #if !defined(TORQUE_OS_XENON) && defined(TORQUE_CPU_PPC)
+   #if !defined(TWISTFORK_OS_XENON) && defined(TWISTFORK_CPU_PPC)
          zero_vert_normal_bulk = zero_vert_normal_bulk_gccvec;
          m_matF_x_BatchedVertWeightList = m_matF_x_BatchedVertWeightList_gccvec;
    #endif
       }
    #endif
-   }
+}
 
-MODULE_END;

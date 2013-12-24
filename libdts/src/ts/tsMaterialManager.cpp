@@ -24,7 +24,6 @@
 #include "ts/tsMaterialManager.h"
 
 #include "core/util/safeDelete.h"
-#include "core/module.h"
 #include "core/log.h"
 
 void TSMaterialManager::mapMaterial(const String & textureName, const String & materialName)

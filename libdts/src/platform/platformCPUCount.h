@@ -20,8 +20,8 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TORQUE_PLATFORM_PLATFORMCPUCOUNT_H_
-#define _TORQUE_PLATFORM_PLATFORMCPUCOUNT_H_
+#ifndef _TWISTFORK_PLATFORM_PLATFORMCPUCOUNT_H_
+#define _TWISTFORK_PLATFORM_PLATFORMCPUCOUNT_H_
 
 #include "platform/platform.h"
 
@@ -71,5 +71,5 @@ namespace CPUInfo
 
 } // namespace CPUInfo
 
-#endif // _TORQUE_PLATFORM_PLATFORMCOUNT_H_
+#endif // _TWISTFORK_PLATFORM_PLATFORMCOUNT_H_
 

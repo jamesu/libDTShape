@@ -25,7 +25,7 @@
 #include "platform/platformCPUCount.h"
 
 // Consoles don't need this
-#if defined(TORQUE_OS_XENON) || defined(TORQUE_OS_PS3)
+#if defined(TWISTFORK_OS_XENON) || defined(TWISTFORK_OS_PS3)
 namespace CPUInfo 
 {
 
@@ -41,7 +41,7 @@ EConfig CPUCount(U32& TotAvailLogical, U32& TotAvailCore, U32& PhysicalNum)
 }; // namespace
 #else
 
-#ifdef TORQUE_OS_LINUX
+#ifdef TWISTFORK_OS_LINUX
 // 	The Linux source code listing can be compiled using Linux kernel verison 2.6 
 //	or higher (e.g. RH 4AS-2.8 using GCC 3.4.4). 
 //	Due to syntax variances of Linux affinity APIs with earlier kernel versions 
@@ -53,9 +53,9 @@ EConfig CPUCount(U32& TotAvailLogical, U32& TotAvailCore, U32& PhysicalNum)
 #include <string.h>
 #include <sched.h>
 #define DWORD unsigned long
-#elif defined( TORQUE_OS_WIN32 )
+#elif defined( TWISTFORK_OS_WIN32 )
 #include <windows.h>
-#elif defined( TORQUE_OS_MAC )
+#elif defined( TWISTFORK_OS_MAC )
 #  include <sys/types.h>
 #  include <sys/sysctl.h>
 #else
@@ -79,7 +79,7 @@ namespace CPUInfo {
       // initial APIC ID for the processor this code is running on.
 
 
-      #ifndef TORQUE_OS_MAC
+      #ifndef TWISTFORK_OS_MAC
       static unsigned int  CpuIDSupported(void);      
       static unsigned int  find_maskwidth(unsigned int);
       static unsigned int  HWD_MTSupported(void);
@@ -91,7 +91,7 @@ namespace CPUInfo {
 
       static char g_s3Levels[2048];
 
-#ifndef TORQUE_OS_MAC
+#ifndef TWISTFORK_OS_MAC
 
       //
       // CpuIDSupported will return 0 if CPUID instruction is unavailable. Otherwise, it will return 
@@ -101,7 +101,7 @@ namespace CPUInfo {
       {
          unsigned int MaxInputValue;
          // If CPUID instruction is supported
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
          try    
          {		
             MaxInputValue = 0;
@@ -121,7 +121,7 @@ namespace CPUInfo {
          {
             return(0);                   // cpuid instruction is unavailable
          }
-#elif defined( TORQUE_COMPILER_VISUALC )
+#elif defined( TWISTFORK_COMPILER_VISUALC )
          try
          {
             MaxInputValue = 0;
@@ -159,7 +159,7 @@ namespace CPUInfo {
          unsigned int Regeax        = 0;
 
          if (!HWD_MTSupported()) return (unsigned int) 1;  // Single core
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
          {
             asm
                (
@@ -187,7 +187,7 @@ namespace CPUInfo {
                ".multi_core:"
                );		
          }
-#elif defined( TORQUE_COMPILER_VISUALC )
+#elif defined( TWISTFORK_COMPILER_VISUALC )
          __asm
          {
             xor eax, eax
@@ -227,7 +227,7 @@ multi_core:
 
          if ((CpuIDSupported() >= 1))
          {
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
             asm 
                (
                "pushl %%ebx\n\t"
@@ -238,7 +238,7 @@ multi_core:
                :
                : "%eax","%ecx"
                );
-#elif defined( TORQUE_COMPILER_VISUALC )
+#elif defined( TWISTFORK_COMPILER_VISUALC )
             __asm
             {
                mov eax, 1
@@ -268,7 +268,7 @@ multi_core:
          unsigned int Regebx = 0;
 
          if (!HWD_MTSupported()) return (unsigned int) 1;
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
          asm 
             (
             "movl $1,%%eax\n\t"
@@ -277,7 +277,7 @@ multi_core:
             :
             : "%eax","%ecx","%edx"
             );
-#elif defined( TORQUE_COMPILER_VISUALC )
+#elif defined( TWISTFORK_COMPILER_VISUALC )
          __asm
          {
             mov eax, 1
@@ -296,7 +296,7 @@ multi_core:
       {
 
          unsigned int Regebx = 0;
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
          asm
             (
             "movl $1, %%eax\n\t"	
@@ -306,7 +306,7 @@ multi_core:
             : "%eax","%ecx","%edx" 
             );
 
-#elif defined( TORQUE_COMPILER_VISUALC )
+#elif defined( TWISTFORK_COMPILER_VISUALC )
          __asm
          {
             mov eax, 1
@@ -328,7 +328,7 @@ multi_core:
       {
          unsigned int MaskWidth,
             count = CountItem;
-#ifdef TORQUE_COMPILER_GCC
+#ifdef TWISTFORK_COMPILER_GCC
          asm
             (
 #ifdef __x86_64__		// define constant to compile  
@@ -368,7 +368,7 @@ multi_core:
 #endif
             );
 
-#elif defined( TORQUE_COMPILER_VISUALC )
+#elif defined( TWISTFORK_COMPILER_VISUALC )
          __asm
          {
             mov eax, count
@@ -423,7 +423,7 @@ next:
          unsigned int numLPEnabled = 0;
          int MaxLPPerCore = 1;
 
-#ifdef TORQUE_OS_MAC
+#ifdef TWISTFORK_OS_MAC
 
          //FIXME: This isn't a proper port but more or less just some sneaky cheating
          //  to get around having to mess with yet another crap UNIX-style API.  Seems
@@ -455,7 +455,7 @@ next:
          unsigned char tblPkgID[256], tblCoreID[256], tblSMTID[256];
          char	tmp[256];
 
-#ifdef TORQUE_OS_LINUX
+#ifdef TWISTFORK_OS_LINUX
          //we need to make sure that this process is allowed to run on 
          //all of the logical processors that the OS itself can run on.
          //A process could acquire/inherit affinity settings that restricts the 
@@ -476,7 +476,7 @@ next:
             if ( CPU_ISSET(i, &allowedCPUs) == 0 )
                return CONFIG_UserConfigIssue;
          }
-#elif defined( TORQUE_OS_WIN32 )
+#elif defined( TWISTFORK_OS_WIN32 )
          DWORD dwProcessAffinity, dwSystemAffinity;
          GetProcessAffinityMask(GetCurrentProcess(), 
             &dwProcessAffinity,
@@ -495,7 +495,7 @@ next:
          MaxLPPerCore = MaxLogicalProcPerPhysicalProc() / MaxCorePerPhysicalProc();
          dwAffinityMask = 1;
 
-#ifdef TORQUE_OS_LINUX
+#ifdef TWISTFORK_OS_LINUX
          cpu_set_t currentCPU;
          while ( j < sysNumProcs )
          {
@@ -504,7 +504,7 @@ next:
             if ( sched_setaffinity (0, sizeof(currentCPU), &currentCPU) == 0 )
             {
                sleep(0);  // Ensure system to switch to the right CPU
-#elif defined( TORQUE_OS_WIN32 )
+#elif defined( TWISTFORK_OS_WIN32 )
          while (dwAffinityMask && dwAffinityMask <= dwSystemAffinity)
          {
             if (SetThreadAffinityMask(GetCurrentThread(), dwAffinityMask))
@@ -546,10 +546,10 @@ next:
          } // while
 
          // restore the affinity setting to its original state
-#ifdef TORQUE_OS_LINUX
+#ifdef TWISTFORK_OS_LINUX
          sched_setaffinity (0, sizeof(allowedCPUs), &allowedCPUs);
          sleep(0);
-#elif defined( TORQUE_OS_WIN32 )
+#elif defined( TWISTFORK_OS_WIN32 )
          SetThreadAffinityMask(GetCurrentThread(), dwProcessAffinity);
          Sleep(0);
 #else

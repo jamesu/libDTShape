@@ -635,8 +635,6 @@ domCOLLADA* ColladaShapeLoader::readColladaFile(const String& path)
 /// This function is invoked by the resource manager based on file extension.
 TSShape* loadColladaShape(const Torque::Path &path)
 {
-#if 0
-#ifndef DAE2DTS_TOOL
    // Generate the cached filename
    Torque::Path cachedPath(path);
    cachedPath.setExtension("cached.dts");
@@ -664,11 +662,10 @@ TSShape* loadColladaShape(const Torque::Path &path)
             delete shape;
       }
 
-      Log::warnf("Failed to load cached COLLADA shape from %s", cachedPath.getFullPath().c_str());
+      Log::warnf("Failed to load cached COLLADA shape from %s", cachedPath.getFullPath());
    }
-#endif // DAE2DTS_TOOL
 
-   if (!Torque::FS::IsFile(path))
+   if (!Platform::isFile(path.getFullFileName()))
    {
       // DAE file does not exist, bail.
       return NULL;
@@ -680,7 +677,7 @@ TSShape* loadColladaShape(const Torque::Path &path)
 
    // Allow TSShapeConstructor object to override properties
    ColladaUtils::getOptions().reset();
-   TSShapeConstructor* tscon = TSShapeConstructor::findShapeConstructor(path.getFullPath());
+   /*TSShapeConstructor* tscon = TSShapeConstructor::findShapeConstructor(path.getFullPath());
    if (tscon)
    {
       ColladaUtils::getOptions() = tscon->mOptions;
@@ -690,7 +687,7 @@ TSShape* loadColladaShape(const Torque::Path &path)
       ColladaUtils::getOptions().forceUpdateMaterials = cmdLineOptions.forceUpdateMaterials;
       ColladaUtils::getOptions().useDiffuseNames = cmdLineOptions.useDiffuseNames;
 #endif
-   }
+   }*/
 
    // Check if this is a Sketchup file (.kmz) and if so, mount the zip filesystem
    // and get the path to the DAE file.
@@ -724,15 +721,6 @@ TSShape* loadColladaShape(const Torque::Path &path)
 
    // Close progress dialog
    TSShapeLoader::updateProgress(TSShapeLoader::Load_Complete, "Import complete");
-
-   if (isSketchup)
-   {
-      // Unmount the zip if we mounted it
-      Torque::FS::Unmount(mountPoint);
-   }
-
+   
    return tss;
-#else
-   return NULL;
-#endif
 }

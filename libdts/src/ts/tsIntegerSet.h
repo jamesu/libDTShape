@@ -31,7 +31,7 @@
 #endif
 
 
-#if defined(TORQUE_MAX_LIB)
+#if defined(TWISTFORK_MAX_LIB)
 #define MAX_TS_SET_DWORDS 32
 #else
 #define MAX_TS_SET_DWORDS 64

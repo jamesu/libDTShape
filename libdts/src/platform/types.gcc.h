@@ -36,70 +36,70 @@ typedef unsigned long long  U64;
 
 //--------------------------------------
 // Compiler Version
-#define TORQUE_COMPILER_GCC (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#define TWISTFORK_COMPILER_GCC (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 
 
 //--------------------------------------
 // Identify the compiler string
 
 #if defined(__MINGW32__)
-#  define TORQUE_COMPILER_STRING "GCC (MinGW)"
-#  define TORQUE_COMPILER_MINGW
+#  define TWISTFORK_COMPILER_STRING "GCC (MinGW)"
+#  define TWISTFORK_COMPILER_MINGW
 #elif defined(__CYGWIN__)
-#  define TORQUE_COMPILER_STRING "GCC (Cygwin)"
-#  define TORQUE_COMPILER_MINGW
+#  define TWISTFORK_COMPILER_STRING "GCC (Cygwin)"
+#  define TWISTFORK_COMPILER_MINGW
 #else
-#  define TORQUE_COMPILER_STRING "GCC "
+#  define TWISTFORK_COMPILER_STRING "GCC "
 #endif
 
 
 //--------------------------------------
 // Identify the Operating System
 #if defined(__WIN32__) || defined(_WIN32)
-#  define TORQUE_OS_STRING "Win32"
-#  define TORQUE_OS_WIN32
-#  define TORQUE_SUPPORTS_NASM
-#  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
+#  define TWISTFORK_OS_STRING "Win32"
+#  define TWISTFORK_OS_WIN32
+#  define TWISTFORK_SUPPORTS_NASM
+#  define TWISTFORK_SUPPORTS_GCC_INLINE_X86_ASM
 
 #elif defined(_WIN64)
-#  define TORQUE_OS_STRING "Win64"
-#  define TORQUE_OS_WIN32
-#  define TORQUE_OS_WIN64
+#  define TWISTFORK_OS_STRING "Win64"
+#  define TWISTFORK_OS_WIN32
+#  define TWISTFORK_OS_WIN64
 
 #elif defined(SN_TARGET_PS3)
-#  define TORQUE_OS_STRING "PS3"
-#  define TORQUE_OS_PS3
+#  define TWISTFORK_OS_STRING "PS3"
+#  define TWISTFORK_OS_PS3
 
 #elif defined(linux)
-#  define TORQUE_OS_STRING "Linux"
-#  define TORQUE_OS_LINUX
-#  define TORQUE_OS_POSIX
-#  define TORQUE_SUPPORTS_NASM
-#  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
+#  define TWISTFORK_OS_STRING "Linux"
+#  define TWISTFORK_OS_LINUX
+#  define TWISTFORK_OS_POSIX
+#  define TWISTFORK_SUPPORTS_NASM
+#  define TWISTFORK_SUPPORTS_GCC_INLINE_X86_ASM
 
 #elif defined(__OpenBSD__)
-#  define TORQUE_OS_STRING "OpenBSD"
-#  define TORQUE_OS_OPENBSD
-#  define TORQUE_OS_POSIX
-#  define TORQUE_SUPPORTS_NASM
-#  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
+#  define TWISTFORK_OS_STRING "OpenBSD"
+#  define TWISTFORK_OS_OPENBSD
+#  define TWISTFORK_OS_POSIX
+#  define TWISTFORK_SUPPORTS_NASM
+#  define TWISTFORK_SUPPORTS_GCC_INLINE_X86_ASM
 
 #elif defined(__FreeBSD__)
-#  define TORQUE_OS_STRING "FreeBSD"
-#  define TORQUE_OS_FREEBSD
-#  define TORQUE_OS_POSIX
-#  define TORQUE_SUPPORTS_NASM
-#  define TORQUE_SUPPORTS_GCC_INLINE_X86_ASM
+#  define TWISTFORK_OS_STRING "FreeBSD"
+#  define TWISTFORK_OS_FREEBSD
+#  define TWISTFORK_OS_POSIX
+#  define TWISTFORK_SUPPORTS_NASM
+#  define TWISTFORK_SUPPORTS_GCC_INLINE_X86_ASM
 
 #elif defined(__APPLE__)
-#  define TORQUE_OS_STRING "MacOS X"
-#  define TORQUE_OS_MAC
-#  define TORQUE_OS_POSIX
-#  define TORQUE_OS_DARWIN
+#  define TWISTFORK_OS_STRING "MacOS X"
+#  define TWISTFORK_OS_MAC
+#  define TWISTFORK_OS_POSIX
+#  define TWISTFORK_OS_DARWIN
 #  if defined(i386)
 // Disabling ASM on XCode for shared library build code relocation issues
 // This could be reconfigured for static builds, though minimal impact
-//#     define TORQUE_SUPPORTS_NASM
+//#     define TWISTFORK_SUPPORTS_NASM
 #  endif
 #else 
 #  error "GCC: Unsupported Operating System"
@@ -108,25 +108,25 @@ typedef unsigned long long  U64;
 //--------------------------------------
 // Identify the CPU
 #if defined(i386)
-#  define TORQUE_CPU_STRING "Intel x86"
-#  define TORQUE_CPU_X86
-#  define TORQUE_LITTLE_ENDIAN
+#  define TWISTFORK_CPU_STRING "Intel x86"
+#  define TWISTFORK_CPU_X86
+#  define TWISTFORK_LITTLE_ENDIAN
 
 #elif defined(__amd64__)
-#  define TORQUE_CPU_STRING "Intel x86-64"
-#  define TORQUE_CPU_X86_64
-#  define TORQUE_LITTLE_ENDIAN
-#  define TORQUE_64
+#  define TWISTFORK_CPU_STRING "Intel x86-64"
+#  define TWISTFORK_CPU_X86_64
+#  define TWISTFORK_LITTLE_ENDIAN
+#  define TWISTFORK_64
 
 #elif defined(__ppc__)
-#  define TORQUE_CPU_STRING "PowerPC"
-#  define TORQUE_CPU_PPC
-#  define TORQUE_BIG_ENDIAN
+#  define TWISTFORK_CPU_STRING "PowerPC"
+#  define TWISTFORK_CPU_PPC
+#  define TWISTFORK_BIG_ENDIAN
 
 #elif defined(SN_TARGET_PS3)
-#  define TORQUE_CPU_STRING "PowerPC"
-#  define TORQUE_CPU_PPC
-#  define TORQUE_BIG_ENDIAN
+#  define TWISTFORK_CPU_STRING "PowerPC"
+#  define TWISTFORK_CPU_PPC
+#  define TWISTFORK_BIG_ENDIAN
 
 #else
 #  error "GCC: Unsupported Target CPU"
@@ -149,18 +149,18 @@ typedef unsigned long long  U64;
 #define OffsetNonConst(x, cls) _Offset_Normal(x, cls)
 
 // compiler is GCC 3 with minor version less than 4
-#elif defined(TORQUE_COMPILER_GCC) && (__GNUC__ == 3) && (__GNUC_MINOR__ < 4)
+#elif defined(TWISTFORK_COMPILER_GCC) && (__GNUC__ == 3) && (__GNUC_MINOR__ < 4)
 #define Offset(x, cls) _Offset_Variant_1(x, cls)
 #define OffsetNonConst(x, cls) _Offset_Variant_1(x, cls)
 
 // compiler is GCC 3 with minor version greater than 4
-#elif defined(TORQUE_COMPILER_GCC) && (__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)
+#elif defined(TWISTFORK_COMPILER_GCC) && (__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)
 #include <stddef.h>
 #define Offset(x, cls) _Offset_Variant_2(x, cls)
 #define OffsetNonConst(x, cls) _Offset_Variant_1(x, cls)
 
 // compiler is GCC 4
-#elif defined(TORQUE_COMPILER_GCC) && (__GNUC__ == 4)
+#elif defined(TWISTFORK_COMPILER_GCC) && (__GNUC__ == 4)
 #include <stddef.h>
 #define Offset(x, cls) _Offset_Normal(x, cls)
 #define OffsetNonConst(x, cls) _Offset_Variant_1(x, cls)

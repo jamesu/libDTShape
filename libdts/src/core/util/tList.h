@@ -20,10 +20,10 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TORQUE_LIST_
-#define _TORQUE_LIST_
+#ifndef _TWISTFORK_LIST_
+#define _TWISTFORK_LIST_
 
-#ifndef _TORQUE_TYPES_H_
+#ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
 
@@ -486,5 +486,5 @@ inline U& List<Type>::_Iterator<U,E>::operator*() const
 
 }  // Namespace
 
-#endif // _TORQUE_LIST_
+#endif // _TWISTFORK_LIST_
 

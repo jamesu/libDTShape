@@ -62,7 +62,7 @@ void Athlon_MatrixF_x_Point3F(const F32 *m, const F32 *p, F32 *presult)
 // r[15]= a[12]*b[3]+ a[13]*b[7]+ a[14]*b[11]+ a[15]*b[15];
 //============================================================
 
-#if defined(TORQUE_SUPPORTS_VC_INLINE_X86_ASM)
+#if defined(TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM)
 #define ADD_3DNOW_FUNCS
 // inlined version here.
 void Athlon_MatrixF_x_MatrixF(const F32 *matA, const F32 *matB, F32 *result)
@@ -196,7 +196,7 @@ void Athlon_MatrixF_x_MatrixF(const F32 *matA, const F32 *matB, F32 *result)
       femms
    }
 }
-#elif defined(TORQUE_SUPPORTS_NASM)
+#elif defined(TWISTFORK_SUPPORTS_NASM)
 #define ADD_3DNOW_FUNCS
 extern "C"
 {
