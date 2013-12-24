@@ -2022,7 +2022,7 @@ TSShape *TSShape::createFromPath(const DTShape::Path &path)
    }
    else if ( extension.equal( "dae", String::NoCase ) || extension.equal( "kmz", String::NoCase ) )
    {
-#ifdef TORQUE_COLLADA
+#ifdef TWISTFORK_INCLUDE_COLLADA
       // Attempt to load the DAE file
       ret = loadColladaShape(path);
       readSuccess = (ret != NULL);

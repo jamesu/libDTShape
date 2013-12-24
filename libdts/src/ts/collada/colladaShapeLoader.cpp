@@ -51,6 +51,12 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
+const char* sFileExtensions[] = {
+   ".bmp",
+   ".png",
+   ".jpg"
+};
+
 // 
 static DAE sDAE;                 // Collada model database (holds the last loaded file)
 static DTShape::Path sLastPath;   // Path of the last loaded Collada file
@@ -389,20 +395,15 @@ void ColladaShapeLoader::computeBounds(Box3F& bounds)
 /// Find the file extension for an extensionless texture
 String findTextureExtension(const DTShape::Path &texPath)
 {
-#if 0
    DTShape::Path path(texPath);
-   for(S32 i = 0;i < GBitmap::sRegistrations.size();++i)
+   S32 len = sizeof(sFileExtensions) / sizeof(const char*);
+   for(S32 i = 0;i <len;++i)
    {
-      GBitmap::Registration &reg = GBitmap::sRegistrations[i];
-      for(S32 j = 0;j < reg.extensions.size();++j)
-      {
-         path.setExtension(reg.extensions[j]);
-         if (Torque::FS::IsFile(path))
-            return path.getExtension();
-      }
+      path.setExtension(sFileExtensions[i]);
+      if (Platform::isFile(path.getFullPath()))
+         return path.getExtension();
    }
-#endif
-
+   
    return String();
 }
 
@@ -599,21 +600,31 @@ domCOLLADA* ColladaShapeLoader::getDomCOLLADA(const DTShape::Path& path)
 
 domCOLLADA* ColladaShapeLoader::readColladaFile(const String& path)
 {
-#if 0
    // Check if this file is already loaded into the database
    domCOLLADA* root = sDAE.getRoot(path.c_str());
    if (root)
       return root;
 
    // Load the Collada file into memory
-   FileObject fo;
-   if (!fo.readMemory(path))
+   FileStream colladaFile;
+   U8 *data = NULL;
+   
+   if (colladaFile.open(path, FileStream::Read))
+   {
+      U32 size = colladaFile.getStreamSize();
+      data = (U8*)dMalloc(size);
+      colladaFile.read(size, data);
+   }
+   
+   if (!data)
    {
       daeErrorHandler::get()->handleError(avar("Could not read %s into memory", path.c_str()));
       return NULL;
    }
 
-   root = sDAE.openFromMemory(path.c_str(), (const char*)fo.buffer());
+   root = sDAE.openFromMemory(path.c_str(), (const char*)data);
+   dFree(data);
+   
    if (!root || !root->getLibrary_visual_scenes_array().getCount()) {
       daeErrorHandler::get()->handleError(avar("Could not parse %s", path.c_str()));
       return NULL;
@@ -623,14 +634,13 @@ domCOLLADA* ColladaShapeLoader::readColladaFile(const String& path)
    ColladaUtils::applyConditioners(root);
 
    // Recursively load external DAE references
-   TSShapeLoader::updateProgress(TSShapeLoader::Load_ExternalRefs, "Loading external references...");
+   //TSShapeLoader::updateProgress(TSShapeLoader::Load_ExternalRefs, "Loading external references...");
    for (S32 iRef = 0; iRef < root->getDocument()->getReferencedDocuments().getCount(); iRef++) {
       String refPath = (daeString)root->getDocument()->getReferencedDocuments()[iRef];
       if (refPath.endsWith(".dae") && !readColladaFile(refPath))
          daeErrorHandler::get()->handleError(avar("Failed to load external reference: %s", refPath.c_str()));
    }
    return root;
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -667,7 +677,7 @@ TSShape* loadColladaShape(const DTShape::Path &path)
       Log::warnf("Failed to load cached COLLADA shape from %s", cachedPath.getFullPath().c_str());
    }
 
-   if (!Platform::isFile(path.getFullFileName()))
+   if (!Platform::isFile(path.getFullPath()))
    {
       // DAE file does not exist, bail.
       return NULL;
@@ -696,6 +706,9 @@ TSShape* loadColladaShape(const DTShape::Path &path)
    String mountPoint;
    DTShape::Path daePath;
    bool isSketchup = ColladaShapeLoader::checkAndMountSketchup(path, mountPoint, daePath);
+   
+   if (!isSketchup)
+      daePath = path;
 
    // Load Collada model and convert to 3space
    TSShape* tss = 0;

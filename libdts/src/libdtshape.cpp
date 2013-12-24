@@ -18,6 +18,8 @@ void init(U32 opts)
 {
    Processor::init();
    
+   FrameAllocator::init(1024*1024); // 1mb
+   
    Math::init(((opts >> 16) & 0xFFFF));
    
    initMeshIntrinsics();
