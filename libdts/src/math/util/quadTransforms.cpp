@@ -23,6 +23,11 @@
 #include "platform/platform.h"
 #include "math/util/quadTransforms.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 BiQuadToSqr::BiQuadToSqr(  const Point2F &p00, 
                            const Point2F &p10, 
@@ -163,3 +168,6 @@ Point3F BiSqrToQuad3D::transform( const Point2F &p ) const
    return result;   
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

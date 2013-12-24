@@ -33,6 +33,12 @@
    #include "math/mMatrix.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// A transform expressed as a combination of a position vector and an angular
 /// orientation.
 class TransformF
@@ -93,5 +99,9 @@ class TransformF
          return mat;
       }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // !_MTRANSFORM_H_

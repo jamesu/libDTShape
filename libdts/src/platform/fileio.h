@@ -27,6 +27,12 @@
 #include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class File
 {
 public:
@@ -155,5 +161,7 @@ public:
    // Opens a file
    static File *openFile(const String &file, File::AccessMode mode);
 };
+
+END_NS
 
 #endif // _FILE_IO_H_

@@ -31,6 +31,11 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// @file
 /// Routines for extracting silhouette polygons from polyhedrons.
@@ -380,5 +385,9 @@ struct SilhouetteExtractorPerspective
          return result;         
       }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // !_MSILHOUETTEEXTRACTOR_H_

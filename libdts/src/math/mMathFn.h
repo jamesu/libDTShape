@@ -27,6 +27,9 @@
 #include <stdlib.h>
 #include <limits>
 
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
+#endif
 #ifndef _MCONSTANTS_H_
 #include "math/mConstants.h"
 #endif
@@ -34,6 +37,11 @@
 #include "platform/platformAssert.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 extern void MathConsoleInit();
 
@@ -467,5 +475,8 @@ inline F64 mSquared( F64 n )
    return n * n;
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_MMATHFN_H_

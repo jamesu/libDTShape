@@ -23,6 +23,10 @@
 #include "platform/platform.h"
 #include "math/mMathFn.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 //--------------------------------------------------------------------------
 #define EQN_EPSILON     (1e-8)
 
@@ -251,3 +255,7 @@ U32 mSolveQuartic_c(F32 a, F32 b, F32 c, F32 d, F32 e, F32 * x)
 U32 (*mSolveQuadratic)( F32 a, F32 b, F32 c, F32* x ) = mSolveQuadratic_c;
 U32 (*mSolveCubic)( F32 a, F32 b, F32 c, F32 d, F32* x ) = mSolveCubic_c;
 U32 (*mSolveQuartic)( F32 a, F32 b, F32 c, F32 d, F32 e, F32* x ) = mSolveQuartic_c;
+
+//-----------------------------------------------------------------------------
+
+END_NS

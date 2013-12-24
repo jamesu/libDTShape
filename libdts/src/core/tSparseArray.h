@@ -31,6 +31,10 @@
 #include "platform/platformAssert.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 template <class T>
 class SparseArray
 {
@@ -147,6 +151,8 @@ inline T* SparseArray<T>::retreive(U32 key)
    // AssertFatal(false, "Key didn't exist in the array!");
    return NULL;
 }
+
+END_NS
 
 #endif //_TSPARSEARRAY_H_
 

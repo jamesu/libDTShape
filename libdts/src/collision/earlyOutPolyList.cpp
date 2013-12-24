@@ -24,8 +24,9 @@
 #include "core/log.h"
 #include "collision/earlyOutPolyList.h"
 
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
+BEGIN_NS(DTShape)
 
 EarlyOutPolyList::EarlyOutPolyList()
 {
@@ -281,3 +282,4 @@ void EarlyOutPolyList::memcpy(U32* dst, U32* src,U32 size)
       *dst++ = *src++;
 }
 
+END_NS

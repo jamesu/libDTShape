@@ -27,6 +27,12 @@
 #include "core/util/refBase.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class Point3F;
 class MatrixF;
 class PlaneF;
@@ -86,5 +92,9 @@ public:
    /// Creates a PhysicsCollision, should be implemented by the app
    static PhysicsCollision *create();
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _T3D_PHYSICS_PHYSICSCOLLISION_H_

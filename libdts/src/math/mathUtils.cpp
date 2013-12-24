@@ -29,6 +29,10 @@
 #include "platform/profiler.h"
 //#include "core/tAlgorithm.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 namespace MathUtils
 {
 
@@ -1824,3 +1828,8 @@ U32 extrudePolygonEdgesFromPoint( const Point3F* vertices, U32 numVertices, cons
 }
 
 } // namespace MathUtils
+
+//-----------------------------------------------------------------------------
+
+END_NS
+

@@ -39,6 +39,11 @@
 #include "math/mSphere.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// A 3D plane defined by a normal and a distance along the normal.
 ///
@@ -793,5 +798,9 @@ inline PlaneD::Side PlaneD::whichSideBox(const Point3D& center,
 //   else
 //      return baseDist < 0.0 ? Back : Front;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MPLANE_H_

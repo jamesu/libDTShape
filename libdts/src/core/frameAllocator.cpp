@@ -22,6 +22,10 @@
 
 #include "core/frameAllocator.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 U8*   FrameAllocator::smBuffer = NULL;
 U32   FrameAllocator::smWaterMark = 0;
 U32   FrameAllocator::smHighWaterMark = 0;
@@ -30,3 +34,5 @@ U32   FrameAllocator::smHighWaterMark = 0;
 U32   FrameAllocator::smMaxFrameAllocation = 0;
 
 #endif
+
+END_NS

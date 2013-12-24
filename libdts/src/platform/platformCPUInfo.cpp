@@ -25,6 +25,12 @@
 #include <math.h>
 #include "core/log.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 Platform::SystemInfo_struct Platform::SystemInfo;
 
 extern void SetProcessorInfo(Platform::SystemInfo_struct::Processor& pInfo,
@@ -151,3 +157,5 @@ void Processor::init()
       Log::printf("   SSE detected");
    Log::printf(" ");
 }
+
+END_NS

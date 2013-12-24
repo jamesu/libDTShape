@@ -23,6 +23,9 @@
 #include "platform/platform.h"
 #include "core/dataChunker.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //----------------------------------------------------------------------------
 
@@ -95,3 +98,4 @@ void DataChunker::freeBlocks(bool keepOne)
       mCurBlock->curIndex = 0;
 }
 
+END_NS

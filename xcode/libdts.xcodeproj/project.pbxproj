@@ -522,36 +522,25 @@
 		32EFB663184A547800D93F75 /* autoPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB539184A547800D93F75 /* autoPtr.h */; };
 		32EFB664184A547800D93F75 /* byteswap.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB53A184A547800D93F75 /* byteswap.h */; };
 		32EFB665184A547800D93F75 /* commonSwizzles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB53B184A547800D93F75 /* commonSwizzles.cpp */; };
-		32EFB666184A547800D93F75 /* delegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB53C184A547800D93F75 /* delegate.h */; };
 		32EFB667184A547800D93F75 /* dxt5nmSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB53D184A547800D93F75 /* dxt5nmSwizzle.h */; };
 		32EFB668184A547800D93F75 /* endian.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB53E184A547800D93F75 /* endian.h */; };
-		32EFB669184A547800D93F75 /* FastDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB53F184A547800D93F75 /* FastDelegate.h */; };
 		32EFB66B184A547800D93F75 /* hashFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB541184A547800D93F75 /* hashFunction.cpp */; };
 		32EFB66C184A547800D93F75 /* hashFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB542184A547800D93F75 /* hashFunction.h */; };
 		32EFB674184A547800D93F75 /* path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB54C184A547800D93F75 /* path.cpp */; };
 		32EFB675184A547800D93F75 /* path.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB54D184A547800D93F75 /* path.h */; };
 		32EFB676184A547800D93F75 /* refBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB54E184A547800D93F75 /* refBase.h */; };
 		32EFB677184A547800D93F75 /* returnType.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB54F184A547800D93F75 /* returnType.h */; };
-		32EFB678184A547800D93F75 /* rgb2luv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB550184A547800D93F75 /* rgb2luv.cpp */; };
-		32EFB679184A547800D93F75 /* rgb2luv.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB551184A547800D93F75 /* rgb2luv.h */; };
-		32EFB67A184A547800D93F75 /* rgb2xyz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB552184A547800D93F75 /* rgb2xyz.cpp */; };
-		32EFB67B184A547800D93F75 /* rgb2xyz.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB553184A547800D93F75 /* rgb2xyz.h */; };
 		32EFB67C184A547800D93F75 /* safeCast.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB554184A547800D93F75 /* safeCast.h */; };
 		32EFB67D184A547800D93F75 /* safeDelete.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB555184A547800D93F75 /* safeDelete.h */; };
 		32EFB680184A547800D93F75 /* swizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB558184A547800D93F75 /* swizzle.h */; };
 		32EFB681184A547800D93F75 /* swizzleSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB559184A547800D93F75 /* swizzleSpec.h */; };
-		32EFB682184A547800D93F75 /* tAlignedArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB55A184A547800D93F75 /* tAlignedArray.h */; };
 		32EFB683184A547800D93F75 /* tDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB55B184A547800D93F75 /* tDictionary.cpp */; };
 		32EFB684184A547800D93F75 /* tDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB55C184A547800D93F75 /* tDictionary.h */; };
-		32EFB685184A547800D93F75 /* tFixedSizeDeque.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB55E184A547800D93F75 /* tFixedSizeDeque.h */; };
 		32EFB686184A547800D93F75 /* tFixedSizeVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB55F184A547800D93F75 /* tFixedSizeVector.h */; };
 		32EFB687184A547800D93F75 /* timeClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB560184A547800D93F75 /* timeClass.cpp */; };
 		32EFB688184A547800D93F75 /* timeClass.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB561184A547800D93F75 /* timeClass.h */; };
-		32EFB689184A547800D93F75 /* tList.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB562184A547800D93F75 /* tList.h */; };
 		32EFB68A184A547800D93F75 /* triListOpt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB563184A547800D93F75 /* triListOpt.cpp */; };
 		32EFB68B184A547800D93F75 /* triListOpt.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB564184A547800D93F75 /* triListOpt.h */; };
-		32EFB68C184A547800D93F75 /* tSignal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB565184A547800D93F75 /* tSignal.cpp */; };
-		32EFB68D184A547800D93F75 /* tSignal.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB566184A547800D93F75 /* tSignal.h */; };
 		32EFB68F184A547800D93F75 /* tUnmanagedVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB568184A547800D93F75 /* tUnmanagedVector.h */; };
 		32EFB690184A547800D93F75 /* tVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB569184A547800D93F75 /* tVector.cpp */; };
 		32EFB691184A547800D93F75 /* tVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB56A184A547800D93F75 /* tVector.h */; };
@@ -669,7 +658,6 @@
 		32EFB719184A547800D93F75 /* tsIntegerSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB5FE184A547800D93F75 /* tsIntegerSet.h */; };
 		32EFB71A184A547800D93F75 /* tsLastDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB5FF184A547800D93F75 /* tsLastDetail.cpp */; };
 		32EFB71B184A547800D93F75 /* tsLastDetail.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB600184A547800D93F75 /* tsLastDetail.h */; };
-		32EFB71C184A547800D93F75 /* tsMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB601184A547800D93F75 /* tsMaterial.cpp */; };
 		32EFB71D184A547800D93F75 /* tsMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB602184A547800D93F75 /* tsMaterial.h */; };
 		32EFB71E184A547800D93F75 /* tsMaterialList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB603184A547800D93F75 /* tsMaterialList.cpp */; };
 		32EFB71F184A547800D93F75 /* tsMaterialList.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB604184A547800D93F75 /* tsMaterialList.h */; };
@@ -680,7 +668,6 @@
 		32EFB724184A547800D93F75 /* tsMeshFit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB609184A547800D93F75 /* tsMeshFit.cpp */; };
 		32EFB725184A547800D93F75 /* tsMeshIntrinsics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB60A184A547800D93F75 /* tsMeshIntrinsics.cpp */; };
 		32EFB726184A547800D93F75 /* tsMeshIntrinsics.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB60B184A547800D93F75 /* tsMeshIntrinsics.h */; };
-		32EFB727184A547800D93F75 /* tsMeshRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB60C184A547800D93F75 /* tsMeshRender.h */; };
 		32EFB728184A547800D93F75 /* tsPartInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB60D184A547800D93F75 /* tsPartInstance.cpp */; };
 		32EFB729184A547800D93F75 /* tsPartInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB60E184A547800D93F75 /* tsPartInstance.h */; };
 		32EFB72A184A547800D93F75 /* tsRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB60F184A547800D93F75 /* tsRender.cpp */; };
@@ -1252,36 +1239,25 @@
 		32EFB539184A547800D93F75 /* autoPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autoPtr.h; sourceTree = "<group>"; };
 		32EFB53A184A547800D93F75 /* byteswap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = byteswap.h; sourceTree = "<group>"; };
 		32EFB53B184A547800D93F75 /* commonSwizzles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = commonSwizzles.cpp; sourceTree = "<group>"; };
-		32EFB53C184A547800D93F75 /* delegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delegate.h; sourceTree = "<group>"; };
 		32EFB53D184A547800D93F75 /* dxt5nmSwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dxt5nmSwizzle.h; sourceTree = "<group>"; };
 		32EFB53E184A547800D93F75 /* endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
-		32EFB53F184A547800D93F75 /* FastDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastDelegate.h; sourceTree = "<group>"; };
 		32EFB541184A547800D93F75 /* hashFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hashFunction.cpp; sourceTree = "<group>"; };
 		32EFB542184A547800D93F75 /* hashFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hashFunction.h; sourceTree = "<group>"; };
 		32EFB54C184A547800D93F75 /* path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = path.cpp; sourceTree = "<group>"; };
 		32EFB54D184A547800D93F75 /* path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = path.h; sourceTree = "<group>"; };
 		32EFB54E184A547800D93F75 /* refBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = refBase.h; sourceTree = "<group>"; };
 		32EFB54F184A547800D93F75 /* returnType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = returnType.h; sourceTree = "<group>"; };
-		32EFB550184A547800D93F75 /* rgb2luv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rgb2luv.cpp; sourceTree = "<group>"; };
-		32EFB551184A547800D93F75 /* rgb2luv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rgb2luv.h; sourceTree = "<group>"; };
-		32EFB552184A547800D93F75 /* rgb2xyz.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rgb2xyz.cpp; sourceTree = "<group>"; };
-		32EFB553184A547800D93F75 /* rgb2xyz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rgb2xyz.h; sourceTree = "<group>"; };
 		32EFB554184A547800D93F75 /* safeCast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = safeCast.h; sourceTree = "<group>"; };
 		32EFB555184A547800D93F75 /* safeDelete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = safeDelete.h; sourceTree = "<group>"; };
 		32EFB558184A547800D93F75 /* swizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swizzle.h; sourceTree = "<group>"; };
 		32EFB559184A547800D93F75 /* swizzleSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swizzleSpec.h; sourceTree = "<group>"; };
-		32EFB55A184A547800D93F75 /* tAlignedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAlignedArray.h; sourceTree = "<group>"; };
 		32EFB55B184A547800D93F75 /* tDictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tDictionary.cpp; sourceTree = "<group>"; };
 		32EFB55C184A547800D93F75 /* tDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDictionary.h; sourceTree = "<group>"; };
-		32EFB55E184A547800D93F75 /* tFixedSizeDeque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFixedSizeDeque.h; sourceTree = "<group>"; };
 		32EFB55F184A547800D93F75 /* tFixedSizeVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFixedSizeVector.h; sourceTree = "<group>"; };
 		32EFB560184A547800D93F75 /* timeClass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timeClass.cpp; sourceTree = "<group>"; };
 		32EFB561184A547800D93F75 /* timeClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timeClass.h; sourceTree = "<group>"; };
-		32EFB562184A547800D93F75 /* tList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tList.h; sourceTree = "<group>"; };
 		32EFB563184A547800D93F75 /* triListOpt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = triListOpt.cpp; sourceTree = "<group>"; };
 		32EFB564184A547800D93F75 /* triListOpt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = triListOpt.h; sourceTree = "<group>"; };
-		32EFB565184A547800D93F75 /* tSignal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tSignal.cpp; sourceTree = "<group>"; };
-		32EFB566184A547800D93F75 /* tSignal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSignal.h; sourceTree = "<group>"; };
 		32EFB568184A547800D93F75 /* tUnmanagedVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tUnmanagedVector.h; sourceTree = "<group>"; };
 		32EFB569184A547800D93F75 /* tVector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tVector.cpp; sourceTree = "<group>"; };
 		32EFB56A184A547800D93F75 /* tVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tVector.h; sourceTree = "<group>"; };
@@ -1399,7 +1375,6 @@
 		32EFB5FE184A547800D93F75 /* tsIntegerSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsIntegerSet.h; sourceTree = "<group>"; };
 		32EFB5FF184A547800D93F75 /* tsLastDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsLastDetail.cpp; sourceTree = "<group>"; };
 		32EFB600184A547800D93F75 /* tsLastDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsLastDetail.h; sourceTree = "<group>"; };
-		32EFB601184A547800D93F75 /* tsMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsMaterial.cpp; sourceTree = "<group>"; };
 		32EFB602184A547800D93F75 /* tsMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsMaterial.h; sourceTree = "<group>"; };
 		32EFB603184A547800D93F75 /* tsMaterialList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsMaterialList.cpp; sourceTree = "<group>"; };
 		32EFB604184A547800D93F75 /* tsMaterialList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsMaterialList.h; sourceTree = "<group>"; };
@@ -1410,7 +1385,6 @@
 		32EFB609184A547800D93F75 /* tsMeshFit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsMeshFit.cpp; sourceTree = "<group>"; };
 		32EFB60A184A547800D93F75 /* tsMeshIntrinsics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsMeshIntrinsics.cpp; sourceTree = "<group>"; };
 		32EFB60B184A547800D93F75 /* tsMeshIntrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsMeshIntrinsics.h; sourceTree = "<group>"; };
-		32EFB60C184A547800D93F75 /* tsMeshRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsMeshRender.h; sourceTree = "<group>"; };
 		32EFB60D184A547800D93F75 /* tsPartInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsPartInstance.cpp; sourceTree = "<group>"; };
 		32EFB60E184A547800D93F75 /* tsPartInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsPartInstance.h; sourceTree = "<group>"; };
 		32EFB60F184A547800D93F75 /* tsRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsRender.cpp; sourceTree = "<group>"; };
@@ -2244,50 +2218,31 @@
 				32EFB539184A547800D93F75 /* autoPtr.h */,
 				32EFB53A184A547800D93F75 /* byteswap.h */,
 				32EFB53B184A547800D93F75 /* commonSwizzles.cpp */,
-				32EFB53C184A547800D93F75 /* delegate.h */,
 				32EFB53D184A547800D93F75 /* dxt5nmSwizzle.h */,
 				32EFB53E184A547800D93F75 /* endian.h */,
-				32EFB53F184A547800D93F75 /* FastDelegate.h */,
 				32EFB541184A547800D93F75 /* hashFunction.cpp */,
 				32EFB542184A547800D93F75 /* hashFunction.h */,
 				32EFB54C184A547800D93F75 /* path.cpp */,
 				32EFB54D184A547800D93F75 /* path.h */,
 				32EFB54E184A547800D93F75 /* refBase.h */,
 				32EFB54F184A547800D93F75 /* returnType.h */,
-				32EFB550184A547800D93F75 /* rgb2luv.cpp */,
-				32EFB551184A547800D93F75 /* rgb2luv.h */,
-				32EFB552184A547800D93F75 /* rgb2xyz.cpp */,
-				32EFB553184A547800D93F75 /* rgb2xyz.h */,
 				32EFB554184A547800D93F75 /* safeCast.h */,
 				32EFB555184A547800D93F75 /* safeDelete.h */,
 				32EFB558184A547800D93F75 /* swizzle.h */,
 				32EFB559184A547800D93F75 /* swizzleSpec.h */,
-				32EFB55A184A547800D93F75 /* tAlignedArray.h */,
 				32EFB55B184A547800D93F75 /* tDictionary.cpp */,
 				32EFB55C184A547800D93F75 /* tDictionary.h */,
-				32EFB55D184A547800D93F75 /* test */,
-				32EFB55E184A547800D93F75 /* tFixedSizeDeque.h */,
 				32EFB55F184A547800D93F75 /* tFixedSizeVector.h */,
 				32EFB560184A547800D93F75 /* timeClass.cpp */,
 				32EFB561184A547800D93F75 /* timeClass.h */,
-				32EFB562184A547800D93F75 /* tList.h */,
 				32EFB563184A547800D93F75 /* triListOpt.cpp */,
 				32EFB564184A547800D93F75 /* triListOpt.h */,
-				32EFB565184A547800D93F75 /* tSignal.cpp */,
-				32EFB566184A547800D93F75 /* tSignal.h */,
 				32EFB568184A547800D93F75 /* tUnmanagedVector.h */,
 				32EFB569184A547800D93F75 /* tVector.cpp */,
 				32EFB56A184A547800D93F75 /* tVector.h */,
 				32EFB56B184A547800D93F75 /* tVectorSpecializations.h */,
 			);
 			path = util;
-			sourceTree = "<group>";
-		};
-		32EFB55D184A547800D93F75 /* test */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = test;
 			sourceTree = "<group>";
 		};
 		32EFB571184A547800D93F75 /* math */ = {
@@ -2338,17 +2293,9 @@
 				32EFB5A0184A547800D93F75 /* mSphere.cpp */,
 				32EFB5A1184A547800D93F75 /* mSphere.h */,
 				32EFB5A2184A547800D93F75 /* mTransform.h */,
-				32EFB5A3184A547800D93F75 /* test */,
 				32EFB5A4184A547800D93F75 /* util */,
 			);
 			path = math;
-			sourceTree = "<group>";
-		};
-		32EFB5A3184A547800D93F75 /* test */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = test;
 			sourceTree = "<group>";
 		};
 		32EFB5A4184A547800D93F75 /* util */ = {
@@ -2414,7 +2361,6 @@
 				32EFB5FE184A547800D93F75 /* tsIntegerSet.h */,
 				32EFB5FF184A547800D93F75 /* tsLastDetail.cpp */,
 				32EFB600184A547800D93F75 /* tsLastDetail.h */,
-				32EFB601184A547800D93F75 /* tsMaterial.cpp */,
 				32EFB602184A547800D93F75 /* tsMaterial.h */,
 				32EFB603184A547800D93F75 /* tsMaterialList.cpp */,
 				32EFB604184A547800D93F75 /* tsMaterialList.h */,
@@ -2425,7 +2371,6 @@
 				32EFB609184A547800D93F75 /* tsMeshFit.cpp */,
 				32EFB60A184A547800D93F75 /* tsMeshIntrinsics.cpp */,
 				32EFB60B184A547800D93F75 /* tsMeshIntrinsics.h */,
-				32EFB60C184A547800D93F75 /* tsMeshRender.h */,
 				32EFB60D184A547800D93F75 /* tsPartInstance.cpp */,
 				32EFB60E184A547800D93F75 /* tsPartInstance.h */,
 				32EFB60F184A547800D93F75 /* tsRender.cpp */,
@@ -2641,7 +2586,6 @@
 				3264AB471866783E009E6458 /* domAny.h in Headers */,
 				32EFB667184A547800D93F75 /* dxt5nmSwizzle.h in Headers */,
 				3264AB331866783E009E6458 /* daeMetaAttribute.h in Headers */,
-				32EFB669184A547800D93F75 /* FastDelegate.h in Headers */,
 				3264AA911866783E009E6458 /* domCommon_float_or_param_type.h in Headers */,
 				3264AC7E186678CF009E6458 /* ucpinternal.h in Headers */,
 				3264AB041866783E009E6458 /* domPhysics_model.h in Headers */,
@@ -2683,7 +2627,6 @@
 				3264AA9F1866783E009E6458 /* domFx_annotate_type_common.h in Headers */,
 				32EFB631184A547800D93F75 /* earlyOutPolyList.h in Headers */,
 				32EFB684184A547800D93F75 /* tDictionary.h in Headers */,
-				32EFB689184A547800D93F75 /* tList.h in Headers */,
 				32EFB696184A547800D93F75 /* mAngAxis.h in Headers */,
 				32EFB69D184A547800D93F75 /* mBoxBase.h in Headers */,
 				3264AB1D1866783E009E6458 /* domTriangles.h in Headers */,
@@ -2775,7 +2718,6 @@
 				32EFB681184A547800D93F75 /* swizzleSpec.h in Headers */,
 				32B08CF618670E5E00CF7CBB /* libdtshape.h in Headers */,
 				32EFB6EE184A547800D93F75 /* types.codewarrior.h in Headers */,
-				32EFB666184A547800D93F75 /* delegate.h in Headers */,
 				3264AA961866783E009E6458 /* domConvex_mesh.h in Headers */,
 				3264AADB1866783E009E6458 /* domInstance_controller.h in Headers */,
 				3264AAD81866783E009E6458 /* domInputLocal.h in Headers */,
@@ -2859,13 +2801,11 @@
 				3264AAF81866783E009E6458 /* domLines.h in Headers */,
 				32EFB731184A547800D93F75 /* tsShapeAlloc.h in Headers */,
 				32EFB77F184A54A000D93F75 /* NvMeshIslandGeneration.h in Headers */,
-				32EFB67B184A547800D93F75 /* rgb2xyz.h in Headers */,
 				32EFB635184A547800D93F75 /* gjk.h in Headers */,
 				3264AAE01866783E009E6458 /* domInstance_material.h in Headers */,
 				32EFB72D184A547800D93F75 /* tsRenderState.h in Headers */,
 				3264AB4A1866783E009E6458 /* daeLIBXMLPlugin.h in Headers */,
 				32EFB65C184A547800D93F75 /* stringFunctions.h in Headers */,
-				32EFB679184A547800D93F75 /* rgb2luv.h in Headers */,
 				3264AB241866783E009E6458 /* daeArrayTypes.h in Headers */,
 				3264AB1C1866783E009E6458 /* domTranslate.h in Headers */,
 				3264AA881866783E009E6458 /* domCg_samplerRECT.h in Headers */,
@@ -2893,7 +2833,6 @@
 				3264AACB1866783E009E6458 /* domGles_texture_constant_type.h in Headers */,
 				32EFB68B184A547800D93F75 /* triListOpt.h in Headers */,
 				3264AB301866783E009E6458 /* daeIOPluginCommon.h in Headers */,
-				32EFB682184A547800D93F75 /* tAlignedArray.h in Headers */,
 				3264AB2D1866783E009E6458 /* daeGCCPlatform.h in Headers */,
 				32EFB6F2184A547800D93F75 /* typetraits.h in Headers */,
 				32EFB721184A547800D93F75 /* tsMaterialManager.h in Headers */,
@@ -2927,7 +2866,6 @@
 				3264AABB1866783E009E6458 /* domGl_sampler1D.h in Headers */,
 				3264AAAA1866783E009E6458 /* domFx_sampler1D_common.h in Headers */,
 				32EFB6B7184A547800D93F75 /* mPolyhedron.h in Headers */,
-				32EFB68D184A547800D93F75 /* tSignal.h in Headers */,
 				3264AAEA1866783E009E6458 /* domLibrary_cameras.h in Headers */,
 				32EFB77D184A54A000D93F75 /* NvHashMap.h in Headers */,
 				32EFB62D184A547800D93F75 /* convex.h in Headers */,
@@ -2944,7 +2882,6 @@
 				3264AB2C1866783E009E6458 /* daeErrorHandler.h in Headers */,
 				3264AA7F1866783E009E6458 /* domCg_connect_param.h in Headers */,
 				3264AC7C186678CF009E6458 /* pcreposix.h in Headers */,
-				32EFB685184A547800D93F75 /* tFixedSizeDeque.h in Headers */,
 				32EFB6FE184A547800D93F75 /* colladaAppSequence.h in Headers */,
 				3264AABA1866783E009E6458 /* domGl_pipeline_settings.h in Headers */,
 				3264AA831866783E009E6458 /* domCg_sampler1D.h in Headers */,
@@ -2958,7 +2895,6 @@
 				3264AA791866783E009E6458 /* domAsset.h in Headers */,
 				32EFB783184A54A000D93F75 /* NvRemoveTjunctions.h in Headers */,
 				32EFB6F4184A547800D93F75 /* tsMeshIntrinsics.arch.h in Headers */,
-				32EFB727184A547800D93F75 /* tsMeshRender.h in Headers */,
 				3264AAD31866783E009E6458 /* domGlsl_setparam_simple.h in Headers */,
 				3264AA821866783E009E6458 /* domCg_param_type.h in Headers */,
 				3264AAF01866783E009E6458 /* domLibrary_lights.h in Headers */,
@@ -3118,7 +3054,6 @@
 				3264ABBA1866783F009E6458 /* domInstance_rigid_body.cpp in Sources */,
 				3264ABB21866783F009E6458 /* domInstance_effect.cpp in Sources */,
 				32EFB717184A547800D93F75 /* tsDump.cpp in Sources */,
-				32EFB678184A547800D93F75 /* rgb2luv.cpp in Sources */,
 				3264AB791866783F009E6458 /* domFx_clearstencil_common.cpp in Sources */,
 				3264AC6F186678CF009E6458 /* pcre_stringpiece.cc in Sources */,
 				3264ABF51866783F009E6458 /* domTristrips.cpp in Sources */,
@@ -3225,7 +3160,6 @@
 				3264AB861866783F009E6458 /* domFx_stenciltarget_common.cpp in Sources */,
 				3264AC181866783F009E6458 /* stdErrPlugin.cpp in Sources */,
 				32EFB72E184A547800D93F75 /* tsShape.cpp in Sources */,
-				32EFB68C184A547800D93F75 /* tSignal.cpp in Sources */,
 				32EFB7EB184A554600D93F75 /* tinyxml.cpp in Sources */,
 				3264AB761866783F009E6458 /* domFx_basic_type_common.cpp in Sources */,
 				3264ABB11866783F009E6458 /* domInstance_controller.cpp in Sources */,
@@ -3245,7 +3179,6 @@
 				3264ABFC1866783F009E6458 /* daeDatabase.cpp in Sources */,
 				32EFB6A7184A547800D93F75 /* mMathSSE.cpp in Sources */,
 				32EFB730184A547800D93F75 /* tsShapeAlloc.cpp in Sources */,
-				32EFB67A184A547800D93F75 /* rgb2xyz.cpp in Sources */,
 				3264AB871866783F009E6458 /* domFx_surface_common.cpp in Sources */,
 				3264ABFB1866783F009E6458 /* daeAtomicType.cpp in Sources */,
 				3264ABF41866783F009E6458 /* domTrifans.cpp in Sources */,
@@ -3324,7 +3257,6 @@
 				3264ABE51866783F009E6458 /* domRotate.cpp in Sources */,
 				32EFB627184A547800D93F75 /* clippedPolyList.cpp in Sources */,
 				3264ABBC1866783F009E6458 /* domInstanceWithExtra.cpp in Sources */,
-				32EFB71C184A547800D93F75 /* tsMaterial.cpp in Sources */,
 				3264ABD41866783F009E6458 /* domMorph.cpp in Sources */,
 				3264ABDE1866783F009E6458 /* domPolylist.cpp in Sources */,
 				32EFB623184A547800D93F75 /* abstractPolyList.cpp in Sources */,

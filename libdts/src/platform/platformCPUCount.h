@@ -25,6 +25,12 @@
 
 #include "platform/platform.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 namespace CPUInfo
 {
    enum EConfig
@@ -70,6 +76,10 @@ namespace CPUInfo
       U32& numPhysical );
 
 } // namespace CPUInfo
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TWISTFORK_PLATFORM_PLATFORMCOUNT_H_
 

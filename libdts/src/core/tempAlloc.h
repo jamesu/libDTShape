@@ -27,6 +27,9 @@
 #  include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 template< typename T >
 struct TempAlloc
@@ -55,5 +58,7 @@ private:
    // Not safe.
    TempAlloc( const TempAlloc& ) {}
 };
+
+END_NS
 
 #endif // _TEMPALLOC_H_

@@ -26,6 +26,11 @@
 #include "ts/tsMaterial.h"
 #include "ts/tsShapeInstance.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 TSRenderState::TSRenderState()
    :  mState( NULL ),
@@ -121,4 +126,6 @@ void TSRenderInst::render(TSRenderState *renderState)
    mesh->mRenderer->doRenderInst(mesh, this, renderState);
 }
 
+//-----------------------------------------------------------------------------
 
+END_NS

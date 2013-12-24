@@ -10,7 +10,9 @@
 #include "ts/tsRender.h"
 
 
-BEGIN_NS(DTSLib)
+BEGIN_NS(DTShapeInit)
+
+using namespace DTShape;
 
 void init(U32 opts)
 {

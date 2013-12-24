@@ -22,10 +22,14 @@
 
 #include <time.h>
 
+#include "platform/platform.h"
 #include "core/util/timeClass.h"
 
-namespace Torque
-{
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 //Micro   0.000001   10-6
 //Milli   0.001      10-3
@@ -84,7 +88,7 @@ void Time::getCurrentDateTime(DateTime &dateTime)
 
 Time Time::getCurrentTime()
 {
-   return Torque::UnixTimeToTime( time( NULL ) );
+   return DTShape::UnixTimeToTime( time( NULL ) );
 }
 
 bool Time::set(S32 year, S32 month, S32 day, S32 hour, S32 minute, S32 second, S32 microsecond)
@@ -195,4 +199,6 @@ void Time::get(S32 *pyear, S32 *pmonth, S32 *pday, S32 *phour, S32 *pminute, S32
       *pmicrosecond = time % OneSecond;
 }
 
-} // Namespace
+//-----------------------------------------------------------------------------
+
+END_NS

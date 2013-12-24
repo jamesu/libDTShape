@@ -30,6 +30,10 @@
 #endif
 
 //-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 // Helper definitions for the vector class.
 
 /// Size of memory blocks to allocate at a time for vectors.
@@ -968,10 +972,20 @@ public:
    }
 };
 
+//-----------------------------------------------------------------------------
+
+END_NS
+
+//-----------------------------------------------------------------------------
+
 // Include vector specializations
 #ifndef _VECTORSPEC_H_
 #include "core/util/tVectorSpecializations.h"
 #endif
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 template <class Iterator, class Value>
 Iterator find(Iterator first, Iterator last, Value value)
@@ -980,6 +994,11 @@ Iterator find(Iterator first, Iterator last, Value value)
       ++first;
    return first;
 }
+
+END_NS
+
+//-----------------------------------------------------------------------------
+
 
 #endif //_TVECTOR_H_
 

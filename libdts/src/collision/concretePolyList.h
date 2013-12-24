@@ -27,6 +27,10 @@
 #include "collision/abstractPolyList.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 /// A concrete, renderable PolyList
 ///
 /// This class is used to store geometry from a PolyList query.
@@ -88,5 +92,7 @@ class ConcretePolyList : public AbstractPolyList
   protected:
    const PlaneF& getIndexedPlane(const U32 index);
 };
+
+END_NS
 
 #endif  // _CONCRETEPOLYLIST_H_

@@ -27,7 +27,6 @@
 #include "platform/types.h"
 #endif
 
-
 #if defined(TWISTFORK_COMPILER_VISUALC)
    #define TWISTFORK_CONSTANT_S64(a) (a##I64)
    #define TWISTFORK_CONSTANT_U64(a) (a##UI64)
@@ -36,8 +35,9 @@
    #define TWISTFORK_CONSTANT_U64(a) (a##ULL)     ///< Used to declare unsigned 64 bit constants @hideinitializer
 #endif
 
-namespace Torque
-{
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 /// 64 bit time representation with ten microsecond resolution.
@@ -272,7 +272,8 @@ inline Time Win32FileTimeToTime(U32 low,U32 high)
    return Time(t / 100 + TWISTFORK_CONSTANT_S64(5049120960000000));
 }
 
+//-----------------------------------------------------------------------------
 
-} // Namespace
+END_NS
 
 #endif

@@ -27,6 +27,12 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 // Not exactly a specialization, just a vector to use when speed is a concern
 template<class T>
 class FastVector : public Vector<T>
@@ -41,6 +47,10 @@ public:
       Vector<T>::mArray[Vector<T>::mElementCount++] = x;
    }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_TVECTORSPEC_H_
 

@@ -22,6 +22,12 @@
 
 #include "math/mMath.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 static S32 m_mulDivS32_ASM(S32 a, S32 b, S32 c)
 {  // a * b / c
    S32 r;
@@ -53,3 +59,5 @@ void mInstallLibrary_ASM()
    m_mulDivS32              = m_mulDivS32_ASM;
    m_mulDivU32              = m_mulDivU32_ASM;
 }
+
+END_NS

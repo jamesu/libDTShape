@@ -29,6 +29,7 @@
 #include "platform/types.h"
 #endif
 
+BEGIN_NS(DTShape)
 
 template< class T > class Vector;
 
@@ -370,6 +371,8 @@ extern String operator+(StringChar c, const String &a);
 extern String operator+(const String &a, const StringChar *b);
 extern String operator+(const String &a, const String &b);
 extern String operator+(const StringChar *a, const String &b);
+
+END_NS
 
 #endif
 

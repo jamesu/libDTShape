@@ -33,6 +33,12 @@
 #include "ts/tsShape.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class AppSequence
 {
 public:
@@ -56,5 +62,9 @@ public:
    virtual F32 getPriority() const { return 5; }
    virtual F32 getBlendRefTime() const { return 0.0f; }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _APPSEQUENCE_H_

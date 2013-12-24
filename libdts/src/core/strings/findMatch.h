@@ -27,6 +27,10 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 class   FindMatch
 {
    char*  expression;
@@ -59,5 +63,7 @@ class   FindMatch
       matchList.clear();                       
    }
 };
+
+END_NS
 
 #endif // _FINDMATCH_H_

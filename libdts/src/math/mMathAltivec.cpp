@@ -28,6 +28,12 @@
 #include "platform/profiler.h"
 #include "core/log.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #if defined( __VEC__ )
 
 // tests show BLAS to be about 4x slower than aligned altivec, 3x slower than unaligned altivec code below.
@@ -133,4 +139,9 @@ void mInstallLibrary_Vec()
 }
 #endif// defined(__VEC__)
 
+//-----------------------------------------------------------------------------
+
+END_NS
+
 #endif// defined(__APPLE__)
+

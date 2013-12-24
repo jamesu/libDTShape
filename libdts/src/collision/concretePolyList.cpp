@@ -26,10 +26,8 @@
 #include "math/mMath.h"
 #include "core/log.h"
 #include "platform/profiler.h"
-//#include "gfx/gfxDevice.h"
-//#include "gfx/primBuilder.h"
-//#include "gfx/gfxStateBlock.h"
 
+BEGIN_NS(DTShape)
 
 //----------------------------------------------------------------------------
 
@@ -224,3 +222,5 @@ void ConcretePolyList::triangulate()
    mPolyList = polyList;
    mIndexList = indexList;
 }
+
+END_NS

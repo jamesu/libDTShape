@@ -25,6 +25,9 @@
 
 #include "platform/typetraits.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
@@ -245,3 +248,7 @@ void PolyhedronVectorData::buildFromPlanes( const PlaneSetF& planes )
          planeList.push_back( currentPlane );
    }
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

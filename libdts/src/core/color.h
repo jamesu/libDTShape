@@ -30,6 +30,10 @@
 #include "math/mPoint4.h" 
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 class ColorI;
 
 
@@ -604,5 +608,7 @@ inline ColorI::operator ColorF() const
                  F32(blue)  * inv255,
                  F32(alpha) * inv255);
 }
+
+END_NS
 
 #endif //_COLOR_H_

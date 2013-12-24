@@ -27,6 +27,12 @@
 #include "ts/tsMesh.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// Decals!  The lovely detailing thingies, e.g. bullet hole marks.
 /// DEPRECATED: This class is here for compatibility with old files only.
 /// Performs no actual rendering.
@@ -61,6 +67,9 @@ public:
    void assemble(bool skip);
 };
 
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif
 

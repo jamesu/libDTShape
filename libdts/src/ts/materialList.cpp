@@ -29,6 +29,12 @@
 #include "core/log.h"
 #include "core/stream/stream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 MaterialList::MaterialList()
 {
    VECTOR_SET_ASSOCIATION(mMatInstList);
@@ -340,3 +346,7 @@ void MaterialList::setMaterialInst( TSMaterialInstance *matInst, U32 texIndex )
    AssertFatal( texIndex < mMatInstList.size(), "MaterialList::setMaterialInst - index out of bounds" );
    mMatInstList[texIndex] = matInst;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

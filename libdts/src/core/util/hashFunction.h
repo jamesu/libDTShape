@@ -27,13 +27,18 @@
 #include "platform/types.h"
 #endif
 
-namespace Torque
-{
+//------------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//------------------------------------------------------------------------------
 
 extern U32 hash(register const U8 *k, register U32 length, register U32 initval);
 
 extern U64 hash64(register const U8 *k, register U32 length, register U64 initval);
 
-}
+//------------------------------------------------------------------------------
+
+END_NS
 
 #endif // _HASHFUNCTION_H_

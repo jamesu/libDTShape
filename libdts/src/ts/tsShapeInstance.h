@@ -39,6 +39,12 @@
 #include "ts/tsMaterialList.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class RenderItem;
 class TSThread;
 class ConvexFeature;
@@ -769,5 +775,9 @@ public:
 };
 
 typedef TSShapeInstance::ObjectInstance TSObjectInstance;
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSSHAPEINSTANCE_H_

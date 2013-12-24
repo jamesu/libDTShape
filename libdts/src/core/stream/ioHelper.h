@@ -27,6 +27,10 @@
 #include "core/stream/stream.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 /// Helper templates to aggregate IO operations - generally used in
 /// template expansion.
 namespace IOHelper
@@ -111,5 +115,7 @@ namespace IOHelper
       inline bool writes(Stream *s,A& a)
    { return s->write(a); }
 }
+
+END_NS
 
 #endif

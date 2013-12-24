@@ -27,6 +27,9 @@
 #include "platform/platformAssert.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //--------------------------------------
 /// Base class for random number generators
@@ -136,5 +139,8 @@ typedef MRandomLCG MRandom;
 
 extern MRandomLCG gRandGen;
 
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_MRANDOM_H_

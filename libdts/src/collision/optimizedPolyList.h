@@ -31,6 +31,10 @@
 #include "math/mPolyhedron.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 #define DEV 0.01
 
 
@@ -159,5 +163,7 @@ class OptimizedPolyList : public AbstractPolyList
   protected:
    const PlaneF& getIndexedPlane(const U32 index);
 };
+
+END_NS
 
 #endif  // _OPTIMIZEDPOLYLIST_H_

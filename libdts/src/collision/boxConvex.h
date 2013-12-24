@@ -27,8 +27,9 @@
 #include "collision/convex.h"
 #endif
 
-
 //----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 class BoxConvex: public Convex
 {
@@ -59,5 +60,7 @@ class OrthoBoxConvex: public BoxConvex
 
    virtual const MatrixF& getTransform() const;
 };
+
+END_NS
 
 #endif

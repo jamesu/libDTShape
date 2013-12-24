@@ -38,6 +38,12 @@
 #include "core/tempAlloc.h"
 #include "core/util/tVector.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 const F32 TypeTraits< F32 >::MIN = - F32_MAX;
 const F32 TypeTraits< F32 >::MAX = F32_MAX;
 const F32 TypeTraits< F32 >::ZERO = 0;
@@ -387,4 +393,8 @@ void* dRealloc_r(void* in_pResize, dsize_t in_size, const char* fileName, const 
 {
    return realloc(in_pResize,in_size);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 

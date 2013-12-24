@@ -26,6 +26,12 @@
 #include "core/util/refBase.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class GFXVertexFormat;
 class ColladaAppMaterial;
 class TSMaterialInstance;
@@ -71,6 +77,10 @@ public:
    
    virtual const char* getName() = 0;
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif /// _BASEMATINSTANCE_H_
 

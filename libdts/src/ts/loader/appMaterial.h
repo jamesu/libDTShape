@@ -23,6 +23,11 @@
 #ifndef _APPMATERIAL_H_
 #define _APPMATERIAL_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 struct AppMaterial
 {
@@ -36,5 +41,9 @@ struct AppMaterial
    virtual U32 getFlags() { return flags; }
    virtual F32 getReflectance() { return reflectance; }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _APPMATERIAL_H_

@@ -28,6 +28,12 @@
 //------------------------------------------------------------------------------
 #include "core/util/byteswap.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 template<>
 inline void Swizzle<U8, 4>::InPlace( void *memory, const dsize_t size ) const
 {
@@ -108,5 +114,6 @@ inline void Swizzle<U8, 3>::ToBuffer( void *destination, const void *source, con
    }
 }
 
+END_NS
 
 #endif

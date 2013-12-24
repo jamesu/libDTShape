@@ -9,11 +9,17 @@
 #include "platform/platform.h"
 #include "tsRender.h"
 
-Swizzle<U8, 4> *TSVertexColor::mDeviceSwizzle = NULL;
-
 #include "platform/profiler.h"
 #include "core/util/hashFunction.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
+
+Swizzle<U8, 4> *TSVertexColor::mDeviceSwizzle = NULL;
 
 U32 GFXVertexElement::getSizeInBytes() const
 {
@@ -182,3 +188,7 @@ void GFXVertexFormat::_updateDecl()
    static GFXVertexDecl decl;
    mDecl = &decl;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

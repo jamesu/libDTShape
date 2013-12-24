@@ -60,6 +60,12 @@
 #include "dom/domNode.h"
 #include "dom/domCOLLADA.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 namespace ColladaUtils
 {
    struct ImportOptions
@@ -128,15 +134,15 @@ namespace ColladaUtils
    String resolveImagePath(const domImage* image);
 
    // Collada export helper functions
-   Torque::Path findTexture(const Torque::Path& diffuseMap);
+   DTShape::Path findTexture(const DTShape::Path& diffuseMap);
    void exportColladaHeader(TiXmlElement* rootNode);
-   void exportColladaMaterials(TiXmlElement* rootNode, const OptimizedPolyList& mesh, Vector<String>& matNames, const Torque::Path& colladaFile);
+   void exportColladaMaterials(TiXmlElement* rootNode, const OptimizedPolyList& mesh, Vector<String>& matNames, const DTShape::Path& colladaFile);
    void exportColladaTriangles(TiXmlElement* meshNode, const OptimizedPolyList& mesh, const String& meshName, const Vector<String>& matNames);
    void exportColladaMesh(TiXmlElement* rootNode, const OptimizedPolyList& mesh, const String& meshName, const Vector<String>& matNames);
    void exportColladaScene(TiXmlElement* rootNode, const String& meshName, const Vector<String>& matNames);
 
    // Export an OptimizedPolyList to a simple Collada file
-   void exportToCollada(const Torque::Path& colladaFile, const OptimizedPolyList& mesh, const String& meshName = String::EmptyString);
+   void exportToCollada(const DTShape::Path& colladaFile, const OptimizedPolyList& mesh, const String& meshName = String::EmptyString);
 };
 
 //-----------------------------------------------------------------------------
@@ -802,5 +808,9 @@ typedef AnimatedElement<bool> AnimatedBool;
 typedef AnimatedElement<S32> AnimatedInt;
 typedef AnimatedElement<const char*> AnimatedString;
 typedef AnimatedElementList<domListOfFloats> AnimatedFloatList;
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_UTILS_H_

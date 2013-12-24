@@ -47,6 +47,11 @@
 #include "math/mSphere.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 //TODO: Specialize intersection tests for frustums using octant tests
 
@@ -469,5 +474,9 @@ class Frustum : public PolyhedronImpl< FrustumData >
 
       /// @}
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MATHUTIL_FRUSTUM_H_

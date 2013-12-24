@@ -28,9 +28,16 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
+#endif
 #ifndef _TWISTFORK_TYPES_H_
 #include "platform/types.h"
 #endif
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 #if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
 // These standard functions are not defined on Win32 and other Microsoft platforms...
@@ -224,5 +231,7 @@ extern int    dVprintf(const char *format, void *arglist);
 extern int    dSprintf(char *buffer, U32 bufferSize, const char *format, ...);
 extern int    dVsprintf(char *buffer, U32 bufferSize, const char *format, va_list arglist);
 extern int    dSscanf(const char *buffer, const char *format, ...);
+
+END_NS
 
 #endif

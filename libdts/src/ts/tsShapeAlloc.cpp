@@ -25,6 +25,12 @@
 #define readOnly()  AssertFatal(mMode==TSShapeAlloc::ReadMode, "TSShapeAlloc: write-only function called when reading")
 #define writeOnly() AssertFatal(mMode==TSShapeAlloc::WriteMode,"TSShapeAlloc: read-only function called when writing")
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 void TSShapeAlloc::setRead(S32 * memBuffer32, S16 * memBuffer16, S8 * memBuffer8, bool clear)
 {
    mMemBuffer32 = memBuffer32;
@@ -226,4 +232,6 @@ void TSShapeAlloc::setGuard()
    setGuard8();
 }
 
+//-----------------------------------------------------------------------------
 
+END_NS

@@ -27,6 +27,7 @@
 #  include "platform/typetraits.h"
 #endif
 
+BEGIN_NS(DTShape)
 
 template<class T>
 struct AutoPtrRef
@@ -127,5 +128,7 @@ public:
 private:
    T  *_ptr;
 };
+
+END_NS
 
 #endif

@@ -33,6 +33,10 @@
 #include "collision/convex.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 class Convex;
 struct CollisionStateList;
 struct Collision;
@@ -78,5 +82,6 @@ struct GjkCollisionState: public CollisionState
                        const MatrixF* w2a = NULL, const MatrixF* _w2b = NULL);
 };
 
+END_NS
 
 #endif

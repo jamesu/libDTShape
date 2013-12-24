@@ -29,6 +29,9 @@
 #include "collision/convex.h"
 #include "collision/gjk.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //----------------------------------------------------------------------------
 
@@ -384,3 +387,5 @@ F32 GjkCollisionState::distance(const MatrixF& a2w, const MatrixF& b2w,
       dist = 0;
    return dist;
 }
+
+END_NS

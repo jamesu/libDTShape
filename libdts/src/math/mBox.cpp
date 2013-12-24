@@ -23,6 +23,11 @@
 #include "math/mMatrix.h"
 #include "math/mSphere.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 const Box3F Box3F::Invalid( F32_MAX, F32_MAX, F32_MAX, -F32_MAX, -F32_MAX, -F32_MAX );
 const Box3F Box3F::Max( -F32_MAX, -F32_MAX, -F32_MAX, F32_MAX, F32_MAX, F32_MAX );
@@ -263,3 +268,7 @@ SphereF Box3F::getBoundingSphere() const
 {
    return SphereF( getCenter(), getGreatestDiagonalLength() / 2.f );
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

@@ -25,6 +25,10 @@
 #include "platform/profiler.h"
 #include "math/mMathFn.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 namespace TriListOpt
 {
 
@@ -396,3 +400,7 @@ F32 score(const VertData &vertexData)
 } // namspace FindVertexScore
 
 } // namespace TriListOpt
+
+//-----------------------------------------------------------------------------
+
+END_NS

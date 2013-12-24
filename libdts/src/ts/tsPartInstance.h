@@ -27,6 +27,12 @@
 #include "ts/tsShapeInstance.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class TSPartInstance
 {
    /// TSPartInstance assumes ownership (or shared ownership) of the source shape.  This means that the source
@@ -133,6 +139,10 @@ public:
 
    void *mData; ///< for use by app
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif
 

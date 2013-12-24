@@ -27,6 +27,11 @@
 #include "ts/tsMaterial.h"
 #include "ts/tsMaterialManager.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 TSMaterialList::TSMaterialList(U32 materialCount,
                                const char **materialNames,
@@ -321,3 +326,7 @@ void TSMaterialList::mapMaterial( U32 i )
    if (matInst && matInst->isTranslucent())
       mFlags[i] |= Translucent;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

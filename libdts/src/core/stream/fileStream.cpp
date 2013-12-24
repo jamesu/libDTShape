@@ -23,6 +23,9 @@
 #include "platform/platform.h"
 #include "core/stream/fileStream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 // FileStream methods...
@@ -574,3 +577,5 @@ FileStream* FileStream::clone() const
    
    return fs;
 }
+
+END_NS

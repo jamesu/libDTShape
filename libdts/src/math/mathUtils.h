@@ -39,6 +39,11 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 class Box3F;
 class RectI;
@@ -407,5 +412,9 @@ namespace MathUtils
    //void findFarthestPoint( const Point3F* points, U32 numPoints, const Point3F& fromPoint, )
 
 } // namespace MathUtils
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MATHUTILS_H_

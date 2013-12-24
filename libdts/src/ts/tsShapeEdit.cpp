@@ -28,6 +28,9 @@
 #include "ts/tsMaterialList.h"
 #include "core/stream/fileStream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
@@ -1347,7 +1350,7 @@ bool TSShape::removeDetail( S32 size )
 }
 
 //-----------------------------------------------------------------------------
-bool TSShape::addSequence(const Torque::Path& path, const String& fromSeq,
+bool TSShape::addSequence(const DTShape::Path& path, const String& fromSeq,
                           const String& name, S32 startFrame, S32 endFrame,
                           bool padRotKeys, bool padTransKeys)
 {
@@ -2131,3 +2134,7 @@ bool TSShape::setSequenceGroundSpeed(const String& seqName, const Point3F& trans
 
    return true;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

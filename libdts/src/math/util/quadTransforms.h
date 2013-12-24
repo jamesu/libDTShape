@@ -33,6 +33,12 @@
 #include "math/mMatrix.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 // NOTE: The code in these classes originate from the Wild Magic Source Code
 // library by David Eberly and is used with permission.
 
@@ -78,5 +84,9 @@ protected:
 
    Point3F p00, p01, p10, p11;
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _QUADTOQUADTRANSFORMS_H_

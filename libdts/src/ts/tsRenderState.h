@@ -39,6 +39,11 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 class TSSceneRenderState;
 class Frustum;
@@ -310,5 +315,9 @@ public:
    /// Factory function to create TSMeshRenderer
    static TSMeshRenderer *create();
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSRENDERDATA_H_

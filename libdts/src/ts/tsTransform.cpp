@@ -23,6 +23,12 @@
 #include "ts/tsTransform.h"
 #include "core/stream/stream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 void Quat16::identity()
 {
    x = y = z = 0;
@@ -154,3 +160,7 @@ void TSTransform::applyScale(const TSScale & scale, MatrixF * mat)
    mat2.mul(mat3);
    mat->mul(mat2);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

@@ -27,6 +27,10 @@
 #include "math/mRandom.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 template <class T>
 class MRandomDeck
 {
@@ -134,5 +138,9 @@ inline void MRandomDeck<T>::removeAll( Vector<T> *outItems )
    mPile.clear();
    mDeck.clear();
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_MRANDOMDECK_H_

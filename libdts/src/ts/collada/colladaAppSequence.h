@@ -27,7 +27,14 @@
 #include "ts/loader/appSequence.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
 class domAnimation_clip;
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class ColladaExtension_animation_clip;
 
 class ColladaAppSequence : public AppSequence
@@ -61,5 +68,9 @@ public:
    F32 getPriority();
    F32 getBlendRefTime();
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_APPSEQUENCE_H_

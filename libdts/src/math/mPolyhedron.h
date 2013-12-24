@@ -51,6 +51,11 @@
 #include "math/mConstants.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// @file
 /// Templated polyhedron code to allow all code to use a central definition of polyhedrons and
@@ -488,5 +493,9 @@ inline PolyhedronFixedVectorData< NUM_PLANES, NUM_POINTS, NUM_EDGES >::operator 
       AnyPolyhedron::EdgeListType( getEdges(), getNumEdges() )
    );
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // !_MPOLYHEDRON_H_

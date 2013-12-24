@@ -30,6 +30,10 @@
 #include "math/mPoint2.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 //------------------------------------------------------------------------------
 /// 3D integer point
 ///
@@ -1031,5 +1035,9 @@ inline Point3F mReflect( const Point3F &v, const Point3F &n )
 
 /// Returns a perpendicular vector to the unit length input vector.
 extern Point3F mPerp( const Point3F &normal );
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MPOINT3_H_

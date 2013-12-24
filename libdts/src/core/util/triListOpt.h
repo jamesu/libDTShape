@@ -25,6 +25,10 @@
 
 #include "core/util/tVector.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 namespace TriListOpt
 {
    typedef U32 IndexType;
@@ -96,5 +100,8 @@ namespace TriListOpt
       F32 score(const VertData &vertexData);
    };
 };
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

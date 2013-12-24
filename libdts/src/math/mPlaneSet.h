@@ -43,10 +43,11 @@
 #include "core/tempAlloc.h"
 #endif
 
-//#ifndef _TALGORITHM_H_
-//#include "core/tAlgorithm.h"
-//#endif
+//-----------------------------------------------------------------------------
 
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// Set of planes which can be tested against bounding volumes.
 ///
@@ -362,5 +363,8 @@ U32 PlaneSet< T >::testPlanes( const Box3F& bounds, U32 planeMask, F32 expand ) 
    return retMask;
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // !_MPLANESET_H_

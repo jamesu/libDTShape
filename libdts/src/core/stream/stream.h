@@ -33,6 +33,9 @@
 #include "core/util/endian.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 /// @defgroup stream_overload Primitive Type Stream Operation Overloads
 /// These macros declare the read and write functions for all primitive types.
@@ -232,5 +235,7 @@ public:
    virtual U32 getLastBytesRead() = 0;
    virtual U32 getLastBytesWritten() = 0;
 };
+
+END_NS
 
 #endif //_STREAM_H_

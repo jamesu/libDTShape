@@ -23,6 +23,11 @@
 #include "platform/platform.h"
 #include "ts/tsShapeInstance.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------
 // This file contains the shape instance thread class (defined in tsShapeInstance.h)
@@ -833,3 +838,6 @@ void TSShapeInstance::advancePos(F32 delta)
       mThreadList[i]->advancePos(delta);
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

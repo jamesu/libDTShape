@@ -24,6 +24,12 @@
 #include "platform/platform.h"
 #include "platform/platformCPUCount.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 // Consoles don't need this
 #if defined(TWISTFORK_OS_XENON) || defined(TWISTFORK_OS_PS3)
 namespace CPUInfo 
@@ -664,4 +670,9 @@ next:
       }
 
 } // namespace CPUInfo
+
+//-----------------------------------------------------------------------------
+
+END_NS
+
 #endif

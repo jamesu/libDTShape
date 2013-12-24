@@ -26,6 +26,10 @@
 #include "collision/optimizedPolyList.h"
 #include "ts/tsMaterial.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 //----------------------------------------------------------------------------
 
 OptimizedPolyList::OptimizedPolyList()
@@ -536,3 +540,5 @@ Polyhedron OptimizedPolyList::toPolyhedron() const
 
    return polyhedron;
 }
+
+END_NS

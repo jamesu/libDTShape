@@ -25,6 +25,9 @@
 #include "math/util/frustum.h"
 #include <math.h>    // Caution!!! Possible platform specific include
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //------------------------------------------------------------------------------
 // C version of Math Library
@@ -951,3 +954,6 @@ void mInstallLibrary_C()
    m_matF_x_box3F          = m_matF_x_box3F_C;
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

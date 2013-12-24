@@ -30,6 +30,11 @@
 #  include "platform/typetraits.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// Base class for objects which can be weakly referenced
 /// (i.e., reference goes away when object is destroyed).
@@ -466,5 +471,9 @@ inline T& Deref( StrongWeakRefPtr< T >& ref )
 {
    return *ref;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

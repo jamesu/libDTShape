@@ -23,15 +23,17 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "core/strings/stringFunctions.h"
 #include "platform/platform.h"
+#include "core/strings/stringFunctions.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 #if defined(TWISTFORK_OS_WIN32) || defined(TWISTFORK_OS_XBOX) || defined(TWISTFORK_OS_XENON)
 // This standard function is not defined when compiling with VC7...
 #define vsnprintf	_vsnprintf
 #endif
-
 
 //-----------------------------------------------------------------------------
 
@@ -532,3 +534,5 @@ const char* dStristr( const char* str1, const char* str2 )
 {
    return dStristr( const_cast< char* >( str1 ), str2 );
 }
+
+END_NS

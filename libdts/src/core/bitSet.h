@@ -27,6 +27,11 @@
 #include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+
 /// A convenience class to manipulate a set of bits.
 ///
 /// Notice that bits are accessed directly, ie, by passing

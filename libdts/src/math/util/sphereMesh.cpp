@@ -22,6 +22,12 @@
 
 #include "math/util/sphereMesh.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 SphereMesh::SphereMesh(U32 baseType)
 {
    VECTOR_SET_ASSOCIATION(mDetails);
@@ -248,3 +254,7 @@ SphereMesh::TriangleMesh * SphereMesh::subdivideMesh(TriangleMesh * prevMesh)
    calcNormals(mesh);
    return(mesh);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

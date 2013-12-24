@@ -42,6 +42,12 @@
 #include "ts/loader/appSequence.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class TSShapeLoader
 {
 
@@ -92,7 +98,7 @@ protected:
    Vector<AppMesh*>              appMeshes;
 
    // Variables used during loading, but that can be discarded afterwards
-   static Torque::Path           shapePath;
+   static DTShape::Path           shapePath;
 
    AppNode*                      boundsNode;
    Vector<AppNode*>              appNodes;            ///< Nodes in the loaded shape
@@ -173,11 +179,15 @@ public:
    TSShapeLoader() : boundsNode(0) { }
    virtual ~TSShapeLoader();
 
-   static const Torque::Path& getShapePath() { return shapePath; }
+   static const DTShape::Path& getShapePath() { return shapePath; }
 
    static void zapScale(MatrixF& mat);
 
-   TSShape* generateShape(const Torque::Path& path);
+   TSShape* generateShape(const DTShape::Path& path);
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSSHAPE_LOADER_H_

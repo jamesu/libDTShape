@@ -24,6 +24,11 @@
 #include "math/mPlane.h"
 #include "math/mMatrix.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 // extern void (*m_matF_x_point3F)(const F32 *m, const F32 *p, F32 *presult);
 // extern void (*m_matF_x_vectorF)(const F32 *m, const F32 *v, F32 *vresult);
@@ -214,3 +219,6 @@ void mInstall_AMD_Math()
    // m_matF_x_vectorF = Athlon_MatrixF_x_VectorF;
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

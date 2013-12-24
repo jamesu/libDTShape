@@ -29,12 +29,17 @@
 #include "ts/tsShapeInstance.h"
 #include "ts/tsMaterialList.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 const F32 TSShapeLoader::DefaultTime = -1.0f;
 const double TSShapeLoader::MinFrameRate = 15.0f;
 const double TSShapeLoader::MaxFrameRate = 60.0f;
 const double TSShapeLoader::AppGroundFrameRate = 10.0f;
-Torque::Path TSShapeLoader::shapePath;
+DTShape::Path TSShapeLoader::shapePath;
 
 //------------------------------------------------------------------------------
 // Utility functions
@@ -119,7 +124,7 @@ void TSShapeLoader::updateProgress(int major, const char* msg, int numMinor, int
 //-----------------------------------------------------------------------------
 // Shape creation entry point
 
-TSShape* TSShapeLoader::generateShape(const Torque::Path& path)
+TSShape* TSShapeLoader::generateShape(const DTShape::Path& path)
 {
    shapePath = path;
    shape = new TSShape();
@@ -1269,3 +1274,7 @@ TSShapeLoader::~TSShapeLoader()
       delete appSequences[iSeq];
    appSequences.clear();   
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

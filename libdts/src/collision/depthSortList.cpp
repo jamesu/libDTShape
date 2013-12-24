@@ -27,7 +27,9 @@
 #include "core/color.h"
 #include "core/stream/fileStream.h" // TODO, remove this
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 // some defines and global parameters that affect poly split routine
 F32 SPLIT_TOL = 0.0005f;
@@ -847,4 +849,4 @@ void DepthSortList::cookieCutter(Poly & cutter, Poly & cuttee,
    }
 }
 
-//----------------------------------------------------------------------------
+END_NS

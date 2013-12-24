@@ -30,6 +30,12 @@
 #include "core/util/tDictionary.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class TSMaterialManager : public StrongRefBase
 {
 public:
@@ -57,5 +63,9 @@ public:
 };
 
 #define MATMGR TSMaterialManager::instance()
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MATERIAL_MGR_H_

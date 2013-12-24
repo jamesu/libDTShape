@@ -17,7 +17,14 @@
 #include "ts/tsRenderState.h"
 #include "ts/tsRender.h"
 
-#if 0
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
+#ifdef TWISTFORK_DUMMY_RENDER
+
 class TSDummyMaterial;
 
 class TSDummyMaterialInstance : public TSMaterialInstance
@@ -312,3 +319,6 @@ PhysicsCollision *PhysicsCollision::create()
    return new DummyPhysicsCollision();
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

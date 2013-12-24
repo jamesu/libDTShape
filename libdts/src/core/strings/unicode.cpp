@@ -38,6 +38,10 @@
 #include "core/log.h"
 
 //-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 /// replacement character. Standard correct value is 0xFFFD.
 #define kReplacementChar 0xFFFD
 
@@ -154,7 +158,7 @@ U32 convertUTF8toUTF16(const UTF8 *unistring, UTF16 *outbuffer, U32 len)
 
 #ifdef TWISTFORK_ENABLE_UTF16_CACHE
    // If we have cached this conversion already, don't do it again
-   U32 hashKey = Torque::hash((const U8 *)unistring, dStrlen(unistring), 0);
+   U32 hashKey = DTShape::hash((const U8 *)unistring, dStrlen(unistring), 0);
    UTF16CacheTable::Iterator cacheItr = sgUTF16Cache.find(hashKey);
    if(cacheItr != sgUTF16Cache.end())
    {
@@ -662,3 +666,5 @@ bool isValidUTF8BOM( U8 bom[4] )
    // every script. -pw
    return false;
 }
+
+END_NS

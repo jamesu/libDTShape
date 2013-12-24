@@ -23,12 +23,16 @@
 #ifndef _PATH_H_
 #define _PATH_H_
 
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
+#endif
 #ifndef _TORQUE_STRING_H_
 #include "core/util/str.h"
 #endif
 
-namespace Torque
-{
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
@@ -142,6 +146,7 @@ String PathToPlatform(String file);
 ///@ingroup VolumeSystem
 String PathToOS(String file);
 
-} // Namespace
+END_NS
+
 #endif
 

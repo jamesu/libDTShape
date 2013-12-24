@@ -32,6 +32,12 @@
 #include "ts/collada/colladaAppMesh.h"
 #include "ts/collada/colladaAppMesh.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 // Trim leading and trailing whitespace from the first word in the string
 // Note that the string is modified.
 static char* TrimFirstWord(char* str)
@@ -256,3 +262,7 @@ MatrixF ColladaAppNode::getTransform(F32 time)
    lastTransformTime = time;
    return lastTransform;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

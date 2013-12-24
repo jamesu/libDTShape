@@ -20,8 +20,15 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
+#include "platform/platform.h"
 #include "math/mPlaneTransformer.h"
 #include "math/mMathFn.h"
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 void PlaneTransformer::set(const MatrixF& xform, const Point3F& scale)
 {
@@ -69,3 +76,7 @@ void PlaneTransformer::setIdentity()
 
    *this = sMakeIdentity.transformer;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

@@ -13,9 +13,9 @@
 
 #include "platform/platform.h"
 
-BEGIN_NS(DTSLib)
+BEGIN_NS(DTShapeInit)
 
-void init(U32 opts);
+void init(U32 opts=0);
 void shutdown();
 
 void initMeshIntrinsics();

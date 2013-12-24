@@ -27,6 +27,9 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //----------------------------------------------------------------------------
 
@@ -106,7 +109,6 @@ public:
    bool findCollision(const VectorF& vec,Polytope::Collision *best);
 };
 
-
-
+END_NS
 
 #endif

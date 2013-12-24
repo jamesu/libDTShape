@@ -25,6 +25,8 @@
 
 //----------------------------------------------------------------------------
 
+BEGIN_NS(DTShape)
+
 AbstractPolyList::~AbstractPolyList()
 {
    mInterestNormalRegistered = false;
@@ -112,3 +114,4 @@ void AbstractPolyList::setInterestNormal(const Point3F& normal)
    mInterestNormal           = normal;
 }
 
+END_NS

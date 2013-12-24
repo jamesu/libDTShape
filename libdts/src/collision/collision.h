@@ -33,6 +33,8 @@
 #include "math/mPoint2.h"
 #endif
 
+BEGIN_NS(DTShape)
+
 class SceneObject;
 class TSMaterialInstance;
 
@@ -182,5 +184,6 @@ struct RayInfo : public Collision
    void *userData;
 };
 
+END_NS
 
 #endif // _COLLISION_H_

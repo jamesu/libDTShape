@@ -39,6 +39,12 @@
 #include "core/log.h"
 #include "core/util/hashFunction.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #ifdef TWISTFORK_ENABLE_PROFILER
 ProfilerRootData *ProfilerRootData::sRootList = NULL;
 Profiler *gProfiler = NULL;
@@ -682,3 +688,7 @@ void Profiler::enableMarker(const char *marker, bool enable)
 }
 
 #endif
+
+//-----------------------------------------------------------------------------
+
+END_NS

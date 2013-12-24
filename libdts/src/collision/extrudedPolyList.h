@@ -39,6 +39,9 @@
 #include "collision/abstractPolyList.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 class CollisionList;
 
@@ -126,5 +129,7 @@ public:
   protected:
    const PlaneF& getIndexedPlane(const U32 index);
 };
+
+END_NS
 
 #endif

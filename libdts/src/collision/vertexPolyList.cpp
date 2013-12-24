@@ -23,6 +23,9 @@
 #include "platform/platform.h"
 #include "collision/vertexPolyList.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 VertexPolyList::VertexPolyList()
 {
@@ -67,3 +70,5 @@ U32 VertexPolyList::addPoint( const Point3F &p )
    mVertexList.push_back( tp );
    return mVertexList.size() - 1;
 }
+
+END_NS

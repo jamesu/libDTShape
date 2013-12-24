@@ -46,6 +46,12 @@
 #  include "platformXbox/platformXbox.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 GFXPrimitiveType drawTypes[] = { GFXTriangleList, GFXTriangleStrip, GFXTriangleFan };
 #define getDrawType(a) (drawTypes[a])
 
@@ -2992,3 +2998,7 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
    tverts2.free_memory();
    colors.free_memory();
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

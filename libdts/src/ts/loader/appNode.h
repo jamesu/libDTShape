@@ -33,6 +33,12 @@
 #include "ts/loader/appMesh.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class AppNode
 {
    friend class TSShapeLoader;
@@ -84,5 +90,9 @@ public:
    virtual bool isSequence();
    virtual bool isRoot();
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _APPNODE_H_

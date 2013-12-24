@@ -25,6 +25,11 @@
 #include "ts/collada/colladaExtensions.h"
 #include "ts/collada/colladaAppSequence.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 ColladaAppSequence::ColladaAppSequence(const domAnimation_clip* clip)
    : pClip(clip), clipExt(new ColladaExtension_animation_clip(clip))
@@ -95,3 +100,7 @@ void ColladaAppSequence::setAnimationActive(const domAnimation* anim, bool activ
    for (int iAnim = 0; iAnim < anim->getAnimation_array().getCount(); iAnim++)
       setAnimationActive(anim->getAnimation_array()[iAnim], active);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

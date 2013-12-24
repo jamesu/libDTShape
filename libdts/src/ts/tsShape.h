@@ -43,6 +43,12 @@
 #include "core/color.h"
 #include "core/strings/stringFunctions.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #define DTS_EXPORTER_CURRENT_VERSION 124
 
 class TSMaterialList;
@@ -400,7 +406,7 @@ class TSShape : public StrongRefBase
    S8* mShapeData;
    U32 mShapeDataSize;
    
-   Torque::Path mPath;
+   DTShape::Path mPath;
 
    // shape class has few methods --
    // just constructor/destructor, io, and lookup methods
@@ -410,12 +416,12 @@ class TSShape : public StrongRefBase
    ~TSShape();
    void init();
    void initMaterialList();    ///< you can swap in a new material list, but call this if you do
-   bool preloadMaterialList(const Torque::Path &path); ///< called to preload and validate the materials in the mat list
+   bool preloadMaterialList(const DTShape::Path &path); ///< called to preload and validate the materials in the mat list
    
    // Generic helpers to load a shape or cae from a pth
-   static TSShape *createFromPath(const Torque::Path &path);
+   static TSShape *createFromPath(const DTShape::Path &path);
    
-   Torque::Path getPath() { return mPath; }
+   DTShape::Path getPath() { return mPath; }
 
    void setupBillboardDetails( const String &cachePath );
 
@@ -656,7 +662,7 @@ class TSShape : public StrongRefBase
    S32 setDetailSize(S32 oldSize, S32 newSize);
    bool removeDetail(S32 size);
 
-   bool addSequence(const Torque::Path& path, const String& fromSeq, const String& name, S32 startFrame, S32 endFrame, bool padRotKeys, bool padTransKeys);
+   bool addSequence(const DTShape::Path& path, const String& fromSeq, const String& name, S32 startFrame, S32 endFrame, bool padRotKeys, bool padTransKeys);
    bool removeSequence(const String& name);
 
    bool addTrigger(const String& seqName, S32 keyframe, S32 state);
@@ -709,5 +715,9 @@ inline const TSShape::ObjectState & TSShape::getObjectState(const Sequence & seq
 {
    return objectStates[seq.baseObjectState + objectNum*seq.numKeyframes + keyframeNum];
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

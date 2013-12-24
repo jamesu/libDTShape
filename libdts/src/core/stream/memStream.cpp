@@ -23,6 +23,9 @@
 #include "platform/platform.h"
 #include "core/stream/memStream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 MemStream::MemStream( U32 growSize,
                       bool allowRead,
@@ -231,3 +234,5 @@ void *MemStream::takeBuffer()
 
    return buffer;
 }
+
+END_NS

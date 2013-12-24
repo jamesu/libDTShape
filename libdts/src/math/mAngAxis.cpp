@@ -24,6 +24,12 @@
 #include "math/mQuat.h"
 #include "math/mMatrix.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 AngAxisF & AngAxisF::set( const QuatF & q )
 {
    angle = 2.0f * mAcos( q.w );
@@ -93,3 +99,6 @@ void AngAxisF::RotateZ(F32 angle, const Point3F & from, Point3F * to)
    mat.mulV(from,to);
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

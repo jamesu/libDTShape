@@ -27,8 +27,9 @@
 #include "collision/clippedPolyList.h"
 #endif
 
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
+BEGIN_NS(DTShape)
 
 class DepthSortList : public ClippedPolyList
 {
@@ -114,5 +115,7 @@ inline void DepthSortList::getOrderedPoly(U32 ith, Poly ** poly, PolyExtents ** 
    *poly = &mPolyList[mPolyIndexList[ith]];
    *polyExtent = &mPolyExtentsList[mPolyIndexList[ith]];
 }
+
+END_NS
 
 #endif

@@ -35,6 +35,12 @@
 #include "math/mPoint4.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// 4x4 Matrix Class
 ///
 /// This runs at F32 precision.
@@ -587,5 +593,9 @@ inline void mTransformPlane(const MatrixF& mat, const Point3F& scale, const Plan
 {
    m_matF_x_scale_x_planeF(mat, &scale.x, &plane.x, &result->x);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_MMATRIX_H_

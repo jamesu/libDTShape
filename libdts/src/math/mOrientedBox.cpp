@@ -25,7 +25,9 @@
 
 #include "math/mMatrix.h"
 
+//-----------------------------------------------------------------------------
 
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
@@ -93,3 +95,7 @@ void OrientedBox3F::_initPoints()
    mPoints[ FarTopLeft ] = mCenter + forward - right + up;
    mPoints[ FarTopRight ] = mCenter + forward + right + up;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

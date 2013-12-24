@@ -23,6 +23,12 @@
 #ifndef _TUNMANAGEDVECTOR_H_
 #define _TUNMANAGEDVECTOR_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 
 /// An array that does not manage the memory it gets passed.  Conversely, the
 /// array cannot be enlarged.
@@ -91,5 +97,7 @@ class UnmanagedVector
          return mArray[ index ];
       }
 };
+
+END_NS
 
 #endif // !_TUNMANAGEDVECTOR_H_

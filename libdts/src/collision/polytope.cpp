@@ -25,6 +25,10 @@
 #include "collision/collision.h"
 #include "collision/polytope.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 //----------------------------------------------------------------------------
 
 Polytope::Polytope()
@@ -427,3 +431,4 @@ bool Polytope::findCollision(const VectorF& vec,Polytope::Collision *best)
    return true;
 }
 
+END_NS

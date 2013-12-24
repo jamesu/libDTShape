@@ -19,11 +19,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
+
+#include "platform/platform.h"
 #include "ts/tsMesh.h"
 
 #if defined(TWISTFORK_CPU_X86) && (_MSC_VER >= 1500)
 #include "ts/tsMeshIntrinsics.h"
 #include <smmintrin.h>
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 void m_matF_x_BatchedVertWeightList_SSE4(const MatrixF &mat, 
                                     const dsize_t count,
@@ -104,5 +112,9 @@ void m_matF_x_BatchedVertWeightList_SSE4(const MatrixF &mat,
       _mm_store_ps(outElem->_normal, tempNrm); //< output normal
    }
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // TWISTFORK_CPU_X86

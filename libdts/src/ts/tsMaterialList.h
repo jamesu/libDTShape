@@ -30,6 +30,11 @@
 #include "core/util/path.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// Specialized material list for 3space objects.
 class TSMaterialList : public MaterialList
@@ -94,5 +99,8 @@ protected:
    virtual void mapMaterial( U32 index );
 };
 
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSMATERIALLIST_H_

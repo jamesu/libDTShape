@@ -30,6 +30,11 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 #if defined(TWISTFORK_MAX_LIB)
 #define MAX_TS_SET_DWORDS 32
@@ -115,5 +120,9 @@ inline bool TSIntegerSet::test(S32 index) const
 
    return ((bits[index>>5] & (1 << (index & 31)))!=0);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

@@ -27,7 +27,7 @@
 #include "core/log.h"
 #include "platform/profiler.h"
 
-//#include "core/tAlgorithm.h"
+BEGIN_NS(DTShape)
 
 bool ClippedPolyList::allowClipping = true;
 
@@ -478,3 +478,6 @@ void ClippedPolyList::generateNormals()
       *normalIter = normal;
    }
 }
+
+END_NS
+

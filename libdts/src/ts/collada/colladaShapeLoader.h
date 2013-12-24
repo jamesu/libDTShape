@@ -27,14 +27,21 @@
 #include "ts/loader/tsShapeLoader.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
 class domCOLLADA;
 class domAnimation;
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 struct AnimChannels;
 
 //-----------------------------------------------------------------------------
 class ColladaShapeLoader : public TSShapeLoader
 {
-   friend TSShape* loadColladaShape(const Torque::Path &path);
+   friend TSShape* loadColladaShape(const DTShape::Path &path);
 
    domCOLLADA*             root;
    Vector<AnimChannels*>   animations;       ///< Holds all animation channels for deletion after loading
@@ -52,10 +59,14 @@ public:
    bool ignoreMesh(const String& name);
    void computeBounds(Box3F& bounds);
 
-   static bool canLoadCachedDTS(const Torque::Path& path);
-   static bool checkAndMountSketchup(const Torque::Path& path, String& mountPoint, Torque::Path& daePath);
-   static domCOLLADA* getDomCOLLADA(const Torque::Path& path);
+   static bool canLoadCachedDTS(const DTShape::Path& path);
+   static bool checkAndMountSketchup(const DTShape::Path& path, String& mountPoint, DTShape::Path& daePath);
+   static domCOLLADA* getDomCOLLADA(const DTShape::Path& path);
    static domCOLLADA* readColladaFile(const String& path);
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_SHAPELOADER_H_

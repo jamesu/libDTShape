@@ -27,6 +27,12 @@
 #include "math/mRandom.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 template <class T>
 class MRandomSet
 {
@@ -89,5 +95,9 @@ inline T MRandomSet<T>::get()
    AssertFatal( false, "MRandomSet::get() has failed." );
    return NULL;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_MRANDOMSET_H_

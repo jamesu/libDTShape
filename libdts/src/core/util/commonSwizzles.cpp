@@ -22,6 +22,8 @@
 
 #include "core/util/swizzle.h"
 
+BEGIN_NS(DTShape)
+
 namespace Swizzles
 {
    dsize_t _bgra[] = { 2, 1, 0, 3 };
@@ -40,3 +42,5 @@ namespace Swizzles
 
    NullSwizzle<U8, 4> null;
 }
+
+END_NS

@@ -30,6 +30,10 @@
 #include "core/stream/stream.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 class FileStream : public Stream
 {
 public:
@@ -99,5 +103,7 @@ private:
    FileStream(const FileStream &i_fileStrm);             // disable copy constructor
    FileStream& operator=(const FileStream &i_fileStrm);  // disable assignment operator
 };
+
+END_NS
 
 #endif // _FILE_STREAM_H

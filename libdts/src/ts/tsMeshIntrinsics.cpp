@@ -19,10 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
+
+#include "platform/platform.h"
 #include "ts/tsMesh.h"
 #include "ts/tsMeshIntrinsics.h"
 #include "ts/arch/tsMeshIntrinsics.arch.h"
 #include "libdtshape.h"
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 void (*zero_vert_normal_bulk)(const dsize_t count, U8 * __restrict const outPtr, const dsize_t outStride) = NULL;
 void (*m_matF_x_BatchedVertWeightList)(const MatrixF &mat, const dsize_t count, const TSSkinMesh::BatchData::BatchedVertWeight * __restrict batch, U8 * const __restrict outPtr, const dsize_t outStride) = NULL;
@@ -73,12 +81,18 @@ void m_matF_x_BatchedVertWeightList_C(const MatrixF &mat,
    }
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS
+
+
 //------------------------------------------------------------------------------
 // Initializer.
 //------------------------------------------------------------------------------
 
+using namespace DTShape;
 
-void DTSLib::initMeshIntrinsics()
+void DTShapeInit::initMeshIntrinsics()
 {
       // Assign defaults (C++ versions)
       zero_vert_normal_bulk = zero_vert_normal_bulk_C;
@@ -113,4 +127,3 @@ void DTSLib::initMeshIntrinsics()
       }
    #endif
 }
-

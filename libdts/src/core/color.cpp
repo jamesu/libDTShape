@@ -23,6 +23,10 @@
 #include "platform/platform.h"
 #include "core/color.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 const ColorF ColorF::ZERO( 0, 0, 0, 0 );
 const ColorF ColorF::ONE( 1, 1, 1, 1 );
 const ColorF ColorF::WHITE( 1, 1, 1 );
@@ -38,3 +42,5 @@ const ColorI ColorI::BLACK( 0, 0, 0 );
 const ColorI ColorI::RED( 255, 0, 0 );
 const ColorI ColorI::GREEN( 0, 255, 0 );
 const ColorI ColorI::BLUE( 0, 0, 255 );
+
+END_NS

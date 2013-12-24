@@ -31,6 +31,10 @@
 #endif
 
 //-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 // Collada allows custom data to be included with many elements using the <extra>
 // tag, followed by one or more named technique profiles. eg.
 // <some_element>
@@ -301,5 +305,9 @@ public:
       GET_EXTRA_PARAM(priority, 5.0f);
    }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_EXTENSIONS_H_

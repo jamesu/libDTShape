@@ -28,7 +28,10 @@
 #include "math/mOrientedBox.h"
 #include "math/mSphere.h"
 #include "math/mPlaneSet.h"
-//#include "core/tAlgorithm.h"
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
@@ -340,4 +343,8 @@ U32 PlaneSet< T >::clipPolygon( const Point3F* inVertices, U32 inNumVertices, Po
    
    return numClippedPolygonVertices;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 

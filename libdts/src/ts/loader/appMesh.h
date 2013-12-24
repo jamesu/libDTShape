@@ -36,6 +36,12 @@
 #include "ts/loader/appSequence.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class AppNode;
 
 class AppMesh
@@ -101,5 +107,9 @@ public:
 
    virtual void lockMesh(F32 t, const MatrixF& objectOffset) { }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _APPMESH_H_

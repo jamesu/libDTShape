@@ -27,6 +27,9 @@
 #include "core/stream/stream.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 /// The MemStream class is used to read and write to a memory buffer.
 class MemStream : public Stream
@@ -100,5 +103,7 @@ class MemStream : public Stream
       void *takeBuffer();
 
 };
+
+END_NS
 
 #endif //_MEMSTREAM_H_

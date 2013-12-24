@@ -55,6 +55,11 @@
 #include "platform/profiler.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// @file
 /// Precise and fast geometric intersection testing.
@@ -381,5 +386,7 @@ struct Intersector : public IntersectorBase< Tester, Testee > {};
 
 template<>
 struct Intersector< AnyPolyhedron, Box3F > : public PolyhedronBoxIntersector< AnyPolyhedron > {};
+
+END_NS
 
 #endif // !_MINTERSECTOR_H_

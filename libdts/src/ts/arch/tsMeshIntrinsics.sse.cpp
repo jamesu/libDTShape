@@ -25,6 +25,12 @@
 #include "ts/tsMeshIntrinsics.h"
 #include <xmmintrin.h>
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 void zero_vert_normal_bulk_SSE(const dsize_t count, U8 * __restrict const outPtr, const dsize_t outStride)
 {
    // A U8 * version of the in/out pointer
@@ -179,5 +185,9 @@ void m_matF_x_BatchedVertWeightList_SSE(const MatrixF &mat,
       _mm_store_ps(outElem->_normal, tempNrm); //< output normal
    }
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // TWISTFORK_CPU_X86

@@ -23,7 +23,9 @@
 #ifndef _MMATH_H_
 #define _MMATH_H_
 
-
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
+#endif
 #ifndef _MRECT_H_
 #include "math/mRect.h"
 #endif

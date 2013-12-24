@@ -27,6 +27,10 @@
 #  include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 //----------------------------------------------------------------------------
 /// Implements a chunked data allocator.
 ///
@@ -294,4 +298,7 @@ private:
    const U32   mElementSize;
    void        *mFreeListHead;
 };
+
+END_NS
+
 #endif

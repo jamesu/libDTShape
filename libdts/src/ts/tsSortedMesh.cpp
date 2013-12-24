@@ -24,16 +24,11 @@
 #include "math/mMath.h"
 #include "ts/tsShapeInstance.h"
 
-// Not worth the effort, much less the effort to comment, but if the draw types
-// are consecutive use addition rather than a table to go from index to command value...
-/*
-#if ((GL_TRIANGLES+1==GL_TRIANGLE_STRIP) && (GL_TRIANGLE_STRIP+1==GL_TRIANGLE_FAN))
-   #define getDrawType(a) (GL_TRIANGLES+(a))
-#else
-   U32 drawTypes[] = { GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN };
-   #define getDrawType(a) (drawTypes[a])
-#endif
-*/
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 // found in tsmesh
 extern void forceFaceCamera();
@@ -164,5 +159,7 @@ void TSSortedMesh::disassemble()
    tsalloc.setGuard();
 }
 
+//-----------------------------------------------------------------------------
 
+END_NS
 

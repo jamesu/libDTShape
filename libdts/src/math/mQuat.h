@@ -27,6 +27,12 @@
 #include "math/mPoint3.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class MatrixF;
 class AngAxisF;
 
@@ -230,5 +236,9 @@ inline F32 QuatF::angleBetween( const QuatF & q )
    // angle between to quaternions
    return mAcos(x * q.x + y * q.y + z * q.z + w * q.w);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MQUAT_H_

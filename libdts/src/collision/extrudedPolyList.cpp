@@ -27,6 +27,10 @@
 #include "math/mPolyhedron.h"
 #include "collision/collision.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 // Minimum distance from a face
 F32 ExtrudedPolyList::FaceEpsilon = 0.01f;
 
@@ -508,3 +512,5 @@ void ExtrudedPolyList::setVelocity(const VectorF& velocity)
       clearInterestNormal();
    }
 }
+
+END_NS

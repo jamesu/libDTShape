@@ -27,6 +27,12 @@
 #include "math/mMath.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class Stream;
 
 /// compressed quaternion class
@@ -105,5 +111,9 @@ inline void TSTransform::setMatrix( const QuatF & q, MatrixF * pDest )
 {
    q.setMatrix(pDest);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

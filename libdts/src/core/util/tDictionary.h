@@ -37,6 +37,11 @@
 #include "core/dataChunker.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 // TODO: Maybe move these into a more general Tuple class?
 
@@ -90,7 +95,7 @@ namespace DictHash
 
    inline U32 hash(const char *data)
    {
-      return Torque::hash( (const U8 *)data, dStrlen( data ), 0 );
+      return DTShape::hash( (const U8 *)data, dStrlen( data ), 0 );
    }
 
    inline U32 hash(const void *data)
@@ -862,6 +867,8 @@ inline Value& Map<Key,Value,Sequence>::operator[](const Key& key)
 {
    return mMap.findOrInsert(key)->value;
 }
+
+END_NS
 
 #endif
 

@@ -23,6 +23,12 @@
 #ifndef _TSMESHINTRINSICS_H_
 #define _TSMESHINTRINSICS_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// This is the batch-by-transform skin loop
 ///
 /// @param mat       Bone transform
@@ -46,6 +52,10 @@ extern void (*zero_vert_normal_bulk)
                           (const dsize_t count, 
                            U8 * __restrict const outPtr, 
                            const dsize_t outStride);
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif
 

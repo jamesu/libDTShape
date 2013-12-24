@@ -23,6 +23,12 @@
 #ifndef _MCONSTANTS_H_
 #define _MCONSTANTS_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #undef M_PI
 #undef M_SQRT2
 
@@ -54,5 +60,9 @@ enum OverlapTestResult
    GeometryIntersecting = 0,    ///< Partly inside and partly outside test volume/space.
    GeometryOutside = -1         ///< No overlap with test volume/space.
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

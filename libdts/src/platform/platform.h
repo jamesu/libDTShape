@@ -25,6 +25,9 @@
 
 #include <stdlib.h>
 
+#define BEGIN_NS(ns) namespace ns {
+#define END_NS }
+
 #ifndef _TWISTFORKCONFIG_H_
 #include "twistforkConfig.h"
 #endif
@@ -44,8 +47,11 @@
 #include <new>
 #include <typeinfo>
 
-#define BEGIN_NS(ns) namespace ns {
-#define END_NS }
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// Global processor identifiers.
 ///
@@ -374,6 +380,10 @@ struct Math
 };
 
 /// @}
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif
 

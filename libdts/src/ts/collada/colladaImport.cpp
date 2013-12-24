@@ -26,7 +26,11 @@
 #include "ts/collada/colladaAppNode.h"
 #include "ts/collada/colladaShapeLoader.h"
 
-//#include "gui/controls/guiTreeViewCtrl.h"
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 // Helper struct for counting nodes, meshes and polygons down through the scene
 // hierarchy
@@ -145,14 +149,14 @@ ConsoleFunction( enumColladaForImport, bool, 3, 3,
 
    // Check if a cached DTS is available => no need to import the collada file
    // if we can load the DTS instead
-   Torque::Path path((const char*)argv[1]);
+   DTShape::Path path((const char*)argv[1]);
    if (ColladaShapeLoader::canLoadCachedDTS(path))
       return false;
 
    // Check if this is a Sketchup file (.kmz) and if so, mount the zip filesystem
    // and get the path to the DAE file.
    String mountPoint;
-   Torque::Path daePath;
+   DTShape::Path daePath;
    bool isSketchup = ColladaShapeLoader::checkAndMountSketchup(path, mountPoint, daePath);
 
    // Load the Collada file into memory
@@ -259,3 +263,7 @@ ConsoleFunction( enumColladaForImport, bool, 3, 3,
 }
 
 #endif
+
+//-----------------------------------------------------------------------------
+
+END_NS

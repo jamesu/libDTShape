@@ -27,6 +27,12 @@
 #include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class PlatformAssert
 {
 public:
@@ -114,7 +120,7 @@ public:
  */
 #define AssertISV(x, y)  \
    { if ((x)==0)         \
-{ if ( ::PlatformAssert::processAssert(::PlatformAssert::Fatal_ISV, __FILE__, __LINE__,  y) ) { ::Platform::debugBreak(); } } }
+{ if ( PlatformAssert::processAssert(PlatformAssert::Fatal_ISV, __FILE__, __LINE__,  y) ) { Platform::debugBreak(); } } }
 
 
 /*!
@@ -135,7 +141,9 @@ public:
  */
 const char* avar(const char *in_msg, ...);
 
+//-----------------------------------------------------------------------------
 
+END_NS
 
 #endif // _PLATFORM_ASSERT_H_
 

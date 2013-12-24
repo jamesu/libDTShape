@@ -28,6 +28,10 @@
 #endif
 
 //------------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//------------------------------------------------------------------------------
 // Endian conversions
 
 inline U8 endianSwap(const U8 in_swap)
@@ -136,6 +140,8 @@ TWISTFORK_DECLARE_TEMPLATIZED_ENDIAN_CONV(U64)
 TWISTFORK_DECLARE_TEMPLATIZED_ENDIAN_CONV(S64)
 TWISTFORK_DECLARE_TEMPLATIZED_ENDIAN_CONV(F32)
 TWISTFORK_DECLARE_TEMPLATIZED_ENDIAN_CONV(F64)
+
+END_NS
 
 #endif
 

@@ -28,7 +28,13 @@
 #include "ts/tsMaterialList.h"
 #include "ts/tsMaterialManager.h"
 
-using namespace ColladaUtils;
+using namespace DTShape::ColladaUtils;
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 String cleanString(const String& str)
 {
@@ -158,7 +164,7 @@ ColladaAppMaterial::ColladaAppMaterial(const domMaterial *pMat)
    name = ColladaUtils::getOptions().matNamePrefix;
    if ( ColladaUtils::getOptions().useDiffuseNames )
    {
-      Torque::Path diffusePath( diffuseMap );
+      DTShape::Path diffusePath( diffuseMap );
       name += diffusePath.getFileName();
    }
    else
@@ -185,7 +191,7 @@ void ColladaAppMaterial::resolveColor(const domCommon_color_or_texture_type* val
 }
 
 // Generate a new Material object
-TSMaterial *ColladaAppMaterial::createMaterial(const Torque::Path& path) const
+TSMaterial *ColladaAppMaterial::createMaterial(const DTShape::Path& path) const
 {
    // The filename and material name are used as TorqueScript identifiers, so
    // clean them up first
@@ -223,3 +229,7 @@ TSMaterial *ColladaAppMaterial::createMaterial(const Torque::Path& path) const
    
    return newMat;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

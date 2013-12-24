@@ -23,6 +23,12 @@
 #ifndef _UTIL_RETURNTYPE_H_
 #define _UTIL_RETURNTYPE_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// @file
 ///
 /// Helper templates to determine the return type of functions.
@@ -62,5 +68,7 @@ template <class R,class O,class A>
 struct ReturnType<R (O::*)(A)> { typedef R ValueType; };
 template <class R,class O>
 struct ReturnType<R (O::*)()> { typedef R ValueType; };
+
+END_NS
 
 #endif

@@ -43,6 +43,12 @@
 
 #include <string.h>
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 const int MaxPath = PATH_MAX;
 
 int x86UNIXOpen(const char *path, int oflag)
@@ -537,3 +543,5 @@ const char *Platform::getRootDir()
 		return sRootDir;
 	}
 }
+
+END_NS

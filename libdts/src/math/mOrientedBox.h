@@ -31,6 +31,11 @@
 #include "math/mPoint3.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 class MatrixF;
 class Box3F;
@@ -108,5 +113,9 @@ class OrientedBox3F : public BoxBase
       /// @param aabb An axis-aligned bounding box in the given transform space.
       void set( const MatrixF& transform, const Box3F& aabb );
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // !_MORIENTEDBOX_H_

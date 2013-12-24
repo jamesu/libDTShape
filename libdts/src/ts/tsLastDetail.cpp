@@ -28,6 +28,12 @@
 #include "core/stream/fileStream.h"
 #include "ts/tsMaterialManager.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #if 0
 GFXImplementVertexFormat( ImposterState )
 {
@@ -159,7 +165,7 @@ void TSLastDetail::update( bool forceUpdate )
    String shapeFile( mCachePath );
    if ( !Platform::isFile( shapeFile ) )
    {
-      Torque::Path path(shapeFile);
+      DTShape::Path path(shapeFile);
       path.setExtension("cached.dts");
       shapeFile = path.getFullPath();
       if ( !Platform::isFile( shapeFile ) )  
@@ -529,5 +535,9 @@ void TSLastDetail::updateImposterImages( bool forceUpdate )
       GFX->endScene();
 #endif
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 

@@ -23,6 +23,12 @@
 #include "ts/loader/appMesh.h"
 #include "ts/loader/tsShapeLoader.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 Vector<AppMaterial*> AppMesh::appMaterials;
 
 AppMesh::AppMesh()
@@ -176,3 +182,7 @@ bool AppMesh::isBillboardZAxis()
 {
    return !dStrnicmp(getName(),"BBZ::",5) || !dStrnicmp(getName(),"BBZ_",4);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

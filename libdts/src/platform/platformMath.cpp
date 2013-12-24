@@ -25,6 +25,11 @@
 #include "math/mMath.h"
 #include "core/strings/stringFunctions.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 extern void mInstallLibrary_C();
 extern void mInstallLibrary_ASM();
@@ -86,3 +91,4 @@ F32 Platform::getRandom()
    return sgPlatRandom.randF();
 }
 
+END_NS

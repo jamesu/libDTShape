@@ -28,14 +28,15 @@
 #include "ts/tsDecal.h"
 #include "platform/profiler.h"
 #include "core/frameAllocator.h"
-//#include "gfx/gfxDevice.h"
 #include "ts/tsMaterialManager.h"
 #include "ts/tsMaterial.h"
-//#include "scene/sceneRenderState.h"
-//#include "gfx/primBuilder.h"
-//#include "gfx/gfxDrawUtil.h"
 #include "math/util/frustum.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 F32                           TSShapeInstance::smDetailAdjust = 1.0f;
 F32                           TSShapeInstance::smSmallestVisiblePixelSize = -1.0f;
@@ -717,3 +718,6 @@ void TSShapeInstance::prepCollision()
    PROFILE_SCOPE( TSShapeInstance_PrepCollision );
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

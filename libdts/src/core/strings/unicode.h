@@ -27,6 +27,9 @@
 #include "platform/types.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 /// Unicode conversion utility functions
 ///
@@ -127,5 +130,7 @@ const UTF8* getNthCodepoint(const UTF8 *unistring, const U32 n);
 /// For reference: http://en.wikipedia.org/wiki/Byte_Order_Mark
 bool chompUTF8BOM( const char *inString, char **outStringPtr );
 bool isValidUTF8BOM( U8 bom[4] );
+
+END_NS
 
 #endif // _UNICODE_H_

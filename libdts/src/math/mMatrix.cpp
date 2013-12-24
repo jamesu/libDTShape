@@ -20,12 +20,18 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
+#include "platform/platform.h"
 #include "core/strings/stringFunctions.h"
 #include "core/frameAllocator.h"
 
 #include "math/mMatrix.h"
 #include "core/log.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 const MatrixF MatrixF::Identity( true );
 
@@ -193,3 +199,7 @@ void MatrixF::dumpMatrix(const char *caption /* =NULL */) const
    Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(2,0)], m[idx(2, 1)], m[idx(2, 2)], m[idx(2, 3)]);
    Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(3,0)], m[idx(3, 1)], m[idx(3, 2)], m[idx(3, 3)]);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

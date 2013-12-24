@@ -23,6 +23,10 @@
 #ifndef _TSMESH_H_
 #define _TSMESH_H_
 
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
+#endif
+
 #ifndef _STREAM_H_
 #include "core/stream/stream.h"
 #endif
@@ -43,6 +47,12 @@
 #endif
 
 #include "core/util/safeDelete.h"
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 class Convex;
 
@@ -516,5 +526,8 @@ public:
    TSSkinMesh();
 };
 
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSMESH_H_

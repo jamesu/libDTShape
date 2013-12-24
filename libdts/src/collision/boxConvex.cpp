@@ -26,6 +26,8 @@
 #include "abstractPolyList.h"
 
 
+BEGIN_NS(DTShape)
+
 //----------------------------------------------------------------------------
 
 static struct Corner {
@@ -213,4 +215,6 @@ const MatrixF& OrthoBoxConvex::getTransform() const
    mOrthoMatrixCache.setColumn(3, translation);
    return mOrthoMatrixCache;
 }
+
+END_NS
 

@@ -27,6 +27,12 @@
 #include "twistforkConfig.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #ifdef TWISTFORK_ENABLE_PROFILER
 
 struct ProfilerData;
@@ -190,5 +196,9 @@ public:
 #define PROFILE_SCOPE(x)
 #define PROFILE_END_NAMED(x)
 #endif
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

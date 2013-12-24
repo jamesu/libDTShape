@@ -23,6 +23,11 @@
 #ifndef _TFIXEDSIZEVECTOR_H_
 #define _TFIXEDSIZEVECTOR_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// A vector with a compile-time constant size.
 template< typename T, int SIZE >
@@ -102,5 +107,9 @@ class FixedSizeVector
          return mArray[ index ];
       }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // !_TFIXEDSIZEVECTOR_H_

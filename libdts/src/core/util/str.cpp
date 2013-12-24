@@ -25,6 +25,10 @@
 
 #include "platform/platform.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 // Sigh... guess what compiler needs this...
 namespace DictHash { U32 hash( String::StringData* ); }
 namespace KeyCmp
@@ -32,6 +36,10 @@ namespace KeyCmp
    template< typename Key > bool equals( const Key&, const Key& );
    template<> bool equals<>( String::StringData* const&, String::StringData* const& );
 }
+
+END_NS
+
+//-----------------------------------------------------------------------------
 
 #include "core/util/str.h"
 #include "core/util/tDictionary.h"
@@ -50,6 +58,7 @@ namespace KeyCmp
 
 #  define _new new
 
+BEGIN_NS(DTShape)
 
 const String::SizeType String::NPos = U32(~0);
 const String String::EmptyString;
@@ -353,7 +362,7 @@ class String::StringData : protected StringDataImpl
          if( mHashCase == U32_MAX )
          {
             PROFILE_SCOPE(StringData_getOrCreateHashCase);
-            mHashCase = Torque::hash((const U8 *)(mData), mLength, 0);
+            mHashCase = DTShape::hash((const U8 *)(mData), mLength, 0);
          }
          return mHashCase;
       }
@@ -372,7 +381,7 @@ class String::StringData : protected StringDataImpl
             dStrncpy( lower, utf8(), mLength );
             lower[ mLength ] = 0;
             dStrlwr( lower );
-            mHashNoCase = Torque::hash( (const U8*)lower, mLength, 0 );
+            mHashNoCase = DTShape::hash( (const U8*)lower, mLength, 0 );
             delete [] lower;
          }
 
@@ -1741,3 +1750,5 @@ String String::GetTrailingNumber(const char* str, S32& number)
 
    return base.substr(0, p - base.c_str());
 }
+
+END_NS

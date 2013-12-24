@@ -26,9 +26,9 @@
 #include "ts/collada/colladaAppNode.h"
 #include "ts/collada/colladaShapeLoader.h"
 
-//#include "T3D/pointLight.h"
-//#include "T3D/spotLight.h"
+//-----------------------------------------------------------------------------
 
+BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 // Collada <light> elements are very similar, but are arranged as separate, unrelated
@@ -165,7 +165,7 @@ ConsoleFunction( loadColladaLights, bool, 2, 4,
    "@ingroup Editors\n"
    "@internal")
 {
-   Torque::Path path((const char*)argv[1]);
+   DTShape::Path path((const char*)argv[1]);
 
    // Optional group to add the lights to. Create if it does not exist, and use
    // the MissionGroup if not specified.
@@ -241,3 +241,7 @@ ConsoleFunction( loadColladaLights, bool, 2, 4,
 #endif
 
 #endif
+
+//-----------------------------------------------------------------------------
+
+END_NS

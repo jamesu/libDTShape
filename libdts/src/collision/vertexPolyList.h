@@ -27,6 +27,9 @@
 #include "collision/abstractPolyList.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 /// A simple polylist which only gathers the unique verticies passed to it.
 class VertexPolyList : public AbstractPolyList
@@ -66,5 +69,6 @@ protected:
 
 };
 
+END_NS
 
 #endif  // _VERTEXPOLYLIST_H_

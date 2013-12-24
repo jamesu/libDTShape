@@ -29,6 +29,9 @@
 
 #include "core/util/endian.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 #define IMPLEMENT_OVERLOADED_READ(type)      \
    bool Stream::read(type* out_read)         \
@@ -294,3 +297,5 @@ Stream* Stream::clone() const
 {
    return NULL;
 }
+
+END_NS

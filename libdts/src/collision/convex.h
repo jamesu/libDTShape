@@ -30,6 +30,9 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+BEGIN_NS(DTShape)
+
 struct Collision;
 class CollisionList;
 struct CollisionStateList;
@@ -37,7 +40,6 @@ class AbstractPolyList;
 class SceneObject;
 class TSMaterialInstance;
 class Convex;
-
 
 //----------------------------------------------------------------------------
 
@@ -288,5 +290,7 @@ public:
    /// Render this convex for debugging purposes.
    virtual void render();   
 };
+
+END_NS
 
 #endif // _CONVEX_H_

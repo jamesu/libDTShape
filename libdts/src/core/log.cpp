@@ -8,7 +8,9 @@
 #include "core/strings/stringFunctions.h"
 #include "core/util/tVector.h"
 
+//-----------------------------------------------------------------------------
 
+BEGIN_NS(DTShape)
 
 static Vector<ConsumerCallback> gConsumers(__FILE__, __LINE__);
 
@@ -121,3 +123,5 @@ void removeConsumer(ConsumerCallback consumer)
 }
 
 }
+
+END_NS

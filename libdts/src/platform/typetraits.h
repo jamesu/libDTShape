@@ -27,6 +27,11 @@
 #  include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 /// @file
 /// Template definitions for introspecting type properties.
@@ -430,5 +435,9 @@ struct ValueHolder< void >
 {
    ValueHolder() {}
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TYPETRAITS_H_

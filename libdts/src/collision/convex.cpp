@@ -30,8 +30,8 @@
 #include "collision/concretePolyList.h"
 #include "platform/profiler.h"
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+BEGIN_NS(DTShape)
 
 static DataChunker sChunker;
 
@@ -724,3 +724,5 @@ F32 sqrDistanceEdges(const Point3F& start0, const Point3F& end0,
    // Return a large number in the cases where endpoints are involved.
    return 1e10f;
 }
+
+END_NS

@@ -27,6 +27,10 @@
 #include "platform/platform.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 /// This #define is used by the FrameAllocator to align starting addresses to
 /// be byte aligned to this value. This is important on the 360 and possibly
 /// on other platforms as well. Use this #define anywhere alignment is needed.
@@ -316,5 +320,7 @@ FRAME_TEMP_NC_SPEC(unsigned short);
 #undef FRAME_TEMP_NC_SPEC
 
 //-----------------------------------------------------------------------------
+
+END_NS
 
 #endif  // _H_FRAMEALLOCATOR_

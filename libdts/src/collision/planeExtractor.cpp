@@ -25,6 +25,10 @@
 #include "core/log.h"
 #include "collision/planeExtractor.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 //----------------------------------------------------------------------------
 // Plane matching parameters
 static F32 NormalEpsilon = 0.93969f; // 20 deg.
@@ -127,3 +131,4 @@ void PlaneExtractorPolyList::vertex(U32)
 {
 }
 
+END_NS

@@ -28,6 +28,11 @@
 #include "math/mSphere.h"
 #include "platform/profiler.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 //TODO: For OBB/frustum intersections and ortho frustums, we can resort to a much quicker AABB/OBB test
 
@@ -585,3 +590,7 @@ void Frustum::tile( F32 *left, F32 *right, F32 *top, F32 *bottom, U32 numTiles, 
    *bottom += tileSize.y * curTile.y - bottomOffset;
    *top = *bottom + tileSize.y + topOffset;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

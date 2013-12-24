@@ -30,6 +30,12 @@
 #include "ts/collada/colladaExtensions.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class TSMaterial;
 
 class ColladaAppMaterial : public AppMaterial
@@ -83,7 +89,11 @@ public:
       }
    }
 
-   TSMaterial *createMaterial(const Torque::Path& path) const;
+   TSMaterial *createMaterial(const DTShape::Path& path) const;
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_APP_MATERIAL_H_

@@ -22,11 +22,16 @@
 
 #include <stdarg.h>
 
+#include "platform/platform.h"
 #include "core/strings/stringFunctions.h"
 #include "platform/platform.h"
 
+//-----------------------------------------------------------------------------
 
-//-------------------------------------- STATIC Declaration
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 PlatformAssert *PlatformAssert::platformAssert = NULL;
 
 //--------------------------------------
@@ -166,3 +171,8 @@ const char* avar(const char *message, ...)
    dVsprintf(buffer, sizeof(buffer), message, args);
    return( buffer );
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
+

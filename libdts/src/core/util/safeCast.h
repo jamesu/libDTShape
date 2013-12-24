@@ -25,6 +25,12 @@
 
 #include "platform/platform.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 template< class T, typename I >
 inline T* safeCast( I* inPtr )
 {
@@ -56,5 +62,7 @@ inline T* safeCastISV( I* inPtr )
       return outPtr;
    }
 }
+
+END_NS
 
 #endif // _TWISTFORK_CORE_UTIL_SAFECAST_H_

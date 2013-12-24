@@ -33,6 +33,10 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 class SceneObject;
 class TSMaterialInstance;
 
@@ -260,5 +264,6 @@ inline void AbstractPolyList::setObject(SceneObject* obj)
    mCurrObject = obj;
 }
 
+END_NS
 
 #endif // _ABSTRACTPOLYLIST_H_

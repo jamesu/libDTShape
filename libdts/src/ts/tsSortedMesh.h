@@ -27,6 +27,12 @@
 #include "ts/tsMesh.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// TSSortedMesh is for meshes that need sorting (obviously).  Such meshes
 /// are usually partially or completely composed of translucent/parent polygons.
 class TSSortedMesh : public TSMesh
@@ -74,6 +80,10 @@ public:
       meshType = SortedMeshType;
    }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TS_SORTED_MESH
 

@@ -38,6 +38,10 @@
 #include "convexDecomp/NvStanHull.h"
 
 //-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 static const Point3F sFacePlanes[] = {
    Point3F( -1.0f,  0.0f,  0.0f ),
    Point3F(  1.0f,  0.0f,  0.0f ),
@@ -941,3 +945,7 @@ DefineTSShapeConstructorMethod( addCollisionDetail, bool, ( S32 size, const char
 }}
 
 #endif
+
+//-----------------------------------------------------------------------------
+
+END_NS

@@ -14,6 +14,12 @@
 #include "core/color.h"
 #include "core/util/tVector.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class GFXDevice;
 
 class TSVertexColor
@@ -314,5 +320,9 @@ inline bool GFXVertexFormat::isEqual( const GFXVertexFormat &format ) const
    return mElements.size() == format.mElements.size() &&
    dMemcmp(mElements.begin(), format.mElements.begin(), format.mElements.size() * sizeof(GFXVertexElement)) == 0;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSRENDER_H_

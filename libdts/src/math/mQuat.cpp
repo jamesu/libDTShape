@@ -27,6 +27,11 @@
 #include "math/mMatrix.h"
 #include "platform/profiler.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 const QuatF QuatF::Identity(0.0f,0.0f,0.0f,1.0f);
 
@@ -327,3 +332,6 @@ QuatF & QuatF::shortestArc( const VectorF &a, const VectorF &b )
    return *this;
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

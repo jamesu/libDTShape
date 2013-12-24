@@ -26,6 +26,12 @@
 #include "platform/platform.h"
 #include "core/frameAllocator.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// This class will swizzle 'sizeof( T )' length chunks of memory into different
 /// patterns which are user described. The pattern is described by an instance
 /// of Swizzle and this swizzle can then be executed on buffers. The following 
@@ -151,6 +157,10 @@ inline void Swizzle<T, mapLength>::InPlace( void *memory, const dsize_t size ) c
       ToBuffer( memory, ~buffer, size );
    }
 }
+
+//------------------------------------------------------------------------------
+
+END_NS
 
 //------------------------------------------------------------------------------
 

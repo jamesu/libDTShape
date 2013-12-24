@@ -25,6 +25,11 @@
 
 #include "platform/profiler.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 #ifdef TWISTFORK_DEBUG_GUARD
 
@@ -99,3 +104,5 @@ bool VectorResize(U32 *aSize, U32 *aCount, void **arrayPtr, U32 newCount, U32 el
 }
 
 #endif
+
+END_NS

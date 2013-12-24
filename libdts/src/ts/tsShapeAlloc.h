@@ -30,6 +30,12 @@
 #include "math/mMath.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// Alloc structure used in the reading/writing of shapes.
 ///
 /// In read mode we assemble contents of 32-bit, 16-bit, and 8-bit buffers
@@ -152,5 +158,9 @@ class TSShapeAlloc
    void checkGuard();
    void setGuard();
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _H_TS_SHAPE_ALLOC_

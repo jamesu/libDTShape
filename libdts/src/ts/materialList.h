@@ -27,6 +27,12 @@
 #include "core/util/tVector.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class Material;
 class TSMaterial;
 class TSMaterialInstance;
@@ -97,5 +103,9 @@ protected:
 private:
    enum Constants { BINARY_FILE_VERSION = 1 };
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _MATERIALLIST_H_

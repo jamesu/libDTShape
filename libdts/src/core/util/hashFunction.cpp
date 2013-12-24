@@ -31,8 +31,9 @@
 
 #include "core/util/hashFunction.h"
 
-namespace Torque
-{
+//------------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 #define hashsize(n) ((U32)1<<(n))
 #define hashmask(n) (hashsize(n)-1)
@@ -268,4 +269,4 @@ U64 hash64( register const U8 *k, register U32 length, register U64 initval )
   return c;
 }
 
-} // namespace
+END_NS

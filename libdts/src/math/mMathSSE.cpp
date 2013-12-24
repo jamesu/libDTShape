@@ -24,6 +24,11 @@
 #include "math/mPlane.h"
 #include "math/mMatrix.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 #if defined(TWISTFORK_SUPPORTS_VC_INLINE_X86_ASM)
 #define ADD_SSE_FN
@@ -383,3 +388,7 @@ void mInstall_Library_SSE()
    // m_matF_x_vectorF = Athlon_MatrixF_x_VectorF;
 #endif
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

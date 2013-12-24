@@ -34,8 +34,14 @@
 #include "core/util/endian.h"
 #include "core/stream/fileStream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #ifdef TWISTFORK_INCLUDE_COLLADA
-extern TSShape* loadColladaShape(const Torque::Path &path);
+extern TSShape* loadColladaShape(const DTShape::Path &path);
 #endif
 
 /// most recent version -- this is the version we write
@@ -713,7 +719,7 @@ void TSShape::initMaterialList()
 
 }
 
-bool TSShape::preloadMaterialList(const Torque::Path &path)
+bool TSShape::preloadMaterialList(const DTShape::Path &path)
 {
    if (materialList)
       materialList->setTextureLookupPath(path.getPath());
@@ -1968,18 +1974,18 @@ void TSShape::fixEndian(S32 * buff32, S16 * buff16, S8 *, S32 count32, S32 count
    }
 }
 
-TSShape *TSShape::createFromPath(const Torque::Path &path)
+TSShape *TSShape::createFromPath(const DTShape::Path &path)
 {
 #if 0
    // Execute the shape script if it exists
-   Torque::Path scriptPath(path);
+   DTShape::Path scriptPath(path);
    scriptPath.setExtension("cs");
 
    // Don't execute the script if we're already doing so!
    StringTableEntry currentScript = Platform::stripBasePath(CodeBlock::getCurrentCodeBlockFullPath());
    if (!scriptPath.getFullPath().equal(currentScript))
    {
-      Torque::Path scriptPathDSO(scriptPath);
+      DTShape::Path scriptPathDSO(scriptPath);
       scriptPathDSO.setExtension("cs.dso");
 
       if (Torque::FS::IsFile(scriptPathDSO) || Torque::FS::IsFile(scriptPath))
@@ -2022,7 +2028,7 @@ TSShape *TSShape::createFromPath(const Torque::Path &path)
       readSuccess = (ret != NULL);
 #else
       // No COLLADA support => attempt to load the cached DTS file instead
-      Torque::Path cachedPath = path;
+      DTShape::Path cachedPath = path;
       cachedPath.setExtension("cached.dts");
        
       FileStream stream;
@@ -2304,3 +2310,6 @@ void TSShape::computeAccelerator(S32 dl)
    }
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

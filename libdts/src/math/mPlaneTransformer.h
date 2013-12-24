@@ -33,7 +33,12 @@
 #include "math/mPlane.h"
 #endif
 
-// =========================================================
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class PlaneTransformer
 {
    MatrixF mTransform;
@@ -45,5 +50,9 @@ class PlaneTransformer
    void transform(const PlaneF& plane, PlaneF& result);
    void setIdentity();
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif

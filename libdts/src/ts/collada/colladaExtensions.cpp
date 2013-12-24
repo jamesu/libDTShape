@@ -25,6 +25,12 @@
 #include "math/mRandom.h"
 #include "ts/collada/colladaExtensions.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 /// Check if any of the MAYA texture transform elements are animated within
 /// the interval
 bool ColladaExtension_effect::animatesTextureTransform(F32 start, F32 end)
@@ -60,3 +66,7 @@ void ColladaExtension_effect::applyTextureTransform(Point2F& uv, F32 time)
    uv.x = result.x;
    uv.y = result.y;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

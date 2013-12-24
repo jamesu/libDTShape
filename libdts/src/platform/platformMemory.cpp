@@ -25,6 +25,12 @@
 #include <mm_malloc.h>
 #include <string.h>
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 void* dMemcpy(void *dst, const void *src, dsize_t size)
 {
    return memcpy(dst,src,size);
@@ -68,3 +74,7 @@ void dFree_aligned(void* p)
 {
    return _mm_free(p);
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

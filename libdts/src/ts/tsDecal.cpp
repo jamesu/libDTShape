@@ -26,6 +26,12 @@
 #include "ts/tsShapeInstance.h"
 #include "core/frameAllocator.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------
 // TSDecalMesh assembly/dissembly methods
 // used for transfer to/from memory buffers
@@ -105,3 +111,6 @@ void TSDecalMesh::disassemble()
    tsalloc.setGuard();
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

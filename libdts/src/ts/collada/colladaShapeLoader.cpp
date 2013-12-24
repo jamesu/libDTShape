@@ -44,13 +44,16 @@
 #include "ts/tsShape.h"
 #include "ts/tsShapeInstance.h"
 #include "ts/tsMaterialManager.h"
-//#include "console/persistenceManager.h"
-//#include "core/util/zip/zipVolume.h"
-//#include "gfx/bitmap/gBitmap.h"
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 // 
 static DAE sDAE;                 // Collada model database (holds the last loaded file)
-static Torque::Path sLastPath;   // Path of the last loaded Collada file
+static DTShape::Path sLastPath;   // Path of the last loaded Collada file
 static FileTime sLastModTime;    // Modification time of the last loaded Collada file
 
 //-----------------------------------------------------------------------------
@@ -384,10 +387,10 @@ void ColladaShapeLoader::computeBounds(Box3F& bounds)
 
 //-----------------------------------------------------------------------------
 /// Find the file extension for an extensionless texture
-String findTextureExtension(const Torque::Path &texPath)
+String findTextureExtension(const DTShape::Path &texPath)
 {
 #if 0
-   Torque::Path path(texPath);
+   DTShape::Path path(texPath);
    for(S32 i = 0;i < GBitmap::sRegistrations.size();++i)
    {
       GBitmap::Registration &reg = GBitmap::sRegistrations[i];
@@ -405,18 +408,18 @@ String findTextureExtension(const Torque::Path &texPath)
 
 //-----------------------------------------------------------------------------
 /// Copy a texture from a KMZ to a cache. Note that the texture filename is modified
-void copySketchupTexture(const Torque::Path &path, String &textureFilename)
+void copySketchupTexture(const DTShape::Path &path, String &textureFilename)
 {
    if (textureFilename.isEmpty())
       return;
 
-   Torque::Path texturePath(textureFilename);
+   DTShape::Path texturePath(textureFilename);
    texturePath.setExtension(findTextureExtension(texturePath));
 
    String cachedTexFilename = String::ToString("%s_%s.cached",
       TSShapeLoader::getShapePath().getFileName().c_str(), texturePath.getFileName().c_str());
 
-   Torque::Path cachedTexPath;
+   DTShape::Path cachedTexPath;
    cachedTexPath.setRoot(path.getRoot());
    cachedTexPath.setPath(path.getPath());
    cachedTexPath.setFileName(cachedTexFilename);
@@ -445,7 +448,7 @@ void copySketchupTexture(const Torque::Path &path, String &textureFilename)
 
 //-----------------------------------------------------------------------------
 /// Add collada materials to materials.cs
-void updateMaterialsScript(const Torque::Path &path, bool copyTextures = false)
+void updateMaterialsScript(const DTShape::Path &path, bool copyTextures = false)
 {
 #if 0
 #ifdef DAE2DTS_TOOL
@@ -453,7 +456,7 @@ void updateMaterialsScript(const Torque::Path &path, bool copyTextures = false)
       return;
 #endif
 
-   Torque::Path scriptPath(path);
+   DTShape::Path scriptPath(path);
    scriptPath.setFileName("materials");
    scriptPath.setExtension("cs");
 
@@ -501,10 +504,10 @@ void updateMaterialsScript(const Torque::Path &path, bool copyTextures = false)
 
 //-----------------------------------------------------------------------------
 /// Check if an up-to-date cached DTS is available for this DAE file
-bool ColladaShapeLoader::canLoadCachedDTS(const Torque::Path& path)
+bool ColladaShapeLoader::canLoadCachedDTS(const DTShape::Path& path)
 {
    // Generate the cached filename
-   Torque::Path cachedPath(path);
+   DTShape::Path cachedPath(path);
    cachedPath.setExtension("cached.dts");
 
    // Check if a cached DTS newer than this file is available
@@ -525,7 +528,7 @@ bool ColladaShapeLoader::canLoadCachedDTS(const Torque::Path& path)
    return false;
 }
 
-bool ColladaShapeLoader::checkAndMountSketchup(const Torque::Path& path, String& mountPoint, Torque::Path& daePath)
+bool ColladaShapeLoader::checkAndMountSketchup(const DTShape::Path& path, String& mountPoint, DTShape::Path& daePath)
 {
 #if 0
    bool isSketchup = path.getExtension().equal("kmz", String::NoCase);
@@ -538,7 +541,7 @@ bool ColladaShapeLoader::checkAndMountSketchup(const Torque::Path& path, String&
          return false;
 
       Vector<String> daeFiles;
-      Torque::Path findPath;
+      DTShape::Path findPath;
       findPath.setRoot(mountPoint);
       S32 results = Torque::FS::FindByPattern(findPath, "*.dae", true, daeFiles);
       if (results == 0 || daeFiles.size() == 0)
@@ -562,7 +565,7 @@ bool ColladaShapeLoader::checkAndMountSketchup(const Torque::Path& path, String&
 
 //-----------------------------------------------------------------------------
 /// Get the root collada DOM element for the given DAE file
-domCOLLADA* ColladaShapeLoader::getDomCOLLADA(const Torque::Path& path)
+domCOLLADA* ColladaShapeLoader::getDomCOLLADA(const DTShape::Path& path)
 {
    daeErrorHandler::setErrorHandler(&sErrorHandler);
 
@@ -632,10 +635,10 @@ domCOLLADA* ColladaShapeLoader::readColladaFile(const String& path)
 
 //-----------------------------------------------------------------------------
 /// This function is invoked by the resource manager based on file extension.
-TSShape* loadColladaShape(const Torque::Path &path)
+TSShape* loadColladaShape(const DTShape::Path &path)
 {
    // Generate the cached filename
-   Torque::Path cachedPath(path);
+   DTShape::Path cachedPath(path);
    cachedPath.setExtension("cached.dts");
 
    // Check if an up-to-date cached DTS version of this file exists, and
@@ -691,7 +694,7 @@ TSShape* loadColladaShape(const Torque::Path &path)
    // Check if this is a Sketchup file (.kmz) and if so, mount the zip filesystem
    // and get the path to the DAE file.
    String mountPoint;
-   Torque::Path daePath;
+   DTShape::Path daePath;
    bool isSketchup = ColladaShapeLoader::checkAndMountSketchup(path, mountPoint, daePath);
 
    // Load Collada model and convert to 3space
@@ -723,3 +726,5 @@ TSShape* loadColladaShape(const Torque::Path &path)
    
    return tss;
 }
+
+END_NS

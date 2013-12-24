@@ -23,6 +23,9 @@
 #include "core/strings/findMatch.h"
 #include "core/strings/stringFunctions.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 //--------------------------------------------------------------------------------
 // NAME
@@ -161,3 +164,5 @@ bool FindMatch::isMatchMultipleExprs( const char *exps, const char *str, bool ca
    delete []e;
    return false;
 }
+
+END_NS

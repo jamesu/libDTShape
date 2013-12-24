@@ -25,6 +25,11 @@
 
 #include "math/mMatrix.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 bool SphereF::intersectsRay( const Point3F &start, const Point3F &end ) const
 {
@@ -91,3 +96,7 @@ bool SphereF::intersectsRay( const Point3F &start, const Point3F &end ) const
    else // else the intersection point is at t0
       return true; // t = t0;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

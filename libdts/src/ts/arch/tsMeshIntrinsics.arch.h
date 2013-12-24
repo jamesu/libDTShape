@@ -23,6 +23,12 @@
 #ifndef _TSMESHINTRINSICS_ARCH_H_
 #define _TSMESHINTRINSICS_ARCH_H_
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #if defined(TWISTFORK_CPU_X86)
 # // x86 CPU family implementations
 extern void zero_vert_normal_bulk_SSE(const dsize_t count, U8 * __restrict const outPtr, const dsize_t outStride);
@@ -44,6 +50,10 @@ extern void m_matF_x_BatchedVertWeightList_gccvec(const MatrixF &mat, const dsiz
 #else
 # // Other CPU types go here...
 #endif
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _TSMESHINTRINSICS_ARCH_H_
 

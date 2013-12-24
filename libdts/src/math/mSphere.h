@@ -27,6 +27,11 @@
 #include "math/mPoint3.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 class SphereF
 {
@@ -88,5 +93,9 @@ inline F32 SphereF::distanceTo( const Point3F &toPt ) const
 {
    return (center - toPt).len() - radius;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif //_SPHERE_H_

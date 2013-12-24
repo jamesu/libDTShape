@@ -24,6 +24,12 @@
 #include "platform/platformCPUCount.h"
 #include "core/strings/stringFunctions.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 enum CPUFlags
 {
    BIT_FPU     = BIT(0),
@@ -260,3 +266,8 @@ void SetProcessorInfo(Platform::SystemInfo_struct::Processor& pInfo,
    pInfo.isHyperThreaded = CPUInfo::isHyperThreaded( config );
    pInfo.isMultiCore = CPUInfo::isMultiCore( config );
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS
+

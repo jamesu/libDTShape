@@ -26,6 +26,8 @@
 #include "core/util/swizzle.h"
 #include "core/util/byteswap.h"
 
+BEGIN_NS(DTShape)
+
 class DXT5nmSwizzle : public Swizzle<U8, 4>
 {
 public:
@@ -105,4 +107,7 @@ public:
       }
    }
 };
+
+END_NS
+
 #endif

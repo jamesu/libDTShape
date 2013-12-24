@@ -24,6 +24,12 @@
 #include "platform/platform.h"
 #include "core/stream/stream.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 #define SETUPTO(upto) ( ((1<<(upto&31))-1)*2+1 ) // careful not to shift more than 31 times
 
 void TSIntegerSet::clearAll(S32 upto)
@@ -304,3 +310,6 @@ void TSIntegerSet::write(Stream * s) const
       s->write(bits[i]);
 }
 
+//-----------------------------------------------------------------------------
+
+END_NS

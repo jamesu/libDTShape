@@ -22,6 +22,11 @@
 
 #include "platform/platform.h"
 
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
 // Make GCC happy.  Needs to have seen this before processing the
 // hash table template.
 struct VertTuple;
@@ -30,6 +35,10 @@ namespace DictHash
    inline U32 hash( const VertTuple& data );
 }
 
+END_NS
+
+//-----------------------------------------------------------------------------
+
 #include "ts/collada/colladaExtensions.h"
 #include "ts/collada/colladaAppMesh.h"
 #include "ts/collada/colladaAppNode.h"
@@ -37,7 +46,13 @@ namespace DictHash
 
 #include "core/util/tDictionary.h"
 
-using namespace ColladaUtils;
+using namespace DTShape::ColladaUtils;
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 bool ColladaAppMesh::fixedSizeEnabled = false;
 S32 ColladaAppMesh::fixedSize = 2;
@@ -1096,3 +1111,7 @@ void ColladaAppMesh::lookupSkinData()
       initialTransforms[iJoint].mul(bindShapeMatrix);
    }
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

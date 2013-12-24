@@ -2,7 +2,13 @@
 #ifndef _CORE_LOG_H_
 #define _CORE_LOG_H_
 
-#include "platform/types.h"
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
+#endif
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
 
 /// Represents an entry in the log.
 struct LogEntry
@@ -97,5 +103,7 @@ namespace Log
    /// @see Log::errorf()
    void errorf(LogEntry::Type type, const char *_format, ...);
 }
+
+END_NS
 
 #endif

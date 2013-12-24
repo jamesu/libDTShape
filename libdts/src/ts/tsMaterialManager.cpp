@@ -26,6 +26,12 @@
 #include "core/util/safeDelete.h"
 #include "core/log.h"
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 void TSMaterialManager::mapMaterial(const String & textureName, const String & materialName)
 {
    if (getMapEntry(textureName).isNotEmpty())
@@ -44,3 +50,7 @@ String TSMaterialManager::getMapEntry(const String & textureName) const
       return String();
    return iter->value;
 }
+
+//-----------------------------------------------------------------------------
+
+END_NS

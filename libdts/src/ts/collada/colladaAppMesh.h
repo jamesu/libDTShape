@@ -40,6 +40,10 @@
 #endif
 
 //-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 // Torque unifies the vert position, normal and UV values, so that a single index
 // uniquely identifies all 3 elements. A triangle then contains just 3 indices,
 // and from that we can get the 3 positions, 3 normals and 3 UVs.
@@ -228,5 +232,9 @@ public:
    /// @return Visibility from 0 (invisible) to 1 (opaque)
    F32 getVisValue(F32 time);
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_APPMESH_H_

@@ -33,6 +33,12 @@
 #include "ts/collada/colladaExtensions.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
+
 class ColladaAppNode : public AppNode
 {
    typedef AppNode Parent;
@@ -106,5 +112,9 @@ public:
    bool animatesTransform(const AppSequence* appSeq);
    bool isParentRoot() { return (appParent == NULL); }
 };
+
+//-----------------------------------------------------------------------------
+
+END_NS
 
 #endif // _COLLADA_APPNODE_H_
