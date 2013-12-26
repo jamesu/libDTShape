@@ -28,6 +28,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "core/strings/stringFunctions.h"
 #include "core/util/tVector.h"
 
+static const char *sMaterialTextureExts[] = {
+  "png",
+  "dds"
+};
+
 extern const char* GetAssetPath(const char *file);
 
 GLTSMaterialInstance::GLTSMaterialInstance(GLTSMaterial *mat) :
@@ -52,11 +57,25 @@ bool GLTSMaterialInstance::init(const GFXVertexFormat *fmt)
       glDeleteTextures(1, &mTexture);
    
    char nameBuf[256];
-   dSprintf(nameBuf, 256, "%s.png", name);
-   mTexture = SOIL_load_OGL_texture(GetAssetPath(nameBuf),
+   mTexture = 0;
+
+   int len = sizeof(sMaterialTextureExts) / sizeof(const char*);
+
+   for (int i=0; i<len; i++)
+   {
+      dSprintf(nameBuf, 256, "%s.%s", name, sMaterialTextureExts[i]);
+      
+      if (!Platform::isFile(GetAssetPath(nameBuf)))
+         continue;
+      
+      mTexture = SOIL_load_OGL_texture(GetAssetPath(nameBuf),
                                     SOIL_LOAD_AUTO,
                                     SOIL_CREATE_NEW_ID,
                                     SOIL_FLAG_MIPMAPS);
+      
+      if (mTexture != 0)
+         break;
+   }
    
    return mTexture != 0;
 }

@@ -287,8 +287,10 @@ void AppState::mainLoop()
 
 bool AppState::LoadShape()
 {
-   TSMaterial *playerMat = TSMaterialManager::instance()->allocateAndRegister("player_blue");
-   TSMaterialManager::instance()->mapMaterial("player_blue", "player_blue");
+   TSMaterialManager::instance()->allocateAndRegister("Soldier_Dif");
+   TSMaterialManager::instance()->allocateAndRegister("Soldier_Dazzle");
+   TSMaterialManager::instance()->mapMaterial("base_Soldier_Main", "Soldier_Dif");
+   TSMaterialManager::instance()->mapMaterial("base_Soldier_Dazzle", "Soldier_Dazzle");
    
    
    TSMaterial *cubeMat = TSMaterialManager::instance()->allocateAndRegister("cube");
