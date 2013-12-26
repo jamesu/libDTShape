@@ -63,6 +63,12 @@ enum TSAppSequences {
    kNumTSAppSequences
 };
 
+typedef struct AnimSequenceInfo {
+   int start;
+   int end;
+   bool cyclic;
+};
+
 const char* sTSAppSequenceNames[] = {
    "Root",
    "Run",
@@ -70,6 +76,14 @@ const char* sTSAppSequenceNames[] = {
    "Side",
    "Jump",
    "invalid"
+};
+
+AnimSequenceInfo sAppSequenceInfos[] = {
+   {50, 109, true},
+   {150, 169, true},
+   {460, 489, true},
+   {200, 219, true},
+   {1000, 1010, false}
 };
 
 #include "GLSimpleShader.h"
@@ -316,7 +330,7 @@ bool AppState::LoadShape()
       {
          Log::printf("Sequence file %s loaded", pathName);
       }*/
-      if (sShape->addSequence(GetAssetPath(pathName), "", sTSAppSequenceNames[i], 0, -1, false, false))
+      if (sShape->addSequence(GetAssetPath(pathName), "", sTSAppSequenceNames[i], sAppSequenceInfos[i].start, sAppSequenceInfos[i].end, true, false))
       {
          Log::printf("Sequence file %s loaded", pathName);
       }
@@ -328,7 +342,10 @@ bool AppState::LoadShape()
       sSequences[i] = sShape->findSequence(sTSAppSequenceNames[i]);
       if (sSequences[i] != -1)
       {
-         sShape->sequences[sSequences[i]].flags |= TSShape::Cyclic;
+         if (sAppSequenceInfos[i].cyclic)
+            sShape->sequences[sSequences[i]].flags |= TSShape::Cyclic;
+         else
+            sShape->sequences[sSequences[i]].flags &= ~TSShape::Cyclic;
       }
    }
    
