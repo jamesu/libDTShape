@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GL">
+      <UniqueIdentifier>{9bd50d5e-f9ed-4df7-bfc5-404f87fd755a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SOIL">
+      <UniqueIdentifier>{6df6f174-938b-4063-897b-6374d7563d52}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DTSTest.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\GLMaterial.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\GLSimpleShader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\GLTSMeshRenderer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\soil\image_DXT.h">
+      <Filter>Source Files\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\soil\image_helper.h">
+      <Filter>Source Files\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\soil\SOIL.h">
+      <Filter>Source Files\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\soil\stb_image_aug.h">
+      <Filter>Source Files\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\soil\stbi_DDS_aug.h">
+      <Filter>Source Files\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\soil\stbi_DDS_aug_c.h">
+      <Filter>Source Files\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\GL\glew.h">
+      <Filter>Source Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\GL\glxew.h">
+      <Filter>Source Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\example\GL\wglew.h">
+      <Filter>Source Files\GL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\example\GLMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\GLSimpleShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\GLTSMeshRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\soil\image_DXT.c">
+      <Filter>Source Files\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\soil\image_helper.c">
+      <Filter>Source Files\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\soil\SOIL.c">
+      <Filter>Source Files\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\soil\stb_image_aug.c">
+      <Filter>Source Files\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\GL\glew.c">
+      <Filter>Source Files\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\generic_support.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DTSTest.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
