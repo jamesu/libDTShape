@@ -29,7 +29,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "SDL.h"
 #include <GL/glew.h>
-
+#include <stdio.h>
 
 #include "libdtshape.h"
 
@@ -42,7 +42,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "math/util/frustum.h"
 #include "core/stream/fileStream.h"
 
+extern "C"
+{
 #include "soil/SOIL.h"
+}
 
 #define TICK_TIME 32
 
@@ -310,7 +313,7 @@ bool AppState::LoadShape()
    TSMaterial *cubeMat = TSMaterialManager::instance()->allocateAndRegister("cube");
    TSMaterialManager::instance()->mapMaterial("Cube", "cube");
    
-   const char *fullPath = GetAssetPath(shapeToLoad);
+   const char* fullPath = GetAssetPath(shapeToLoad);
    sShape = TSShape::createFromPath(fullPath);
    
    if (!sShape)

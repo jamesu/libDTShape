@@ -23,9 +23,12 @@
 
 #include "libDTShapeConfig.h"
 #include "platform/platform.h"
-#include "core/fileio.h"
+#include "platform/fileio.h"
+#include "core/util/str.h"
 
+#include "core/strings/stringFunctions.h"
 #include "core/strings/unicode.h"
+#include "core/tempalloc.h"
 
 #ifndef	WINVER
 #define WINVER  0x0500      /* version 5.0 */
@@ -40,15 +43,20 @@
 #include <windows.h>
 
 // Microsoft VC++ has this POSIX header in the wrong directory
-#if defined(TORQUE_COMPILER_VISUALC)
+#if defined(LIBDTSHAPE_COMPILER_VISUALC)
 #include <sys/utime.h>
-#elif defined (TORQUE_COMPILER_GCC)
+#elif defined (LIBDTSHAPE_COMPILER_GCC)
 #include <time.h>
 #include <sys/utime.h>
 #else
 #include <utime.h>
 #endif
 
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//-----------------------------------------------------------------------------
 
 template< typename T >
 inline void forwardslashT( T *str )
@@ -696,5 +704,6 @@ bool Platform::isDirectory(const char *pDirPath)
    return false;
 }
 
-
 //------------------------------------------------------------------------------
+
+END_NS

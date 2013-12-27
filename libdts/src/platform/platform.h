@@ -176,6 +176,11 @@ namespace Platform
    /// not depend on this for high precision timing.
    /// @see PlatformTimer
    U32 getRealMilliseconds();
+
+   // Math control state
+   U32 getMathControlState();
+   void setMathControlState(U32 state);
+   void setMathControlStateKnown();
    
    // Process control
    void sleep(U32 ms);
@@ -204,7 +209,6 @@ namespace Platform
    bool getFileTimes(const char *filePath, FileTime *createTime, FileTime *modifyTime);
    
    bool fileDelete(const char *name);
-   bool deletePath(const char *filename);
 
    // Alerts
    void AlertOK(const char *windowTitle, const char *message);

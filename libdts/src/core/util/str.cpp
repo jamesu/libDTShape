@@ -237,7 +237,7 @@ static const char* StrFind(const char* hay, const char* needle, S32 pos, U32 mod
 /// this without a constructor.
 struct StringDataImpl
 {
-#ifdef TORQUE_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
       StringChar*       mString;       ///< so we can inspect data in a debugger
 #endif
 
@@ -272,7 +272,7 @@ class String::StringData : protected StringDataImpl
             mData[ mLength ] = '\0';
          }
          
-#ifdef TORQUE_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
          mString = &mData[0];
 #endif
       }
@@ -401,7 +401,7 @@ class String::StringData : protected StringDataImpl
          static UTF16 emptyUTF16[ 1 ] = { 0 };
          static StringDataImpl empty =
          {
-            #ifdef TORQUE_DEBUG
+            #ifdef LIBDTSHAPE_DEBUG
             "",            // mString
             #endif
             
@@ -438,7 +438,7 @@ namespace KeyCmp
 
 //-----------------------------------------------------------------------------
 
-#ifdef TORQUE_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
 
 /// Tracks the number of bytes allocated for strings.
 /// @bug This currently does not include UTF16 allocations.
@@ -466,7 +466,7 @@ void* String::StringData::operator new( size_t size, U32 len )
 
    str->mLength      = len;
 
-#ifdef TORQUE_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
    dFetchAndAdd( sgStringMemBytes, size + len * sizeof(StringChar) );
    dFetchAndAdd( sgStringInstances, 1 );
 #endif
@@ -479,7 +479,7 @@ void String::StringData::operator delete(void *ptr)
    StringData* sub = static_cast<StringData *>(ptr);
    AssertFatal( sub->mRefCount == 0, "StringData::delete() - invalid refcount" );
 
-#ifdef TORQUE_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
    dFetchAndAdd( sgStringMemBytes, U32( -( S32( sizeof( StringData ) + sub->mLength * sizeof(StringChar) ) ) ) );
    dFetchAndAdd( sgStringInstances, U32( -1 ) );
 #endif
@@ -494,7 +494,7 @@ void* String::StringData::operator new( size_t size, U32 len, DataChunker& chunk
 
    str->mLength      = len;
 
-#ifdef TORQUE_DEBUG
+#ifdef LIBDTSHAPE_DEBUG
    dFetchAndAdd( sgStringMemBytes, size + len * sizeof(StringChar) );
    dFetchAndAdd( sgStringInstances, 1 );
 #endif
@@ -1549,7 +1549,7 @@ void String::copy(StringChar* dst, const StringChar *src, U32 len)
 
 //-----------------------------------------------------------------------------
 
-#if defined(TORQUE_OS_WIN32) || defined(TORQUE_OS_XBOX) || defined(TORQUE_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XBOX) || defined(LIBDTSHAPE_OS_XENON)
 // This standard function is not defined when compiling with VC7...
 #define vsnprintf	_vsnprintf
 #endif

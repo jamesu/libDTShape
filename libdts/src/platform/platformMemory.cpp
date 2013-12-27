@@ -22,7 +22,14 @@
 
 #include "platform/platform.h"
 #include <stdlib.h>
+
+
+#ifdef WIN32
+#include <malloc.h>
+#else
 #include <mm_malloc.h>
+#endif
+
 #include <string.h>
 
 //-----------------------------------------------------------------------------
@@ -67,12 +74,20 @@ void dRealFree(void* p)
 
 void *dMalloc_aligned(dsize_t in_size, int alignment)
 {
+#ifdef WIN32
+   return _aligned_malloc(in_size, alignment);
+#else
    return _mm_malloc(in_size, alignment);
+#endif
 }
 
 void dFree_aligned(void* p)
 {
+#ifdef WIN32
+   return _aligned_free(p);
+#else
    return _mm_free(p);
+#endif
 }
 
 //-----------------------------------------------------------------------------

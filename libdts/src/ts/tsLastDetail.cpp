@@ -507,11 +507,11 @@ void TSLastDetail::deleteImposterCacheTextures()
 {
    const String diffuseMap = _getDiffuseMapPath();
    if ( diffuseMap.length() )
-      Platform::deletePath( diffuseMap );
+      Platform::fileDelete( diffuseMap );
 
    const String normalMap = _getNormalMapPath();
    if ( normalMap.length() )
-      Platform::deletePath( normalMap );
+      Platform::fileDelete( normalMap );
 }
 
 void TSLastDetail::updateImposterImages( bool forceUpdate )

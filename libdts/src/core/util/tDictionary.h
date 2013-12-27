@@ -29,7 +29,7 @@
 #ifndef _HASHFUNCTION_H_
 #include "core/util/hashFunction.h"
 #endif
-#ifndef _TORQUE_STRING_H_
+#ifndef _LIBDTSHAPE_STRING_H_
 #include "core/util/str.h"
 #endif
 

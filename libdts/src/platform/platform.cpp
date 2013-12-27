@@ -30,14 +30,16 @@
 
 #include "math/mRandom.h"
 
-
-#include <unistd.h>
 #include <signal.h>
-#include <sys/time.h>
 #include <stdio.h>
 
 #include "core/tempAlloc.h"
 #include "core/util/tVector.h"
+
+
+#if defined(WIN32)
+#include <windows.h>
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -56,10 +58,34 @@ void Platform::onFatalError(int code)
 }
 
 //-----------------------------------------------------------------------------
+
+#if defined(LIBDTSHAPE_OS_WIN32)
+static inline void _resolveLeadingSlash(char* buf, U32 size)
+{
+   if(buf[0] != '/')
+      return;
+
+   AssertFatal(dStrlen(buf) + 2 < size, "Expanded path would be too long");
+   dMemmove(buf + 2, buf, dStrlen(buf));
+   buf[0] = 'c';
+   buf[1] = ':';
+}
+#endif
+
+//-----------------------------------------------------------------------------
 void Platform::debugBreak()
 {
-   //kill(getpid(), SIGSEGV);
+#if defined(LIBDTSHAPE_OS_WIN32)
+   DebugBreak();
+#endif
+
+#if defined(LIBDTSHAPE_OS_MAC)
+   DebugStr("\pDEBUG_BREAK!");
+#endif
+
+#if defined(LIBDTSHAPE_OS_POSIX)
    kill(getpid(), SIGTRAP);
+#endif
 }
 
 //-----------------------------------------------------------------------------

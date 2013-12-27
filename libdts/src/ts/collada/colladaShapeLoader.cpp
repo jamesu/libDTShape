@@ -666,7 +666,7 @@ TSShape* loadColladaShape(const DTShape::Path &path)
 
          if (readSuccess)
          {
-         #ifdef TORQUE_DEBUG
+         #ifdef LIBDTSHAPE_DEBUG
             Log::printf("Loaded cached Collada shape from %s", cachedPath.getFullPath().c_str());
          #endif
             return shape;

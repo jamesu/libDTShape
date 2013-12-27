@@ -20,13 +20,13 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#ifndef _TORQUE_PLATFORM_PLATFORMINTRINSICS_VISUALC_H_
-#define _TORQUE_PLATFORM_PLATFORMINTRINSICS_VISUALC_H_
+#ifndef _LIBDTSHAPE_PLATFORM_PLATFORMINTRINSICS_VISUALC_H_
+#define _LIBDTSHAPE_PLATFORM_PLATFORMINTRINSICS_VISUALC_H_
 
 /// @file
 /// Compiler intrinsics for Visual C++.
 
-#if defined(TORQUE_OS_XENON)
+#if defined(LIBDTSHAPE_OS_XENON)
 #  include <Xtl.h>
 #  define _InterlockedExchangeAdd InterlockedExchangeAdd
 #  define _InterlockedExchangeAdd64 InterlockedExchangeAdd64
@@ -48,7 +48,7 @@ inline void dFetchAndAdd( volatile S32& ref, S32 val )
    _InterlockedExchangeAdd( ( volatile long* ) &ref, val );
 }
 
-#if defined(TORQUE_OS_XENON)
+#if defined(LIBDTSHAPE_OS_XENON)
 // Not available on x86
 inline void dFetchAndAdd( volatile U64& ref, U64 val )
 {
@@ -73,4 +73,4 @@ inline U32 dAtomicRead( volatile U32 &ref )
    return _InterlockedExchangeAdd( ( volatile long* )&ref, 0 );
 }
 
-#endif // _TORQUE_PLATFORM_PLATFORMINTRINSICS_VISUALC_H_
+#endif // _LIBDTSHAPE_PLATFORM_PLATFORMINTRINSICS_VISUALC_H_

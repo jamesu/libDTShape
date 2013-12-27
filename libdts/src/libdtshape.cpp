@@ -37,6 +37,8 @@ void init(U32 opts)
    FrameAllocator::init(1024*1024); // 1mb
    
    Math::init(((opts >> 16) & 0xFFFF));
+
+   Platform::setMathControlStateKnown();
    
    initMeshIntrinsics();
    

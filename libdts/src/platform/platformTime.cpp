@@ -24,6 +24,80 @@
 #include "time.h"
 #include <errno.h>
 #include <time.h>
+
+#ifdef WIN32
+
+#include <windows.h>
+
+//-----------------------------------------------------------------------------
+
+BEGIN_NS(DTShape)
+
+//--------------------------------------
+void Platform::getLocalTime(LocalTime &lt)
+{
+   struct tm *systime;
+   time_t long_time;
+
+   time( &long_time );                // Get time as long integer.
+   systime = localtime( &long_time ); // Convert to local time.
+   
+   lt.sec      = systime->tm_sec;      
+   lt.min      = systime->tm_min;      
+   lt.hour     = systime->tm_hour;     
+   lt.month    = systime->tm_mon;    
+   lt.monthday = systime->tm_mday; 
+   lt.weekday  = systime->tm_wday;  
+   lt.year     = systime->tm_year;     
+   lt.yearday  = systime->tm_yday;  
+   lt.isdst    = systime->tm_isdst;    
+}  
+
+String Platform::localTimeToString( const LocalTime &lt )
+{
+   tm systime;
+   
+   systime.tm_sec    = lt.sec;
+   systime.tm_min    = lt.min;
+   systime.tm_hour   = lt.hour;
+   systime.tm_mon    = lt.month;
+   systime.tm_mday   = lt.monthday;
+   systime.tm_wday   = lt.weekday;
+   systime.tm_year   = lt.year;
+   systime.tm_yday   = lt.yearday;
+   systime.tm_isdst  = lt.isdst;
+
+   return asctime( &systime );
+}
+
+U32 Platform::getTime()
+{
+   time_t long_time;
+   time( &long_time );
+   return long_time;
+} 
+
+U32 Platform::getRealMilliseconds()
+{
+   return GetTickCount();
+}
+
+//------------------------------------------------------------------------------
+//-------------------------------------- x86UNIX Implementation
+//
+//
+
+void Platform::sleep(U32 ms)
+{
+   Sleep(ms);
+}
+
+//-----------------------------------------------------------------------------
+
+END_NS
+	    
+#else
+
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -125,3 +199,4 @@ void Platform::sleep(U32 ms)
 
 END_NS
 	    
+#endif

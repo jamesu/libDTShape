@@ -26,7 +26,7 @@
 #ifndef _PLATFORM_H_
 #include "platform/platform.h"
 #endif
-#ifndef _TORQUE_STRING_H_
+#ifndef _LIBDTSHAPE_STRING_H_
 #include "core/util/str.h"
 #endif
 
@@ -44,7 +44,7 @@ class Path
 public:
    enum Separator
    {
-#if defined(TORQUE_OS_WIN32) || defined(TORQUE_OS_XENON)
+#if defined(LIBDTSHAPE_OS_WIN32) || defined(LIBDTSHAPE_OS_XENON)
       OsSeparator = '\\'
 #else
       OsSeparator = '/'
