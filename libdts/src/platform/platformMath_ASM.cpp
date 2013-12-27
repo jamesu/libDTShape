@@ -116,7 +116,7 @@ U32 Platform::getMathControlState()
 {
    U16 cw;
    __asm__ __volatile__(
-      "fstcw %0" : "=r" (cw)
+      "fstcw %0;" : "=m" (cw)
    );
    return cw;
 }
@@ -127,7 +127,7 @@ void Platform::setMathControlStateKnown()
 {
    U16 cw = 0x27F;
    __asm__ __volatile__(
-      "fldcw %0" : "r" (cw)
+      "fldcw %0;" : "=m" (cw)
    );
 }
 
@@ -137,7 +137,7 @@ void Platform::setMathControlState(U32 state)
 {
    U16 cw = state;
    __asm__ __volatile__(
-      "fldcw %0" : "r" (cw)
+      "fldcw %0;" : "=m" (cw)
    );
 }
 
