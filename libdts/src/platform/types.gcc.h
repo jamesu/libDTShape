@@ -97,10 +97,8 @@ typedef unsigned long long  U64;
 #  define LIBDTSHAPE_OS_MAC
 #  define LIBDTSHAPE_OS_POSIX
 #  define LIBDTSHAPE_OS_DARWIN
-#  if defined(i386)
-// Disabling ASM on XCode for shared library build code relocation issues
-// This could be reconfigured for static builds, though minimal impact
-//#     define LIBDTSHAPE_SUPPORTS_NASM
+#  if defined(i386) || defined(__amd64__)
+#  define LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM
 #  endif
 #else 
 #  error "GCC: Unsupported Operating System"
