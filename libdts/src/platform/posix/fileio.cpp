@@ -422,11 +422,6 @@ bool Platform::createPath(const char * filename)
    return false; // TODO
 }
 
-bool Platform::deletePath(const char * filename)
-{
-   return false; // TODO
-}
-
 bool Platform::fileDelete(const char *name)
 {
    return(remove(name) == 0);
