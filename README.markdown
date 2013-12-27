@@ -24,7 +24,7 @@ To summarize:
 * Windows (32bit & 64bit)
 * OS X (32bit & 64bit)
 
-While libDTShape is mainly optimized for x86/x64, but it can support any generic platform provided the platform headers are setup correctly.
+While libDTShape is mainly optimized for x86/x64, it can support any generic platform provided the platform headers are setup correctly.
 
 ## How do I use it?
 
