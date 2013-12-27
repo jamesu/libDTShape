@@ -41,6 +41,11 @@
 #include <windows.h>
 #endif
 
+
+#if defined(LIBDTSHAPE_OS_POSIX)
+#include <unistd.h>
+#endif
+
 //-----------------------------------------------------------------------------
 
 BEGIN_NS(DTShape)
@@ -77,10 +82,6 @@ void Platform::debugBreak()
 {
 #if defined(LIBDTSHAPE_OS_WIN32)
    DebugBreak();
-#endif
-
-#if defined(LIBDTSHAPE_OS_MAC)
-   DebugStr("\pDEBUG_BREAK!");
 #endif
 
 #if defined(LIBDTSHAPE_OS_POSIX)
