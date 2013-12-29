@@ -106,11 +106,9 @@ void Platform::setMathControlStateKnown()
    }
 }
 
-#endif
-
 //-----------------------------------------------------------------------------
 
-#if defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
+#elif defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
 
 U32 Platform::getMathControlState()
 {
@@ -166,6 +164,25 @@ static U32 m_mulDivU32_ASM(S32 a, S32 b, U32 c)
       : "=a" (r) : "a" (a) , "b" (b) , "c" (c) 
       );
    return r;
+}
+
+#else
+
+U32 Platform::getMathControlState()
+{
+   return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void Platform::setMathControlStateKnown()
+{
+}
+
+//-----------------------------------------------------------------------------
+
+void Platform::setMathControlState(U32 state)
+{
 }
 
 #endif

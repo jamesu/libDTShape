@@ -1656,14 +1656,14 @@ String String::ToString(const char *str, ...)
    // Use the format object
    va_list args;
    va_start(args, str);
-   String ret = VToString(str, args);
+   String ret = VToString(str, &args);
    va_end(args);
    return ret;
 }
 
 String String::VToString(const char* str, void* args)
 {
-   StrFormat format(str,&args);
+   StrFormat format(str,args);
 
    // Copy it into a string
    U32         len = format.length();

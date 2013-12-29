@@ -24,8 +24,9 @@
 #include <stdlib.h>
 
 
-#ifdef WIN32
+#if defined(WIN32)
 #include <malloc.h>
+#elif defined(LIBDTSHAPE_OS_POSIX)
 #else
 #include <mm_malloc.h>
 #endif
@@ -74,8 +75,12 @@ void dRealFree(void* p)
 
 void *dMalloc_aligned(dsize_t in_size, int alignment)
 {
-#ifdef WIN32
+#if defined(WIN32)
    return _aligned_malloc(in_size, alignment);
+#elif defined(LIBDTSHAPE_OS_POSIX)
+   void *outPtr = NULL;
+   int ret = posix_memalign(&outPtr, alignment, in_size);
+   return outPtr;
 #else
    return _mm_malloc(in_size, alignment);
 #endif
@@ -83,8 +88,10 @@ void *dMalloc_aligned(dsize_t in_size, int alignment)
 
 void dFree_aligned(void* p)
 {
-#ifdef WIN32
+#if defined(WIN32)
    return _aligned_free(p);
+#elif defined(LIBDTSHAPE_OS_POSIX)
+   return free(p);
 #else
    return _mm_free(p);
 #endif

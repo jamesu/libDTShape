@@ -75,8 +75,6 @@ typedef unsigned long long  U64;
 #  define LIBDTSHAPE_OS_STRING "Linux"
 #  define LIBDTSHAPE_OS_LINUX
 #  define LIBDTSHAPE_OS_POSIX
-#  define LIBDTSHAPE_SUPPORTS_NASM
-#  define LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM
 
 #elif defined(__OpenBSD__)
 #  define LIBDTSHAPE_OS_STRING "OpenBSD"
@@ -111,16 +109,29 @@ typedef unsigned long long  U64;
 #  define LIBDTSHAPE_CPU_X86
 #  define LIBDTSHAPE_LITTLE_ENDIAN
 
+#if defined(linux)
+#  define LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM
+#endif
+
 #elif defined(__amd64__)
 #  define LIBDTSHAPE_CPU_STRING "Intel x86-64"
 #  define LIBDTSHAPE_CPU_X86_64
 #  define LIBDTSHAPE_LITTLE_ENDIAN
 #  define LIBDTSHAPE_64
 
+#if defined(linux)
+#  define LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM
+#endif
+
 #elif defined(__ppc__)
 #  define LIBDTSHAPE_CPU_STRING "PowerPC"
 #  define LIBDTSHAPE_CPU_PPC
 #  define LIBDTSHAPE_BIG_ENDIAN
+
+#elif defined(__arm__)
+#  define LIBDTSHAPE_CPU_STRING "ARM"
+#  define LIBDTSHAPE_CPU_ARM
+#  define LIBDTSHAPE_LITTLE_ENDIAN
 
 #elif defined(SN_TARGET_PS3)
 #  define LIBDTSHAPE_CPU_STRING "PowerPC"

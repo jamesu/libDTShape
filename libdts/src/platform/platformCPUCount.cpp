@@ -107,7 +107,7 @@ namespace CPUInfo {
       {
          unsigned int MaxInputValue;
          // If CPUID instruction is supported
-#ifdef LIBDTSHAPE_COMPILER_GCC
+#if defined(LIBDTSHAPE_COMPILER_GCC) && defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
          try    
          {		
             MaxInputValue = 0;
@@ -144,7 +144,7 @@ namespace CPUInfo {
             return(0);                   // cpuid instruction is unavailable
          }
 #else
-#  error Not implemented.
+		 return 0;
 #endif
 
          return MaxInputValue;
@@ -165,7 +165,7 @@ namespace CPUInfo {
          unsigned int Regeax        = 0;
 
          if (!HWD_MTSupported()) return (unsigned int) 1;  // Single core
-#ifdef LIBDTSHAPE_COMPILER_GCC
+#if defined(LIBDTSHAPE_COMPILER_GCC) && defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
          {
             asm
                (
@@ -213,7 +213,7 @@ multi_core:
 
          }
 #else
-#  error Not implemented.
+		 return 1;
 #endif
          return (unsigned int)((Regeax & NUM_CORE_BITS) >> 26)+1;
 
@@ -233,7 +233,7 @@ multi_core:
 
          if ((CpuIDSupported() >= 1))
          {
-#ifdef LIBDTSHAPE_COMPILER_GCC
+#if defined(LIBDTSHAPE_COMPILER_GCC) && defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
             asm 
                (
                "pushl %%ebx\n\t"
@@ -252,7 +252,7 @@ multi_core:
                   mov Regedx, edx
             }		
 #else
-#  error Not implemented.
+			return HWD_MT_BIT;
 #endif
          }
 
@@ -274,7 +274,7 @@ multi_core:
          unsigned int Regebx = 0;
 
          if (!HWD_MTSupported()) return (unsigned int) 1;
-#ifdef LIBDTSHAPE_COMPILER_GCC
+#if defined(LIBDTSHAPE_COMPILER_GCC) && defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
          asm 
             (
             "movl $1,%%eax\n\t"
@@ -291,7 +291,7 @@ multi_core:
                mov Regebx, ebx
          }
 #else
-#  error Not implemented.
+		 return 1;
 #endif
          return (unsigned int) ((Regebx & NUM_LOGICAL_BITS) >> 16);
 
@@ -302,7 +302,7 @@ multi_core:
       {
 
          unsigned int Regebx = 0;
-#ifdef LIBDTSHAPE_COMPILER_GCC
+#if LIBDTSHAPE_COMPILER_GCC && defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
          asm
             (
             "movl $1, %%eax\n\t"	
@@ -320,7 +320,7 @@ multi_core:
                mov Regebx, ebx
          }
 #else
-#  error Not implemented.
+		 return 0;
 #endif                                
 
          return (unsigned char) ((Regebx & INITIAL_APIC_ID_BITS) >> 24);
@@ -334,7 +334,7 @@ multi_core:
       {
          unsigned int MaskWidth,
             count = CountItem;
-#ifdef LIBDTSHAPE_COMPILER_GCC
+#if LIBDTSHAPE_COMPILER_GCC && defined(LIBDTSHAPE_SUPPORTS_GCC_INLINE_X86_ASM)
          asm
             (
 #ifdef __x86_64__		// define constant to compile  
@@ -389,7 +389,7 @@ next:
 
          }
 #else
-#  error Not implemented.
+		 return 0;
 #endif
          return MaskWidth;
       }
@@ -490,7 +490,8 @@ next:
          if (dwProcessAffinity != dwSystemAffinity)  // not all CPUs are enabled
             return CONFIG_UserConfigIssue;
 #else
-#  error Not implemented.
+		 sysNumProcs = 1;
+		 
 #endif
 
          // Assume that cores within a package have the SAME number of 

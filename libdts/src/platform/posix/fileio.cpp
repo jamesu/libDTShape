@@ -35,7 +35,6 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/syslimits.h>
 
 #if defined(__FreeBSD__)
 #include <sys/types.h>
