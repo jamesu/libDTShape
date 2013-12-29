@@ -21,8 +21,9 @@ To summarize:
 
 ## What platforms does it support?
 
-* Windows (32bit & 64bit)
-* OS X (32bit & 64bit)
+* Windows (x86, amd64)
+* OS X (x86, amd64)
+* Linux (x86, amd64, arm)
 
 While libDTShape is mainly optimized for x86/x64, it can support any generic platform provided the platform headers are setup correctly.
 
