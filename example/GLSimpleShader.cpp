@@ -26,6 +26,59 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "GLSimpleShader.h"
 #include "core/log.h"
 
+
+#ifdef HAVE_OPENGLES2
+const char sVertexProgram[] = "\n\
+\n\
+attribute vec4 aPosition;\n\
+attribute vec4 aColor;\n\
+attribute vec2 aTexCoord0;\n\
+attribute vec3 aNormal;\n\
+\n\
+uniform mat4 worldMatrixProjection;\n\
+uniform mat4 worldMatrix;\n\
+uniform vec3 lightPos;\n\
+uniform vec3 lightColor;\n\
+\n\
+varying vec2 vTexCoord0;\n\
+varying vec4 vColor0;\n\
+\n\
+void main()\n\
+{\n\
+vec3 normal, lightDir;\n\
+vec4 diffuse;\n\
+float NdotL;\n\
+\n\
+normal = normalize(mat3(worldMatrix) * aNormal);\n\
+\n\
+lightDir = normalize(vec3(lightPos));\n\
+\n\
+NdotL = max(dot(normal, lightDir), 0.0);\n\
+\n\
+diffuse = vec4(lightColor, 1.0);\n\
+\n\
+gl_Position = worldMatrixProjection * aPosition;\n\
+vTexCoord0 = aTexCoord0;\n\
+vColor0 = NdotL * diffuse;\n\
+vColor0.a = 1.0;\n\
+}\n\
+";
+
+const char sFragmentProgram[] = "\n\
+\n\
+varying vec2 vTexCoord0;\n\
+varying vec4 vColor0;\n\
+uniform sampler2D texture0;\n\
+\n\
+void main()\n\
+{\n\
+gl_FragColor = texture2D(texture0, vTexCoord0);\n\
+gl_FragColor.r = gl_FragColor.r * vColor0.r * vColor0.a;\n\
+gl_FragColor.g = gl_FragColor.g * vColor0.g * vColor0.a;\n\
+gl_FragColor.b = gl_FragColor.b * vColor0.b * vColor0.a;\n\
+}\n\
+";
+#else
 const char sVertexProgram[] = "\n\
 #version 120\n\
 \n\
@@ -78,6 +131,7 @@ gl_FragColor.g = gl_FragColor.g * vColor0.g * vColor0.a;\n\
 gl_FragColor.b = gl_FragColor.b * vColor0.b * vColor0.a;\n\
 }\n\
 ";
+#endif
 
 GLSimpleShader::GLSimpleShader() :
 mProjectionMatrix(1),
@@ -117,19 +171,22 @@ GLuint GLSimpleShader::linkProgram(GLuint *shaders)
 
   glLinkProgram(program);
   
-  GLint status;
+  GLint status = GL_TRUE;
   glGetProgramiv (program, GL_LINK_STATUS, &status);
   if (status == GL_FALSE)
   {
-     GLint infoLogLength;
-     glGetShaderiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+     GLint infoLogLength = 0;
+     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+	 
+	 if (infoLogLength > 0)
+	 {
+	     GLchar *strInfoLog = new GLchar[infoLogLength + 1];
+	     glGetProgramInfoLog(program, infoLogLength, NULL, strInfoLog);
      
-     GLchar *strInfoLog = new GLchar[infoLogLength + 1];
-     glGetShaderInfoLog(program, infoLogLength, NULL, strInfoLog);
+	     Log::printf("Failed to link shader...\n%s\n", strInfoLog);
      
-     Log::printf("Failed to link shader...\n%s\n", strInfoLog);
-     
-     delete[] strInfoLog;
+	     delete[] strInfoLog;
+	 }
      glDeleteProgram(program);
      return 0;
   }

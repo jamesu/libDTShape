@@ -28,7 +28,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #define GL_GLEXT_PROTOTYPES
 
 #include "SDL.h"
-#include <GL/glew.h>
+#include "GLIncludes.h"
 #include <stdio.h>
 
 #include "libdtshape.h"
@@ -453,6 +453,7 @@ void AppState::DrawShape(F32 dt)
       // Update transform, & render buffers
       sShader->setModelViewMatrix(glModelView);
       sShader->updateTransforms();
+	  
       renderState.mRenderInsts[i]->render(&renderState);
    }
    
@@ -538,17 +539,45 @@ int AppState::main(int argc, char **argv)
       return (1);
    }
    
-   window = SDL_CreateWindow("libDTShape Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+   int screenW = 800;
+   int screenH = 600;
+   SDL_DisplayMode mode;
    
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+   int windowFlags = 0;
+   
+#ifdef HAVE_OPENGLES2
+   windowFlags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|SDL_WINDOW_BORDERLESS;
+#else
+   windowFlags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
+#endif
+   
+   SDL_GetCurrentDisplayMode(0, &mode);
+   if (mode.w < screenW)
+	   screenW = mode.w;
+   if (mode.h < screenH)
+	   screenH = mode.h;
+   
+   window = SDL_CreateWindow("libDTShape Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenW, screenH, windowFlags);
    
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+#ifdef HAVE_OPENGLES2
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#else
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#endif
    
    // Create an OpenGL context associated with the window.
    glcontext = SDL_GL_CreateContext(window);
+   SDL_GL_MakeCurrent(window, glcontext);
    
+   SDL_GL_GetDrawableSize(window, &screenW, &screenH);
+   glViewport(0, 0, screenW, screenH);
+   
+#ifndef HAVE_OPENGLES2
    GLenum err = glewInit();
    if (GLEW_OK != err)
    {
@@ -557,8 +586,10 @@ int AppState::main(int argc, char **argv)
    }
    
    Log::errorf("Using GLEW %s", glewGetString(GLEW_VERSION));
+#endif
    
    sShader = new GLSimpleShader();
+   
    bool loaded = LoadShape();
    
    if (!loaded)

@@ -26,10 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-extern "C"
-{
-#include <GL/glew.h>
-}
+
+#include "GLIncludes.h"
 
 #include "ts/tsRender.h"
 #include "ts/tsRenderState.h"

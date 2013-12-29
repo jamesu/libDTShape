@@ -13,7 +13,7 @@
 	* everybody at gamedev.net
 */
 
-#define SOIL_CHECK_FOR_GL_ERRORS 0
+#define SOIL_CHECK_FOR_GL_ERRORS 1
 
 #ifdef WIN32
 	#define WIN32_LEAN_AND_MEAN
@@ -25,6 +25,9 @@
 	#include <OpenGL/gl.h>
 	#include <Carbon/Carbon.h>
 	#define APIENTRY
+#elif defined(HAVE_OPENGLES2)
+	#include "SDL_opengles2.h"
+	#define GL_CLAMP     GL_CLAMP_TO_EDGE
 #else
 	#include <GL/gl.h>
 	#include <GL/glx.h>
@@ -966,7 +969,7 @@ void check_for_GL_errors( const char *calling_location )
 	GLenum err_code = glGetError();
 	while( GL_NO_ERROR != err_code )
 	{
-		printf( "OpenGL Error @ %s: %i", calling_location, err_code );
+		printf( "OpenGL Error @ %s: %i\n", calling_location, err_code );
 		err_code = glGetError();
 	}
 }
@@ -1994,12 +1997,15 @@ int query_DXT_capability( void )
 				CFRelease( bundleURL );
 				CFRelease( extensionName );
 				CFRelease( bundle );
+			#elif defined(HAVE_OPENGLES2)
+				ext_addr = &glCompressedTexImage2D;
 			#else
 				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
 						glXGetProcAddressARB
 						(
 							(const GLubyte *)"glCompressedTexImage2DARB"
 						);
+			
 			#endif
 			/*	Flag it so no checks needed later	*/
 			if( NULL == ext_addr )
