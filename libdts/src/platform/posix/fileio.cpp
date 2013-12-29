@@ -40,6 +40,10 @@
 #include <sys/types.h>
 #endif
 
+#if defined(__APPLE__)
+#include <limits.h>
+#endif
+
 #include <string.h>
 
 //-----------------------------------------------------------------------------
