@@ -1,0 +1,127 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(DTShape)
+
+ADD_DEFINITIONS(-DPCRE_STATIC=1)
+ADD_DEFINITIONS(-DHAVE_CONFIG_H=1)
+ADD_DEFINITIONS(-DDOM_INCLUDE_TINYXML=1)
+ADD_DEFINITIONS(-DLINUX=1)
+ADD_DEFINITIONS(-DUNICODE=1)
+
+include_directories(../../libdts)
+include_directories(../../libdts/src/)
+include_directories(../../libdts/collada/include)
+include_directories(../../libdts/tinyxml)
+include_directories(../../libdts/pcre)
+include_directories(../../libdts/collada/include/1.4)
+
+
+set(DTSHAPE_SOURCES
+	../../libdts/src/platform/platformMath.cpp
+	../../libdts/src/platform/platformTime.cpp
+	../../libdts/src/platform/platformCPUCount.cpp
+	../../libdts/src/platform/platformMemory.cpp
+	../../libdts/src/platform/platformAssert.cpp
+	../../libdts/src/platform/platformCPU.cpp
+	../../libdts/src/platform/platform.cpp
+	../../libdts/src/platform/profiler.cpp
+	../../libdts/src/platform/platformMath_ASM.cpp
+	../../libdts/src/platform/platformCPUInfo.cpp
+	../../libdts/src/platform/posix/fileio.cpp
+	../../libdts/src/collision/boxConvex.cpp
+	../../libdts/src/collision/clippedPolyList.cpp
+	../../libdts/src/collision/polytope.cpp
+	../../libdts/src/collision/abstractPolyList.cpp
+	../../libdts/src/collision/planeExtractor.cpp
+	../../libdts/src/collision/depthSortList.cpp
+	../../libdts/src/collision/earlyOutPolyList.cpp
+	../../libdts/src/collision/convex.cpp
+	../../libdts/src/collision/optimizedPolyList.cpp
+	../../libdts/src/collision/extrudedPolyList.cpp
+	../../libdts/src/collision/concretePolyList.cpp
+	../../libdts/src/collision/gjk.cpp
+	../../libdts/src/collision/vertexPolyList.cpp
+	../../libdts/src/math/mQuat.cpp
+	../../libdts/src/math/mMathAltivec.cpp
+	../../libdts/src/math/mMathAMD.cpp
+	../../libdts/src/math/mRect.cpp
+	../../libdts/src/math/mSolver.cpp
+	../../libdts/src/math/mOrientedBox.cpp
+	../../libdts/src/math/mPoint.cpp
+	../../libdts/src/math/mPlane.cpp
+	../../libdts/src/math/mAngAxis.cpp
+	../../libdts/src/math/mMatrix.cpp
+	../../libdts/src/math/mPlaneTransformer.cpp
+	../../libdts/src/math/util/sphereMesh.cpp
+	../../libdts/src/math/util/quadTransforms.cpp
+	../../libdts/src/math/util/triRayCheck.cpp
+	../../libdts/src/math/util/frustum.cpp
+	../../libdts/src/math/mMath_C.cpp
+	../../libdts/src/math/mPolyhedron.cpp
+	../../libdts/src/math/mathUtils.cpp
+	../../libdts/src/math/mBox.cpp
+	../../libdts/src/math/mRandom.cpp
+	../../libdts/src/math/mSphere.cpp
+	../../libdts/src/math/mMathSSE.cpp
+	../../libdts/src/libdtshape.cpp
+	../../libdts/src/core/strings/unicode.cpp
+	../../libdts/src/core/strings/stringFunctions.cpp
+	../../libdts/src/core/strings/findMatch.cpp
+	../../libdts/src/core/color.cpp
+	../../libdts/src/core/frameAllocator.cpp
+	../../libdts/src/core/log.cpp
+	../../libdts/src/core/util/path.cpp
+	../../libdts/src/core/util/timeClass.cpp
+	../../libdts/src/core/util/tDictionary.cpp
+	../../libdts/src/core/util/commonSwizzles.cpp
+	../../libdts/src/core/util/tVector.cpp
+	../../libdts/src/core/util/triListOpt.cpp
+	../../libdts/src/core/util/str.cpp
+	../../libdts/src/core/util/hashFunction.cpp
+	../../libdts/src/core/stream/stream.cpp
+	../../libdts/src/core/stream/fileStream.cpp
+	../../libdts/src/core/stream/memStream.cpp
+	../../libdts/src/core/dataChunker.cpp
+	../../libdts/src/ts/tsLastDetail.cpp
+	../../libdts/src/ts/tsDecal.cpp
+	../../libdts/src/ts/tsCollision.cpp
+	../../libdts/src/ts/tsShapeEdit.cpp
+	../../libdts/src/ts/tsThread.cpp
+	../../libdts/src/ts/tsDummyInterface.cpp
+	../../libdts/src/ts/tsMeshIntrinsics.cpp
+	../../libdts/src/ts/tsRender.cpp
+	../../libdts/src/ts/collada/colladaExtensions.cpp
+	../../libdts/src/ts/collada/colladaAppSequence.cpp
+	../../libdts/src/ts/collada/colladaUtils.cpp
+	../../libdts/src/ts/collada/colladaAppNode.cpp
+	../../libdts/src/ts/collada/colladaImport.cpp
+	../../libdts/src/ts/collada/colladaLights.cpp
+	../../libdts/src/ts/collada/colladaShapeLoader.cpp
+	../../libdts/src/ts/collada/colladaAppMesh.cpp
+	../../libdts/src/ts/collada/colladaAppMaterial.cpp
+	../../libdts/src/ts/tsMaterialList.cpp
+	../../libdts/src/ts/tsDump.cpp
+	../../libdts/src/ts/arch/tsMeshIntrinsics.sse.cpp
+	../../libdts/src/ts/arch/tsMeshIntrinsics.sse4.cpp
+	../../libdts/src/ts/tsSortedMesh.cpp
+	../../libdts/src/ts/tsAnimate.cpp
+	../../libdts/src/ts/tsTransform.cpp
+	../../libdts/src/ts/materialList.cpp
+	../../libdts/src/ts/tsShapeOldRead.cpp
+	../../libdts/src/ts/loader/appMesh.cpp
+	../../libdts/src/ts/loader/tsShapeLoader.cpp
+	../../libdts/src/ts/loader/appNode.cpp
+	../../libdts/src/ts/tsMaterialManager.cpp
+	../../libdts/src/ts/tsMeshFit.cpp
+	../../libdts/src/ts/tsIntegerSet.cpp
+	../../libdts/src/ts/tsPartInstance.cpp
+	../../libdts/src/ts/tsShapeAlloc.cpp
+	../../libdts/src/ts/tsRenderState.cpp
+	../../libdts/src/ts/tsShape.cpp
+	../../libdts/src/ts/tsMesh.cpp
+	../../libdts/src/ts/tsShapeInstance.cpp
+)
+
+add_library(DTShape STATIC ${DTSHAPE_SOURCES})
+
+#target_link_libraries(DTShape pcre tinyxml collada_dom convexDecomp)
