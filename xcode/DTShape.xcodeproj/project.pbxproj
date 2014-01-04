@@ -579,7 +579,6 @@
 		32EFB6BA184A547800D93F75 /* mQuat.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB597184A547800D93F75 /* mQuat.h */; };
 		32EFB6BB184A547800D93F75 /* mRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB598184A547800D93F75 /* mRandom.cpp */; };
 		32EFB6BC184A547800D93F75 /* mRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB599184A547800D93F75 /* mRandom.h */; };
-		32EFB6BD184A547800D93F75 /* mRandomDeck.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB59A184A547800D93F75 /* mRandomDeck.h */; };
 		32EFB6BE184A547800D93F75 /* mRandomSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB59B184A547800D93F75 /* mRandomSet.h */; };
 		32EFB6BF184A547800D93F75 /* mRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB59C184A547800D93F75 /* mRect.cpp */; };
 		32EFB6C0184A547800D93F75 /* mRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB59D184A547800D93F75 /* mRect.h */; };
@@ -1293,7 +1292,6 @@
 		32EFB597184A547800D93F75 /* mQuat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mQuat.h; sourceTree = "<group>"; };
 		32EFB598184A547800D93F75 /* mRandom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mRandom.cpp; sourceTree = "<group>"; };
 		32EFB599184A547800D93F75 /* mRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mRandom.h; sourceTree = "<group>"; };
-		32EFB59A184A547800D93F75 /* mRandomDeck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mRandomDeck.h; sourceTree = "<group>"; };
 		32EFB59B184A547800D93F75 /* mRandomSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mRandomSet.h; sourceTree = "<group>"; };
 		32EFB59C184A547800D93F75 /* mRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mRect.cpp; sourceTree = "<group>"; };
 		32EFB59D184A547800D93F75 /* mRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mRect.h; sourceTree = "<group>"; };
@@ -2276,7 +2274,6 @@
 				32EFB597184A547800D93F75 /* mQuat.h */,
 				32EFB598184A547800D93F75 /* mRandom.cpp */,
 				32EFB599184A547800D93F75 /* mRandom.h */,
-				32EFB59A184A547800D93F75 /* mRandomDeck.h */,
 				32EFB59B184A547800D93F75 /* mRandomSet.h */,
 				32EFB59C184A547800D93F75 /* mRect.cpp */,
 				32EFB59D184A547800D93F75 /* mRect.h */,
@@ -2802,7 +2799,6 @@
 				32EFB70C184A547800D93F75 /* appSequence.h in Headers */,
 				3264AB2B1866783E009E6458 /* daeError.h in Headers */,
 				32EFB63B184A547800D93F75 /* polytope.h in Headers */,
-				32EFB6BD184A547800D93F75 /* mRandomDeck.h in Headers */,
 				3264AAB01866783E009E6458 /* domFx_stenciltarget_common.h in Headers */,
 				3264AA781866783E009E6458 /* domAnimation_clip.h in Headers */,
 				3264AB2A1866783E009E6458 /* daeElement.h in Headers */,

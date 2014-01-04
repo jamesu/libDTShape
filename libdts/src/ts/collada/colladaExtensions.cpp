@@ -51,8 +51,8 @@ void ColladaExtension_effect::applyTextureTransform(Point2F& uv, F32 time)
       // Update texture transform
       textureTransform.set(EulerF(0, 0, rotateUV.getValue(time)));
       textureTransform.setPosition(Point3F(
-         offsetU.getValue(time) + noiseU.getValue(time)*gRandGen.randF(),
-         offsetV.getValue(time) + noiseV.getValue(time)*gRandGen.randF(),
+         offsetU.getValue(time) + noiseU.getValue(time)*1.0,//gRandGen.randF(),
+         offsetV.getValue(time) + noiseV.getValue(time)*1.0,//gRandGen.randF(),
          0));
       textureTransform.scale(Point3F(repeatU.getValue(time), repeatV.getValue(time), 1.0f));
 

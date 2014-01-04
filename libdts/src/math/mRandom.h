@@ -90,8 +90,6 @@ public:
    MRandomLCG(S32 s);
    virtual ~MRandomLCG() {}
 
-   static void setGlobalRandSeed(U32 seed);
-
    void setSeed(S32 s);
 //   using MRandomGenerator::randI;
     S32 randI(S32 i, S32 n);            ///< i..n integer generator
@@ -136,8 +134,6 @@ public:
 
 
 typedef MRandomLCG MRandom;
-
-extern MRandomLCG gRandGen;
 
 //-----------------------------------------------------------------------------
 

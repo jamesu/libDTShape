@@ -29,24 +29,6 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-MRandomLCG gRandGen;
-U32 gRandGenSeed = 1376312589;
-
-void MRandomLCG::setGlobalRandSeed(U32 seed)
-{
-	/*if (Journal::IsPlaying())
-		Journal::Read(&gRandGenSeed);
-	else
-	{*/
-		gRandGenSeed = seed;
-		/*if (Journal::IsRecording())
-			Journal::Write(gRandGenSeed);
-	}*/
-
-	//now actually set the seed
-	gRandGen.setSeed(gRandGenSeed);
-}
-
 static U32 msSeed = 1376312589;
 
 inline U32 generateSeed()

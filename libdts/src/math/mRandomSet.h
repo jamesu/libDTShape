@@ -46,7 +46,7 @@ protected:
 
 public:
 
-   MRandomSet( MRandomLCG *randGen = &gRandGen );
+   MRandomSet( MRandomLCG *randGen );
 
    void add( const T &item, F32 probability );
    
