@@ -87,7 +87,9 @@ class TSShape : public StrongRefBase
          Cyclic         = BIT(4),
          MakePath       = BIT(5),
          HasTranslucency= BIT(6),
-         AnyScale       = UniformScale | AlignedScale | ArbitraryScale
+         AnyScale       = UniformScale | AlignedScale | ArbitraryScale,
+         HasSkinMesh = BIT(7),
+         
       };
 
    /// Nodes hold the transforms in the shape's tree.  They are the bones of the skeleton.
@@ -398,9 +400,6 @@ class TSShape : public StrongRefBase
    /// The GFX vertex size in bytes for all detail meshes in the shape.
    /// @see initVertexFeatures()
    U32 mVertSize;
-
-   /// Is true if this shape contains skin meshes.
-   bool mHasSkinMesh;
 
    bool mSequencesConstructed;
 

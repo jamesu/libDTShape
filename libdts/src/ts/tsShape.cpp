@@ -672,7 +672,7 @@ void TSShape::initMaterialList()
    subShapeFirstTranslucentObject.setSize(numSubShapes);
    #endif
 
-   mHasSkinMesh = false;
+   bool hasSkinMesh = false;
 
    S32 i,j,k;
    // for each subshape, find the first translucent object
@@ -692,7 +692,7 @@ void TSShape::initMaterialList()
             if (!mesh)
                continue;
 
-            mHasSkinMesh |= mesh->getMeshType() == TSMesh::SkinMeshType;
+            hasSkinMesh |= mesh->getMeshType() == TSMesh::SkinMeshType;
 
             for (k=0; k<mesh->primitives.size(); k++)
             {
@@ -717,7 +717,11 @@ void TSShape::initMaterialList()
       if (i!=end)
          break;
    }
-
+   
+   if (hasSkinMesh)
+      mFlags |= HasSkinMesh;
+   else
+      mFlags &= ~HasSkinMesh;
 }
 
 bool TSShape::preloadMaterialList(const DTShape::Path &path)
