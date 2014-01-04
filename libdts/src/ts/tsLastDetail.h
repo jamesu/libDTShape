@@ -133,10 +133,6 @@ protected:
    /// The material instance used to render this imposter.
    TSMaterialInstance *mMatInstance;
 
-   /// This is a global list of all the TSLastDetail
-   /// objects in the system.
-   static Vector<TSLastDetail*> smLastDetails;
-
    /// The maximum texture size for a billboard texture.
    static const U32 smMaxTexSize = 2048;
 

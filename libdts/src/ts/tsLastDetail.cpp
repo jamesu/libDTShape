@@ -46,8 +46,6 @@ GFXImplementVertexFormat( ImposterState )
 };
 #endif
 
-Vector<TSLastDetail*> TSLastDetail::smLastDetails;
-
 TSLastDetail::TSLastDetail(   TSShape *shape,
                               const String &cachePath,
                               U32 numEquatorSteps,
@@ -71,9 +69,6 @@ TSLastDetail::TSLastDetail(   TSShape *shape,
 
    //mMaterial = NULL;
    mMatInstance = NULL;
-
-   // Store this in the static list.
-   //smLastDetails.push_back( this );
 }
 
 TSLastDetail::~TSLastDetail()
@@ -81,10 +76,6 @@ TSLastDetail::~TSLastDetail()
    SAFE_DELETE( mMatInstance );
    //if ( mMaterial )
    //   mMaterial->deleteObject();
-
-   // Remove ourselves from the list.
-   //Vector<TSLastDetail*>::iterator iter = find( smLastDetails.begin(), smLastDetails.end(), this );
-   //smLastDetails.erase( iter );
 }
 
 void TSLastDetail::render( TSRenderState &rdata, F32 alpha )
