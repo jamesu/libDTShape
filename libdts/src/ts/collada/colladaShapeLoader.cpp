@@ -55,7 +55,8 @@ BEGIN_NS(DTShape)
 const char* sFileExtensions[] = {
    ".bmp",
    ".png",
-   ".jpg"
+   ".jpg",
+   ".dds"
 };
 
 // 
