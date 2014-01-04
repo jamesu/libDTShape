@@ -212,25 +212,6 @@ class TSShapeInstance
    Vector<Quat16>         mNodeReferenceArbitraryScaleRots;
    /// @}
 
-   /// @name Workspace for Node Transforms
-   /// @{
-   static Vector<QuatF>   smNodeCurrentRotations;
-   static Vector<Point3F> smNodeCurrentTranslations;
-   static Vector<F32>     smNodeCurrentUniformScales;
-   static Vector<Point3F> smNodeCurrentAlignedScales;
-   static Vector<TSScale> smNodeCurrentArbitraryScales;
-   static Vector<MatrixF> smNodeLocalTransforms;
-   static TSIntegerSet    smNodeLocalTransformDirty;
-   /// @}
-
-   /// @name Threads
-   /// keep track of who controls what on currently animating shape
-   /// @{
-   static Vector<TSThread*> smRotationThreads;
-   static Vector<TSThread*> smTranslationThreads;
-   static Vector<TSThread*> smScaleThreads;
-   /// @}
-	
 	TSMaterialList* mMaterialList;    ///< by default, points to hShape material list
 //-------------------------------------------------------------------------------------
 // Misc.
@@ -428,6 +409,11 @@ protected:
 //-------------------------------------------------------------------------------------
 
    public:
+   
+   TSRenderState *mCurrentRenderState;
+   
+   /// Sets new render state so we can access the shared scratch space
+   void beginUpdate(TSRenderState *newRenderState);
 
    struct RenderData
    {
@@ -437,24 +423,6 @@ protected:
       S32 materialIndex;
       const Point3F * objectScale;
    };
-
-   /// Scale pixel size by this amount when selecting
-   /// detail levels.
-   static F32 smDetailAdjust;
-
-   /// If this is set to a positive pixel value shapes
-   /// with a smaller pixel size than this will skip 
-   /// rendering entirely.
-   static F32 smSmallestVisiblePixelSize;
-
-   /// never choose detail level number below this value (except if
-   /// only way to get a visible detail)
-   static S32 smNumSkipRenderDetails;
-
-   /// For debugging / metrics.
-   static F32 smLastScreenErrorTolerance;
-   static F32 smLastScaledDistance;
-   static F32 smLastPixelSize;
 
    /// Debugging
    /// @{
@@ -643,7 +611,7 @@ protected:
 // constructors, destructors, initialization, io
 //-------------------------------------------------------------------------------------
    
-   TSShapeInstance( TSShape * pShape, bool loadMaterials = true);
+   TSShapeInstance( TSShape * pShape, TSRenderState *renderState, bool loadMaterials = true);
    ~TSShapeInstance();
 
    void buildInstanceData(TSShape *, bool loadMaterials);

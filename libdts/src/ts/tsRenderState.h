@@ -40,6 +40,14 @@
 #include "core/util/tVector.h"
 #endif
 
+#ifndef _TSINTEGERSET_H_
+#include "ts/tsIntegerSet.h"
+#endif
+
+#ifndef _TSTRANSFORM_H_
+#include "ts/tsTransform.h"
+#endif
+
 //-----------------------------------------------------------------------------
 
 BEGIN_NS(DTShape)
@@ -52,6 +60,7 @@ class TSMaterialInstance;
 class TSMeshRenderer;
 class TSMesh;
 class TSMeshInstanceRenderData;
+class TSThread;
 
 typedef U32 TSRenderInstTypeHash;
 
@@ -166,7 +175,7 @@ class TSRenderState
 {
 protected:
    
-   // user-supplied interface which 
+   /// Scene state
    const TSSceneRenderState *mState;
    
 public:
@@ -204,13 +213,61 @@ public:
    
    /// Generic pointer to a render data object
    TSMeshInstanceRenderData *mRenderData;
-
+   
+   /// Render Workspace normal store
+   Vector<Point3F> gNormalStore;
+   
+   /// @name Workspace for Node Transforms
+   /// @{
+   Vector<QuatF>   smNodeCurrentRotations;
+   Vector<Point3F> smNodeCurrentTranslations;
+   Vector<F32>     smNodeCurrentUniformScales;
+   Vector<Point3F> smNodeCurrentAlignedScales;
+   Vector<TSScale> smNodeCurrentArbitraryScales;
+   Vector<MatrixF> smNodeLocalTransforms;
+   TSIntegerSet    smNodeLocalTransformDirty;
+   /// @}
+   
+   /// @name Threads
+   /// keep track of who controls what on currently animating shape
+   /// @{
+   Vector<TSThread*> smRotationThreads;
+   Vector<TSThread*> smTranslationThreads;
+   Vector<TSThread*> smScaleThreads;
+   /// @}
+   
+   /// Scale pixel size by this amount when selecting
+   /// detail levels.
+   F32 smDetailAdjust;
+   
+   /// If this is set to a positive pixel value shapes
+   /// with a smaller pixel size than this will skip
+   /// rendering entirely.
+   F32 smSmallestVisiblePixelSize;
+   
+   /// never choose detail level number below this value (except if
+   /// only way to get a visible detail)
+   S32 smNumSkipRenderDetails;
+   
+   /// For debugging / metrics.
+   F32 smLastScreenErrorTolerance;
+   F32 smLastScaledDistance;
+   F32 smLastPixelSize;
+	
 protected:
+   
+   /// Allocator for TSRenderInst and MatrixF
    MultiTypedChunker mChunker;
    
 public:
+   /// @name Output TSRenderInsts
+   /// @{
+   /// Primitives which must be drawn first
    Vector<TSRenderInst*> mRenderInsts;
+   
+   /// Primitives which must be drawn on top of solid geometry
    Vector<TSRenderInst*> mTranslucentRenderInsts;
+   /// @}
 
 public:
 

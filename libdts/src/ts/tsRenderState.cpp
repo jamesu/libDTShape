@@ -41,8 +41,25 @@ TSRenderState::TSRenderState()
       mNoRenderNonTranslucent( false ),
       mMaterialHint( NULL ),
       mCuller( NULL ),
-      mUseOriginSort( false )
+      mUseOriginSort( false ),
+      smNodeCurrentRotations(__FILE__, __LINE__),
+      smNodeCurrentTranslations(__FILE__, __LINE__),
+      smNodeCurrentUniformScales(__FILE__, __LINE__),
+      smNodeCurrentAlignedScales(__FILE__, __LINE__),
+      smNodeCurrentArbitraryScales(__FILE__, __LINE__),
+      smNodeLocalTransforms(__FILE__, __LINE__),
+      smRotationThreads(__FILE__, __LINE__),
+      smTranslationThreads(__FILE__, __LINE__),
+      smScaleThreads(__FILE__, __LINE__)
 {
+   smDetailAdjust = 1.0f;
+   smSmallestVisiblePixelSize = -1.0f;
+   smNumSkipRenderDetails = 0;
+   
+   smLastScreenErrorTolerance = 0.0f;
+   smLastScaledDistance = 0.0f;
+   smLastPixelSize = 0.0f;
+   
 }
 
 TSRenderState::TSRenderState( TSRenderState &state )
@@ -63,6 +80,19 @@ void TSRenderState::reset()
    mRenderInsts.clear();
    mTranslucentRenderInsts.clear();
    mChunker.clear();
+   
+   smNodeCurrentRotations.clear();
+   smNodeCurrentTranslations.clear();
+   smNodeCurrentUniformScales.clear();
+   smNodeCurrentUniformScales.clear();
+   smNodeCurrentAlignedScales.clear();
+   smNodeCurrentArbitraryScales.clear();
+   smNodeLocalTransforms.clear();
+   smNodeLocalTransformDirty.clearAll();
+   
+   smRotationThreads.clear();
+   smTranslationThreads.clear();
+   smScaleThreads.clear();
 }
 
 

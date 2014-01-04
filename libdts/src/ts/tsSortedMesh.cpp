@@ -98,17 +98,17 @@ S32 TSSortedMesh::getNumPolys()
 
 #define tsalloc TSShape::smTSAlloc
 
-void TSSortedMesh::assemble(bool skip)
+void TSSortedMesh::assemble(TSIOState &loadState, bool skip)
 {
-   bool save1 = TSMesh::smUseTriangles;
-   bool save2 = TSMesh::smUseOneStrip;
-   TSMesh::smUseTriangles = false;
-   TSMesh::smUseOneStrip = false;
+   bool save1 = loadState.smUseTriangles;
+   bool save2 = loadState.smUseOneStrip;
+   loadState.smUseTriangles = false;
+   loadState.smUseOneStrip = false;
 
-   TSMesh::assemble(skip);
+   TSMesh::assemble(loadState, skip);
 
-   TSMesh::smUseTriangles = save1;
-   TSMesh::smUseOneStrip = save2;
+   loadState.smUseTriangles = save1;
+   loadState.smUseOneStrip = save2;
 
    S32 numClusters = tsalloc.get32();
    S32 * ptr32 = tsalloc.copyToShape32(numClusters*8);
@@ -135,9 +135,9 @@ void TSSortedMesh::assemble(bool skip)
    tsalloc.checkGuard();
 }
 
-void TSSortedMesh::disassemble()
+void TSSortedMesh::disassemble(TSIOState &loadState)
 {
-   TSMesh::disassemble();
+   TSMesh::disassemble(loadState);
 
    tsalloc.set32(clusters.size());
    tsalloc.copyToBuffer32((S32*)clusters.address(),clusters.size()*8);

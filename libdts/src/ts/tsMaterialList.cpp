@@ -21,9 +21,9 @@
 //-----------------------------------------------------------------------------
 
 #include "platform/platform.h"
-#include "ts/tsMaterialList.h"
 
 #include "ts/tsShape.h"
+#include "ts/tsMaterialList.h"
 #include "ts/tsMaterial.h"
 #include "ts/tsMaterialManager.h"
 
@@ -156,11 +156,17 @@ void TSMaterialList::setFlags(U32 index, U32 value)
    mFlags[index] = value;
 }
 
-bool TSMaterialList::write(Stream & s)
+bool TSMaterialList::write(Stream & s, TSIOState *options)
 {
    if (!Parent::write(s))
       return false;
-
+   
+   TSIOState loadState;
+   if (options)
+   {
+      loadState = *options;
+   }
+   
    U32 i;
    for (i=0; i<size(); i++)
       s.write(mFlags[i]);
@@ -177,7 +183,7 @@ bool TSMaterialList::write(Stream & s)
    // MDF - This used to write mLightmaps
    // We never ended up using it but it is
    // still part of the version 25 standard
-   if (TSShape::smVersion == 25)
+   if (loadState.smVersion == 25)
    {
       for (i=0; i<size(); i++)
          s.write(0xFFFFFFFF);
@@ -192,15 +198,21 @@ bool TSMaterialList::write(Stream & s)
    return (s.getStatus() == Stream::Ok);
 }
 
-bool TSMaterialList::read(Stream & s)
+bool TSMaterialList::read(Stream & s, TSIOState *options)
 {
    if (!Parent::read(s))
       return false;
+   
+   TSIOState loadState;
+   if (options)
+   {
+      loadState = *options;
+   }
 
    allocate(size());
 
    U32 i;
-   if (TSShape::smReadVersion < 2)
+   if (loadState.smReadVersion < 2)
    {
       for (i=0; i<size(); i++)
          setFlags(i,S_Wrap|T_Wrap);
@@ -211,7 +223,7 @@ bool TSMaterialList::read(Stream & s)
          s.read(&mFlags[i]);
    }
 
-   if (TSShape::smReadVersion < 5)
+   if (loadState.smReadVersion < 5)
    {
       for (i=0; i<size(); i++)
       {
@@ -229,7 +241,7 @@ bool TSMaterialList::read(Stream & s)
       for (i=0; i<size(); i++)
          s.read(&mDetailMaps[i]);
 
-      if (TSShape::smReadVersion == 25)
+      if (loadState.smReadVersion == 25)
       {
          U32 dummy = 0;
 
@@ -238,7 +250,7 @@ bool TSMaterialList::read(Stream & s)
       }
    }
 
-   if (TSShape::smReadVersion > 11)
+   if (loadState.smReadVersion > 11)
    {
       for (i=0; i<size(); i++)
          s.read(&mDetailScales[i]);
@@ -249,7 +261,7 @@ bool TSMaterialList::read(Stream & s)
          mDetailScales[i] = 1.0f;
    }
 
-   if (TSShape::smReadVersion > 20)
+   if (loadState.smReadVersion > 20)
    {
       for (i=0; i<size(); i++)
          s.read(&mReflectionAmounts[i]);
@@ -260,7 +272,7 @@ bool TSMaterialList::read(Stream & s)
          mReflectionAmounts[i] = 1.0f;
    }
 
-   if (TSShape::smReadVersion < 16)
+   if (loadState.smReadVersion < 16)
    {
       // make sure emapping is off for translucent materials on old shapes
       for (i=0; i<size(); i++)

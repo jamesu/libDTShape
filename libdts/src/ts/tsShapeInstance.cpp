@@ -37,33 +37,11 @@
 
 BEGIN_NS(DTShape)
 
-//-----------------------------------------------------------------------------
-
-F32                           TSShapeInstance::smDetailAdjust = 1.0f;
-F32                           TSShapeInstance::smSmallestVisiblePixelSize = -1.0f;
-S32                           TSShapeInstance::smNumSkipRenderDetails = 0;
-
-F32                           TSShapeInstance::smLastScreenErrorTolerance = 0.0f;
-F32                           TSShapeInstance::smLastScaledDistance = 0.0f;
-F32                           TSShapeInstance::smLastPixelSize = 0.0f;
-
-Vector<QuatF>                 TSShapeInstance::smNodeCurrentRotations(__FILE__, __LINE__);
-Vector<Point3F>               TSShapeInstance::smNodeCurrentTranslations(__FILE__, __LINE__);
-Vector<F32>                   TSShapeInstance::smNodeCurrentUniformScales(__FILE__, __LINE__);
-Vector<Point3F>               TSShapeInstance::smNodeCurrentAlignedScales(__FILE__, __LINE__);
-Vector<TSScale>               TSShapeInstance::smNodeCurrentArbitraryScales(__FILE__, __LINE__);
-Vector<MatrixF>               TSShapeInstance::smNodeLocalTransforms(__FILE__, __LINE__);
-TSIntegerSet                  TSShapeInstance::smNodeLocalTransformDirty;
-
-Vector<TSThread*>             TSShapeInstance::smRotationThreads(__FILE__, __LINE__);
-Vector<TSThread*>             TSShapeInstance::smTranslationThreads(__FILE__, __LINE__);
-Vector<TSThread*>             TSShapeInstance::smScaleThreads(__FILE__, __LINE__);
-
 //-------------------------------------------------------------------------------------
 // constructors, destructors, initialization
 //-------------------------------------------------------------------------------------
 
-TSShapeInstance::TSShapeInstance( TSShape *shape, bool loadMaterials )
+TSShapeInstance::TSShapeInstance( TSShape *shape, TSRenderState *renderState, bool loadMaterials )
 {
    VECTOR_SET_ASSOCIATION(mMeshObjects);
    VECTOR_SET_ASSOCIATION(mNodeTransforms);
@@ -76,6 +54,7 @@ TSShapeInstance::TSShapeInstance( TSShape *shape, bool loadMaterials )
    VECTOR_SET_ASSOCIATION(mTransitionThreads);
 
    mShape = shape;
+   mCurrentRenderState = renderState;
    buildInstanceData( mShape, loadMaterials );
 }
 
@@ -266,6 +245,12 @@ void TSShapeInstance::reSkin( String newBaseName, String oldBaseName )
 //-------------------------------------------------------------------------------------
 // Render & detail selection
 //-------------------------------------------------------------------------------------
+
+
+void TSShapeInstance::beginUpdate(TSRenderState *newRenderState)
+{
+   mCurrentRenderState = newRenderState;
+}
 
 void TSShapeInstance::renderDebugNormals( F32 normalScalar, S32 dl )
 {
@@ -495,9 +480,9 @@ void TSShapeInstance::setCurrentDetail( S32 dl, F32 intraDL )
    mCurrentIntraDetailLevel = intraDL > 1.0f ? 1.0f : (intraDL < 0.0f ? 0.0f : intraDL);
 
    // Restrict the chosen detail level by cutoff value.
-   if ( smNumSkipRenderDetails > 0 && mCurrentDetailLevel >= 0 )
+   if ( (S32)mCurrentRenderState->smNumSkipRenderDetails > 0 && mCurrentDetailLevel >= 0 )
    {
-      S32 cutoff = getMin( smNumSkipRenderDetails, mShape->mSmallestVisibleDL );
+      S32 cutoff = getMin( (S32)mCurrentRenderState->smNumSkipRenderDetails, mShape->mSmallestVisibleDL );
       if ( mCurrentDetailLevel < cutoff )
       {
          mCurrentDetailLevel = cutoff;
@@ -522,7 +507,7 @@ S32 TSShapeInstance::setDetailFromDistance( const TSSceneRenderState *state, F32
    PROFILE_SCOPE( TSShapeInstance_setDetailFromDistance );
 
    // For debugging/metrics.
-   smLastScaledDistance = scaledDistance;
+   mCurrentRenderState->smLastScaledDistance = scaledDistance;
 
    // Shortcut if the distance is really close or negative.
    if ( scaledDistance <= 0.0f )
@@ -562,14 +547,14 @@ S32 TSShapeInstance::setDetailFromDistance( const TSSceneRenderState *state, F32
    // We're inlining TSSceneRenderState::projectRadius here to 
    // skip the unnessasary divide by zero protection.
    F32 pixelRadius = ( mShape->radius / scaledDistance ) * state->getWorldToScreenScale().y * pixelScale;
-   F32 pixelSize = pixelRadius * smDetailAdjust;
+   F32 pixelSize = pixelRadius * mCurrentRenderState->smDetailAdjust;
 
-   if (  pixelSize > smSmallestVisiblePixelSize && 
+   if (  pixelSize > mCurrentRenderState->smSmallestVisiblePixelSize &&
          pixelSize <= mShape->mSmallestVisibleSize )
       pixelSize = mShape->mSmallestVisibleSize + 0.01f;
 
    // For debugging/metrics.
-   smLastPixelSize = pixelSize;
+   mCurrentRenderState->smLastPixelSize = pixelSize;
 
    // Clamp it to an acceptable range for the lookup table.
    U32 index = (U32)mClampF( pixelSize, 0, mShape->mDetailLevelLookup.size() - 1 );
@@ -578,9 +563,9 @@ S32 TSShapeInstance::setDetailFromDistance( const TSSceneRenderState *state, F32
    mShape->mDetailLevelLookup[ index ].get( mCurrentDetailLevel, mCurrentIntraDetailLevel );
 
    // Restrict the chosen detail level by cutoff value.
-   if ( smNumSkipRenderDetails > 0 && mCurrentDetailLevel >= 0 )
+   if ( mCurrentRenderState->smNumSkipRenderDetails > 0 && mCurrentDetailLevel >= 0 )
    {
-      S32 cutoff = getMin( smNumSkipRenderDetails, mShape->mSmallestVisibleDL );
+      S32 cutoff = getMin( (S32)mCurrentRenderState->smNumSkipRenderDetails, mShape->mSmallestVisibleDL );
       if ( mCurrentDetailLevel < cutoff )
       {
          mCurrentDetailLevel = cutoff;
@@ -596,7 +581,7 @@ S32 TSShapeInstance::setDetailFromScreenError( F32 errorTolerance )
    PROFILE_SCOPE( TSShapeInstance_setDetailFromScreenError );
 
    // For debugging/metrics.
-   smLastScreenErrorTolerance = errorTolerance;
+   mCurrentRenderState->smLastScreenErrorTolerance = errorTolerance;
 
    // note:  we use 10 time the average error as the metric...this is
    // more robust than the maxError...the factor of 10 is to put average error

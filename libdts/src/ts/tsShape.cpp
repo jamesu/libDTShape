@@ -45,33 +45,38 @@ BEGIN_NS(DTShape)
 extern TSShape* loadColladaShape(const DTShape::Path &path);
 #endif
 
-/// most recent version -- this is the version we write
-S32 TSShape::smVersion = 26;
-/// the version currently being read...valid only during a read
-S32 TSShape::smReadVersion = -1;
 const U32 TSShape::smMostRecentExporterVersion = DTS_EXPORTER_CURRENT_VERSION;
 
-F32 TSShape::smAlphaOutLastDetail = -1.0f;
-F32 TSShape::smAlphaInBillboard = 0.15f;
-F32 TSShape::smAlphaOutBillboard = 0.15f;
-F32 TSShape::smAlphaInDefault = -1.0f;
-F32 TSShape::smAlphaOutDefault = -1.0f;
+const F32 TSShape::smAlphaOutLastDetail = -1.0f;
+const F32 TSShape::smAlphaInBillboard = 0.15f;
+const F32 TSShape::smAlphaOutBillboard = 0.15f;
+const F32 TSShape::smAlphaInDefault = -1.0f;
+const F32 TSShape::smAlphaOutDefault = -1.0f;
 
-// don't bother even loading this many of the highest detail levels (but
-// always load last renderable detail)
-S32 TSShape::smNumSkipLoadDetails = 0;
-
-bool TSShape::smInitOnRead = true;
-
+TSIOState::TSIOState()
+{
+   smVersion = 26;
+   smReadVersion = -1;
+   
+   smNumSkipLoadDetails = 0;
+   
+   smInitOnRead = true;
+   
+   smUseTriangles = true; // convert all primitives to triangle lists on load
+   smUseOneStrip  = true; // join triangle strips into one long strip on load
+   smMinStripSize = 1;     // smallest number of _faces_ allowed per strip (all else put in tri list)
+   smUseEncodedNormals = false;
+}
 
 TSShape::TSShape()
 {
    materialList = NULL;
    mReadVersion = -1; // -1 means constructed from scratch (e.g., in exporter or no read yet)
-   mHasSkinMesh = false;
    mSequencesConstructed = false;
    mShapeData = NULL;
    mShapeDataSize = 0;
+   
+   mNumSkipLoadDetails = 0;
 
    mUseDetailFromScreenError = false;
 
@@ -484,7 +489,7 @@ void TSShape::init()
 
    for (i=mSmallestVisibleDL-1; i>=0; i--)
    {
-      if (i<smNumSkipLoadDetails)
+      if (i<mNumSkipLoadDetails)
       {
          // this detail level renders when pixel size
          // is larger than our cap...zap all the meshes and decals
@@ -857,9 +862,11 @@ bool TSShape::checkSkip(S32 meshNum, S32 & curObject, S32 skipDL)
    return false;
 }
 
-void TSShape::assembleShape()
+void TSShape::assembleShape(TSIOState &loadState)
 {
    S32 i,j;
+   
+   mNumSkipLoadDetails = loadState.smNumSkipLoadDetails;
 
    // get counts...
    S32 numNodes = tsalloc.get32();
@@ -872,7 +879,7 @@ void TSShape::assembleShape()
    S32 numNodeUniformScales;
    S32 numNodeAlignedScales;
    S32 numNodeArbitraryScales;
-   if (smReadVersion<22)
+   if (mReadVersion<22)
    {
       numNodeRots = numNodeTrans = tsalloc.get32() - numNodes;
       numNodeUniformScales = numNodeAlignedScales = numNodeArbitraryScales = 0;
@@ -886,7 +893,7 @@ void TSShape::assembleShape()
       numNodeArbitraryScales = tsalloc.get32();
    }
    S32 numGroundFrames = 0;
-   if (smReadVersion>23)
+   if (mReadVersion>23)
       numGroundFrames = tsalloc.get32();
    S32 numObjectStates = tsalloc.get32();
    S32 numDecalStates = tsalloc.get32();
@@ -894,7 +901,7 @@ void TSShape::assembleShape()
    S32 numDetails = tsalloc.get32();
    S32 numMeshes = tsalloc.get32();
    S32 numSkins = 0;
-   if (smReadVersion<23)
+   if (mReadVersion<23)
       // in later versions, skins are kept with other meshes
       numSkins = tsalloc.get32();
    S32 numNames = tsalloc.get32();
@@ -984,7 +991,7 @@ void TSShape::assembleShape()
 
    tsalloc.checkGuard();
 
-   if (smReadVersion>21)
+   if (loadState.smReadVersion>21)
    {
       // more node sequence data...scale
       nodeUniformScales.setSize(numNodeUniformScales);
@@ -1005,7 +1012,7 @@ void TSShape::assembleShape()
    }
 
    // old shapes need ground transforms moved to ground arrays...but only do it once
-   if (smReadVersion<22 && tsalloc.allocShape32(0))
+   if (mReadVersion<22 && tsalloc.allocShape32(0))
    {
       for (i=0; i<sequences.size(); i++)
       {
@@ -1028,7 +1035,7 @@ void TSShape::assembleShape()
 
    // version 22 & 23 shapes accidentally had no ground transforms, and ground for
    // earlier shapes is handled just above, so...
-   if (smReadVersion>23)
+   if (mReadVersion>23)
    {
       groundTranslations.setSize(numGroundFrames);
       for (i=0;i<numGroundFrames;i++)
@@ -1061,7 +1068,7 @@ void TSShape::assembleShape()
    tsalloc.checkGuard();
 
    // details
-   if ( smReadVersion >= 26 )
+   if ( mReadVersion >= 26 )
    {
       U32 alignedSize32 = sizeof( Detail ) / 4;
       ptr32 = tsalloc.copyToShape32( numDetails * alignedSize32, true );
@@ -1133,7 +1140,7 @@ void TSShape::assembleShape()
    // now that we have the details loaded.
    updateSmallestVisibleDL();
 
-   S32 skipDL = getMin(mSmallestVisibleDL,smNumSkipLoadDetails);
+   S32 skipDL = getMin(mSmallestVisibleDL,(S32)mNumSkipLoadDetails);
    if (skipDL < 0)
       skipDL = 0;
 
@@ -1142,42 +1149,42 @@ void TSShape::assembleShape()
 
    // about to read in the meshes...first must allocate some scratch space
    S32 scratchSize = getMax(numSkins,numMeshes);
-   TSMesh::smVertsList.setSize(scratchSize);
-   TSMesh::smTVertsList.setSize(scratchSize);
+   loadState.smVertsList.setSize(scratchSize);
+   loadState.smTVertsList.setSize(scratchSize);
 
-   if ( smReadVersion >= 26 )
+   if ( mReadVersion >= 26 )
    {
-      TSMesh::smTVerts2List.setSize(scratchSize);
-      TSMesh::smColorsList.setSize(scratchSize);
+      loadState.smTVerts2List.setSize(scratchSize);
+      loadState.smColorsList.setSize(scratchSize);
    }
 
-   TSMesh::smNormsList.setSize(scratchSize);
-   TSMesh::smEncodedNormsList.setSize(scratchSize);
-   TSMesh::smDataCopied.setSize(scratchSize);
-   TSSkinMesh::smInitTransformList.setSize(scratchSize);
-   TSSkinMesh::smVertexIndexList.setSize(scratchSize);
-   TSSkinMesh::smBoneIndexList.setSize(scratchSize);
-   TSSkinMesh::smWeightList.setSize(scratchSize);
-   TSSkinMesh::smNodeIndexList.setSize(scratchSize);
+   loadState.smNormsList.setSize(scratchSize);
+   loadState.smEncodedNormsList.setSize(scratchSize);
+   loadState.smDataCopied.setSize(scratchSize);
+   loadState.smInitTransformList.setSize(scratchSize);
+   loadState.smVertexIndexList.setSize(scratchSize);
+   loadState.smBoneIndexList.setSize(scratchSize);
+   loadState.smWeightList.setSize(scratchSize);
+   loadState.smNodeIndexList.setSize(scratchSize);
    for (i=0; i<numMeshes; i++)
    {
-      TSMesh::smVertsList[i]=NULL;
-      TSMesh::smTVertsList[i]=NULL;
+      loadState.smVertsList[i]=NULL;
+      loadState.smTVertsList[i]=NULL;
       
-      if ( smReadVersion >= 26 )
+      if ( mReadVersion >= 26 )
       {
-         TSMesh::smTVerts2List[i] = NULL;
-         TSMesh::smColorsList[i] = NULL;
+         loadState.smTVerts2List[i] = NULL;
+         loadState.smColorsList[i] = NULL;
       }
       
-      TSMesh::smNormsList[i]=NULL;
-      TSMesh::smEncodedNormsList[i]=NULL;
-      TSMesh::smDataCopied[i]=false;
-      TSSkinMesh::smInitTransformList[i] = NULL;
-      TSSkinMesh::smVertexIndexList[i] = NULL;
-      TSSkinMesh::smBoneIndexList[i] = NULL;
-      TSSkinMesh::smWeightList[i] = NULL;
-      TSSkinMesh::smNodeIndexList[i] = NULL;
+      loadState.smNormsList[i]=NULL;
+      loadState.smEncodedNormsList[i]=NULL;
+      loadState.smDataCopied[i]=false;
+      loadState.smInitTransformList[i] = NULL;
+      loadState.smVertexIndexList[i] = NULL;
+      loadState.smBoneIndexList[i] = NULL;
+      loadState.smWeightList[i] = NULL;
+      loadState.smNodeIndexList[i] = NULL;
    }
 
    // read in the meshes (sans skins)...straightforward read one at a time
@@ -1190,33 +1197,33 @@ void TSShape::assembleShape()
       if (meshType == TSMesh::DecalMeshType)
          // decal mesh deprecated
          skip = true;
-      TSMesh * mesh = TSMesh::assembleMesh(meshType,skip);
+      TSMesh * mesh = TSMesh::assembleMesh(loadState, meshType,skip);
       if (ptrmesh)
          ptrmesh[i] = skip ?  0 : mesh;
 
       // fill in location of verts, tverts, and normals for detail levels
       if (mesh && meshType!=TSMesh::DecalMeshType)
       {
-         TSMesh::smVertsList[i]  = mesh->verts.address();
-         TSMesh::smTVertsList[i] = mesh->tverts.address();
-         if (smReadVersion >= 26)
+         loadState.smVertsList[i]  = mesh->verts.address();
+         loadState.smTVertsList[i] = mesh->tverts.address();
+         if (mReadVersion >= 26)
          {
-            TSMesh::smTVerts2List[i] = mesh->tverts2.address();
-            TSMesh::smColorsList[i] = mesh->colors.address();
+            loadState.smTVerts2List[i] = mesh->tverts2.address();
+            loadState.smColorsList[i] = mesh->colors.address();
          }
-         TSMesh::smNormsList[i]  = mesh->norms.address();
-         TSMesh::smEncodedNormsList[i] = mesh->encodedNorms.address();
-         TSMesh::smDataCopied[i] = !skip; // as long as we didn't skip this mesh, the data should be in shape now
+         loadState.smNormsList[i]  = mesh->norms.address();
+         loadState.smEncodedNormsList[i] = mesh->encodedNorms.address();
+         loadState.smDataCopied[i] = !skip; // as long as we didn't skip this mesh, the data should be in shape now
          if (meshType==TSMesh::SkinMeshType)
          {
             TSSkinMesh * skin = (TSSkinMesh*)mesh;
-            TSMesh::smVertsList[i]  = skin->batchData.initialVerts.address();
-            TSMesh::smNormsList[i]  = skin->batchData.initialNorms.address();
-            TSSkinMesh::smInitTransformList[i] = skin->batchData.initialTransforms.address();
-            TSSkinMesh::smVertexIndexList[i] = skin->vertexIndex.address();
-            TSSkinMesh::smBoneIndexList[i] = skin->boneIndex.address();
-            TSSkinMesh::smWeightList[i] = skin->weight.address();
-            TSSkinMesh::smNodeIndexList[i] = skin->batchData.nodeIndex.address();
+            loadState.smVertsList[i]  = skin->batchData.initialVerts.address();
+            loadState.smNormsList[i]  = skin->batchData.initialNorms.address();
+            loadState.smInitTransformList[i] = skin->batchData.initialTransforms.address();
+            loadState.smVertexIndexList[i] = skin->vertexIndex.address();
+            loadState.smBoneIndexList[i] = skin->boneIndex.address();
+            loadState.smWeightList[i] = skin->weight.address();
+            loadState.smNodeIndexList[i] = skin->batchData.nodeIndex.address();
          }
       }
    }
@@ -1244,7 +1251,7 @@ void TSShape::assembleShape()
 
    tsalloc.checkGuard();
 
-   if (smReadVersion<23)
+   if (mReadVersion<23)
    {
       // get detail information about skins...
       S32 * detailFirstSkin = tsalloc.getPointer32(numDetails);
@@ -1255,24 +1262,24 @@ void TSShape::assembleShape()
       // about to read in skins...clear out scratch space...
       if (numSkins)
       {
-         TSSkinMesh::smInitTransformList.setSize(numSkins);
-         TSSkinMesh::smVertexIndexList.setSize(numSkins);
-         TSSkinMesh::smBoneIndexList.setSize(numSkins);
-         TSSkinMesh::smWeightList.setSize(numSkins);
-         TSSkinMesh::smNodeIndexList.setSize(numSkins);
+         loadState.smInitTransformList.setSize(numSkins);
+         loadState.smVertexIndexList.setSize(numSkins);
+         loadState.smBoneIndexList.setSize(numSkins);
+         loadState.smWeightList.setSize(numSkins);
+         loadState.smNodeIndexList.setSize(numSkins);
       }
       for (i=0; i<numSkins; i++)
       {
-         TSMesh::smVertsList[i]=NULL;
-         TSMesh::smTVertsList[i]=NULL;
-         TSMesh::smNormsList[i]=NULL;
-         TSMesh::smEncodedNormsList[i]=NULL;
-         TSMesh::smDataCopied[i]=false;
-         TSSkinMesh::smInitTransformList[i] = NULL;
-         TSSkinMesh::smVertexIndexList[i] = NULL;
-         TSSkinMesh::smBoneIndexList[i] = NULL;
-         TSSkinMesh::smWeightList[i] = NULL;
-         TSSkinMesh::smNodeIndexList[i] = NULL;
+         loadState.smVertsList[i]=NULL;
+         loadState.smTVertsList[i]=NULL;
+         loadState.smNormsList[i]=NULL;
+         loadState.smEncodedNormsList[i]=NULL;
+         loadState.smDataCopied[i]=false;
+         loadState.smInitTransformList[i] = NULL;
+         loadState.smVertexIndexList[i] = NULL;
+         loadState.smBoneIndexList[i] = NULL;
+         loadState.smWeightList[i] = NULL;
+         loadState.smNodeIndexList[i] = NULL;
       }
 
       // skins
@@ -1280,7 +1287,7 @@ void TSShape::assembleShape()
       for (i=0; i<numSkins; i++)
       {
          bool skip = i<detailFirstSkin[skipDL];
-         TSSkinMesh * skin = (TSSkinMesh*)TSMesh::assembleMesh(TSMesh::SkinMeshType,skip);
+         TSSkinMesh * skin = (TSSkinMesh*)TSMesh::assembleMesh(loadState, TSMesh::SkinMeshType,skip);
          if (meshes.address())
          {
             // add pointer to skin in shapes list of meshes
@@ -1292,16 +1299,16 @@ void TSShape::assembleShape()
          // fill in location of verts, tverts, and normals for shared detail levels
          if (skin)
          {
-            TSMesh::smVertsList[i]  = skin->batchData.initialVerts.address();
-            TSMesh::smTVertsList[i] = skin->tverts.address();
-            TSMesh::smNormsList[i]  = skin->batchData.initialNorms.address();
-            TSMesh::smEncodedNormsList[i]  = skin->encodedNorms.address();
-            TSMesh::smDataCopied[i] = !skip; // as long as we didn't skip this mesh, the data should be in shape now
-            TSSkinMesh::smInitTransformList[i] = skin->batchData.initialTransforms.address();
-            TSSkinMesh::smVertexIndexList[i] = skin->vertexIndex.address();
-            TSSkinMesh::smBoneIndexList[i] = skin->boneIndex.address();
-            TSSkinMesh::smWeightList[i] = skin->weight.address();
-            TSSkinMesh::smNodeIndexList[i] = skin->batchData.nodeIndex.address();
+            loadState.smVertsList[i]  = skin->batchData.initialVerts.address();
+            loadState.smTVertsList[i] = skin->tverts.address();
+            loadState.smNormsList[i]  = skin->batchData.initialNorms.address();
+            loadState.smEncodedNormsList[i]  = skin->encodedNorms.address();
+            loadState.smDataCopied[i] = !skip; // as long as we didn't skip this mesh, the data should be in shape now
+            loadState.smInitTransformList[i] = skin->batchData.initialTransforms.address();
+            loadState.smVertexIndexList[i] = skin->vertexIndex.address();
+            loadState.smBoneIndexList[i] = skin->boneIndex.address();
+            loadState.smWeightList[i] = skin->weight.address();
+            loadState.smNodeIndexList[i] = skin->batchData.nodeIndex.address();
          }
       }
 
@@ -1318,7 +1325,7 @@ void TSShape::assembleShape()
    alphaOut.set(ptr32,numDetails);
 }
 
-void TSShape::disassembleShape()
+void TSShape::disassembleShape(TSIOState &saveState)
 {
    S32 i;
 
@@ -1407,7 +1414,7 @@ void TSShape::disassembleShape()
    tsalloc.setGuard();
 
    // details
-   if (TSShape::smVersion > 25)
+   if (saveState.smVersion > 25)
    {
       U32 alignedSize32 = sizeof( Detail ) / 4;
       tsalloc.copyToBuffer32((S32*)details.address(),numDetails * alignedSize32 );
@@ -1439,7 +1446,7 @@ void TSShape::disassembleShape()
          mesh = meshes[i];
       tsalloc.set32( (mesh && mesh->getMeshType() != TSMesh::DecalMeshType) ? mesh->getMeshType() : TSMesh::NullMeshType);
       if (mesh)
-         mesh->disassemble();
+         mesh->disassemble(saveState);
    }
    delete [] isMesh;
    tsalloc.setGuard();
@@ -1488,17 +1495,19 @@ bool TSShape::canWriteOldFormat() const
    return true;
 }
 
-void TSShape::write(Stream * s, bool saveOldFormat)
+void TSShape::write(Stream * s, TSIOState *options)
 {
-   S32 currentVersion = smVersion;
-   if (saveOldFormat)
-      smVersion = 24;
+   TSIOState saveState;
+   if (options)
+   {
+      saveState = *options;
+   }
 
    // write version
-   s->write(smVersion | (mExporterVersion<<16));
+   s->write(saveState.smVersion | (mExporterVersion<<16));
 
    tsalloc.setWrite();
-   disassembleShape();
+   disassembleShape(saveState);
 
    S32     * buffer32 = tsalloc.getBuffer32();
    S16     * buffer16 = tsalloc.getBuffer16();
@@ -1537,7 +1546,7 @@ void TSShape::write(Stream * s, bool saveOldFormat)
    // write sequences - write will properly endian-flip.
    s->write(sequences.size());
    for (S32 i=0; i<sequences.size(); i++)
-      sequences[i].write(s);
+      sequences[i].write(s, saveState);
 
    // write material list - write will properly endian-flip.
    materialList->write(*s);
@@ -1545,29 +1554,33 @@ void TSShape::write(Stream * s, bool saveOldFormat)
    delete [] buffer32;
    delete [] buffer16;
    delete [] buffer8;
-
-   smVersion = currentVersion;
 }
 
 //-------------------------------------------------
 // read whole shape
 //-------------------------------------------------
 
-bool TSShape::read(Stream * s)
+bool TSShape::read(Stream * s, TSIOState *options)
 {
+   TSIOState loadState;
+   if (options)
+   {
+      loadState = *options;
+   }
+   
    // read version - read handles endian-flip
-   s->read(&smReadVersion);
-   mExporterVersion = smReadVersion >> 16;
-   smReadVersion &= 0xFF;
-   if (smReadVersion>smVersion)
+   s->read(&mReadVersion);
+   mExporterVersion = mReadVersion >> 16;
+   mReadVersion &= 0xFF;
+   if (mReadVersion>loadState.smVersion)
    {
       // error -- don't support future versions yet :>
       Log::errorf(LogEntry::General,
                   "Error: attempt to load a version %i dts-shape, can currently only load version %i and before.",
-                   smReadVersion,smVersion);
+                   mReadVersion,loadState.smVersion);
       return false;
    }
-   mReadVersion = smReadVersion;
+   loadState.smReadVersion = mReadVersion;
 
    S32 * memBuffer32;
    S16 * memBuffer16;
@@ -1610,7 +1623,7 @@ bool TSShape::read(Stream * s)
       sequences.setSize(numSequences);
       for (i=0; i<numSequences; i++)
       {
-         sequences[i].read(s);
+         sequences[i].read(s, loadState);
 
          // Store initial (empty) source data
          sequences[i].sourceData.total = sequences[i].numKeyframes;
@@ -1620,24 +1633,24 @@ bool TSShape::read(Stream * s)
       // read material list
       delete materialList; // just in case...
       materialList = new TSMaterialList;
-      materialList->read(*s);
+      materialList->read(*s, &loadState);
    }
 
 	// since we read in the buffers, we need to endian-flip their entire contents...
    fixEndian(memBuffer32,memBuffer16,memBuffer8,count32,count16,count8);
 
    tsalloc.setRead(memBuffer32,memBuffer16,memBuffer8,true);
-   assembleShape(); // determine size of buffer needed
+   assembleShape(loadState); // determine size of buffer needed
    mShapeDataSize = tsalloc.getSize();
    tsalloc.doAlloc();
    mShapeData = tsalloc.getBuffer();
    tsalloc.setRead(memBuffer32,memBuffer16,memBuffer8,false);
-   assembleShape(); // copy to buffer
+   assembleShape(loadState); // copy to buffer
    AssertFatal(tsalloc.getSize()==mShapeDataSize,"TSShape::read: shape data buffer size mis-calculated");
 
    delete [] memBuffer32;
 
-   if (smInitOnRead)
+   if (loadState.smInitOnRead)
       init();
 
    //if (names.size() == 3 && dStricmp(names[2], "Box") == 0)
@@ -1948,7 +1961,7 @@ void TSShape::createEmptyShape()
    bounds.minExtents.set(-0.5f, 0.0f, -0.5f);
    bounds.maxExtents.set(0.5f, 1.0f, 0.5f);
 
-   mExporterVersion = 124;
+   mExporterVersion = DTS_EXPORTER_CURRENT_VERSION;
    mSmallestVisibleSize = 2;
    mSmallestVisibleDL = 0;
    mReadVersion = 24;

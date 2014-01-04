@@ -73,8 +73,8 @@ public:
                            ///  @returns false ALWAYS
    S32 getNumPolys();
 
-   void assemble(bool skip);
-   void disassemble();
+   void assemble(TSIOState &loadState, bool skip);
+   void disassemble(TSIOState &loadState);
 
    TSSortedMesh() {
       meshType = SortedMeshType;

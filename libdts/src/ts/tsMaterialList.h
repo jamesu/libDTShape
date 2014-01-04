@@ -91,8 +91,8 @@ class TSMaterialList : public MaterialList
    /// Functions for reading/writing to/from streams
    /// @{
 
-   bool write(Stream &);
-   bool read(Stream &);
+   bool write(Stream &, TSIOState *options = NULL);
+   bool read(Stream &, TSIOState *options = NULL);
    /// @}
 
 protected:

@@ -129,7 +129,6 @@ TSShape* TSShapeLoader::generateShape(const DTShape::Path& path)
    shapePath = path;
    shape = new TSShape();
 
-   shape->mExporterVersion = 124;
    shape->mSmallestVisibleSize = 999999;
    shape->mSmallestVisibleDL = 0;
    shape->mReadVersion = 24;

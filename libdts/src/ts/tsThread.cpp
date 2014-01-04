@@ -666,9 +666,9 @@ void TSShapeInstance::updateTransitions()
    for (i=0; i<mShape->nodes.size(); i++)
    {
       if (mTransitionRotationNodes.test(i))
-         mNodeReferenceRotations[i].set(smNodeCurrentRotations[i]);
+         mNodeReferenceRotations[i].set(mCurrentRenderState->smNodeCurrentRotations[i]);
       if (mTransitionTranslationNodes.test(i))
-         mNodeReferenceTranslations[i] = smNodeCurrentTranslations[i];
+         mNodeReferenceTranslations[i] = mCurrentRenderState->smNodeCurrentTranslations[i];
    }
 
    if (animatesScale())
@@ -683,7 +683,7 @@ void TSShapeInstance::updateTransitions()
          for (i=0; i<mShape->nodes.size(); i++)
          {
             if (mTransitionScaleNodes.test(i))
-               mNodeReferenceUniformScales[i] = smNodeCurrentUniformScales[i];
+               mNodeReferenceUniformScales[i] = mCurrentRenderState->smNodeCurrentUniformScales[i];
          }
       }
       else if (animatesAlignedScale())
@@ -692,7 +692,7 @@ void TSShapeInstance::updateTransitions()
          for (i=0; i<mShape->nodes.size(); i++)
          {
             if (mTransitionScaleNodes.test(i))
-               mNodeReferenceScaleFactors[i] = smNodeCurrentAlignedScales[i];
+               mNodeReferenceScaleFactors[i] = mCurrentRenderState->smNodeCurrentAlignedScales[i];
          }
       }
       else
@@ -703,8 +703,8 @@ void TSShapeInstance::updateTransitions()
          {
             if (mTransitionScaleNodes.test(i))
             {
-               mNodeReferenceScaleFactors[i] = smNodeCurrentArbitraryScales[i].mScale;
-               mNodeReferenceArbitraryScaleRots[i].set(smNodeCurrentArbitraryScales[i].mRotate);
+               mNodeReferenceScaleFactors[i] = mCurrentRenderState->smNodeCurrentArbitraryScales[i].mScale;
+               mNodeReferenceArbitraryScaleRots[i].set(mCurrentRenderState->smNodeCurrentArbitraryScales[i].mRotate);
             }
          }
       }

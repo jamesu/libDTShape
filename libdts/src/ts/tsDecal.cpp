@@ -39,9 +39,9 @@ BEGIN_NS(DTShape)
 
 #define tsalloc TSShape::smTSAlloc
 
-void TSDecalMesh::assemble(bool)
+void TSDecalMesh::assemble(TSIOState &loadState, bool)
 {
-   if (TSShape::smReadVersion<20)
+   if (loadState.smReadVersion<20)
    {
       // read empty mesh...decals used to be derived from meshes
       tsalloc.checkGuard();
@@ -63,7 +63,7 @@ void TSDecalMesh::assemble(bool)
    tsalloc.align32();
    indices.set(ptr16,sz);
 
-   if (TSShape::smReadVersion<20)
+   if (loadState.smReadVersion<20)
    {
       // read more empty mesh stuff...decals used to be derived from meshes
       tsalloc.getPointer32(3);
@@ -74,7 +74,7 @@ void TSDecalMesh::assemble(bool)
    ptr32 = tsalloc.getPointer32(sz);
    startPrimitive.set(ptr32,sz);
 
-   if (TSShape::smReadVersion>=19)
+   if (loadState.smReadVersion>=19)
    {
    ptr32 = tsalloc.getPointer32(sz*4);
    texgenS.set(ptr32,startPrimitive.size());
@@ -92,7 +92,7 @@ void TSDecalMesh::assemble(bool)
    tsalloc.checkGuard();
 }
 
-void TSDecalMesh::disassemble()
+void TSDecalMesh::disassemble(TSIOState &saveState)
 {
    tsalloc.set32(primitives.size());
    tsalloc.copyToBuffer32((S32*)primitives.address(),primitives.size());

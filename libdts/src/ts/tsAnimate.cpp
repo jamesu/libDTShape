@@ -76,11 +76,11 @@ void TSShapeInstance::animateNodes(S32 ss)
    mNodeTransforms.setSize(mShape->nodes.size());
 
    // temporary storage for node transforms
-   smNodeCurrentRotations.setSize(mShape->nodes.size());
-   smNodeCurrentTranslations.setSize(mShape->nodes.size());
-   smNodeLocalTransforms.setSize(mShape->nodes.size());
-   smRotationThreads.setSize(mShape->nodes.size());
-   smTranslationThreads.setSize(mShape->nodes.size());
+   mCurrentRenderState->smNodeCurrentRotations.setSize(mShape->nodes.size());
+   mCurrentRenderState->smNodeCurrentTranslations.setSize(mShape->nodes.size());
+   mCurrentRenderState->smNodeLocalTransforms.setSize(mShape->nodes.size());
+   mCurrentRenderState->smRotationThreads.setSize(mShape->nodes.size());
+   mCurrentRenderState->smTranslationThreads.setSize(mShape->nodes.size());
 
    TSIntegerSet rotBeenSet;
    TSIntegerSet tranBeenSet;
@@ -88,7 +88,7 @@ void TSShapeInstance::animateNodes(S32 ss)
    rotBeenSet.setAll(mShape->nodes.size());
    tranBeenSet.setAll(mShape->nodes.size());
    scaleBeenSet.setAll(mShape->nodes.size());
-   smNodeLocalTransformDirty.clearAll();
+   mCurrentRenderState->smNodeLocalTransformDirty.clearAll();
 
    S32 i,j,nodeIndex,a,b,start,end,firstBlend = mThreadList.size();
    for (i=0; i<mThreadList.size(); i++)
@@ -127,13 +127,13 @@ void TSShapeInstance::animateNodes(S32 ss)
    {
       if (rotBeenSet.test(i))
       {
-         mShape->defaultRotations[i].getQuatF(&smNodeCurrentRotations[i]);
-         smRotationThreads[i] = NULL;
+         mShape->defaultRotations[i].getQuatF(&mCurrentRenderState->smNodeCurrentRotations[i]);
+         mCurrentRenderState->smRotationThreads[i] = NULL;
       }
       if (tranBeenSet.test(i))
       {
-         smNodeCurrentTranslations[i] = mShape->defaultTranslations[i];
-         smTranslationThreads[i] = NULL;
+         mCurrentRenderState->smNodeCurrentTranslations[i] = mShape->defaultTranslations[i];
+         mCurrentRenderState->smTranslationThreads[i] = NULL;
       }
    }
 
@@ -166,9 +166,9 @@ void TSShapeInstance::animateNodes(S32 ss)
             QuatF q1,q2;
             mShape->getRotation(*th->getSequence(),th->keyNum1,j,&q1);
             mShape->getRotation(*th->getSequence(),th->keyNum2,j,&q2);
-            TSTransform::interpolate(q1,q2,th->keyPos,&smNodeCurrentRotations[nodeIndex]);
+            TSTransform::interpolate(q1,q2,th->keyPos,&mCurrentRenderState->smNodeCurrentRotations[nodeIndex]);
             rotBeenSet.set(nodeIndex);
-            smRotationThreads[nodeIndex] = th;
+            mCurrentRenderState->smRotationThreads[nodeIndex] = th;
          }
       }
 
@@ -187,8 +187,8 @@ void TSShapeInstance::animateNodes(S32 ss)
             {
                const Point3F & p1 = mShape->getTranslation(*th->getSequence(),th->keyNum1,j);
                const Point3F & p2 = mShape->getTranslation(*th->getSequence(),th->keyNum2,j);
-               TSTransform::interpolate(p1,p2,th->keyPos,&smNodeCurrentTranslations[nodeIndex]);
-               smTranslationThreads[nodeIndex] = th;
+               TSTransform::interpolate(p1,p2,th->keyPos,&mCurrentRenderState->smNodeCurrentTranslations[nodeIndex]);
+               mCurrentRenderState->smTranslationThreads[nodeIndex] = th;
             }
             tranBeenSet.set(nodeIndex);
          }
@@ -202,9 +202,9 @@ void TSShapeInstance::animateNodes(S32 ss)
    for (i=a; i<b; i++)
    {
       if (!mHandsOffNodes.test(i))
-         TSTransform::setMatrix(smNodeCurrentRotations[i],smNodeCurrentTranslations[i],&smNodeLocalTransforms[i]);
+         TSTransform::setMatrix(mCurrentRenderState->smNodeCurrentRotations[i],mCurrentRenderState->smNodeCurrentTranslations[i],&mCurrentRenderState->smNodeLocalTransforms[i]);
       else
-         smNodeLocalTransforms[i] = mNodeTransforms[i];     // in case mNodeTransform was changed externally
+         mCurrentRenderState->smNodeLocalTransforms[i] = mNodeTransforms[i];     // in case mNodeTransform was changed externally
    }
 
    // add scale onto transforms
@@ -220,8 +220,8 @@ void TSShapeInstance::animateNodes(S32 ss)
       S32 nodeIndex = mNodeCallbacks[i].nodeIndex;
       if (nodeIndex>=start && nodeIndex<end)
       {
-         mNodeCallbacks[i].callback->setNodeTransform(this, nodeIndex, smNodeLocalTransforms[nodeIndex]);
-         smNodeLocalTransformDirty.set(nodeIndex);
+         mNodeCallbacks[i].callback->setNodeTransform(this, nodeIndex, mCurrentRenderState->smNodeLocalTransforms[nodeIndex]);
+         mCurrentRenderState->smNodeLocalTransformDirty.set(nodeIndex);
       }
    }
 
@@ -244,9 +244,9 @@ void TSShapeInstance::animateNodes(S32 ss)
    {
       S32 parentIdx = mShape->nodes[i].parentIndex;
       if (parentIdx < 0)
-         mNodeTransforms[i] = smNodeLocalTransforms[i];
+         mNodeTransforms[i] = mCurrentRenderState->smNodeLocalTransforms[i];
       else
-         mNodeTransforms[i].mul(mNodeTransforms[parentIdx],smNodeLocalTransforms[i]);
+         mNodeTransforms[i].mul(mNodeTransforms[parentIdx],mCurrentRenderState->smNodeLocalTransforms[i]);
    }
 }
 
@@ -255,37 +255,37 @@ void TSShapeInstance::handleDefaultScale(S32 a, S32 b, TSIntegerSet & scaleBeenS
    // set default scale values (i.e., identity) and do any initialization
    // relating to animated scale (since scale normally not animated)
 
-   smScaleThreads.setSize(mShape->nodes.size());
+   mCurrentRenderState->smScaleThreads.setSize(mShape->nodes.size());
    scaleBeenSet.takeAway(mCallbackNodes);
    scaleBeenSet.takeAway(mHandsOffNodes);
    if (animatesUniformScale())
    {
-      smNodeCurrentUniformScales.setSize(mShape->nodes.size());
+      mCurrentRenderState->smNodeCurrentUniformScales.setSize(mShape->nodes.size());
       for (S32 i=a; i<b; i++)
          if (scaleBeenSet.test(i))
          {
-            smNodeCurrentUniformScales[i] = 1.0f;
-            smScaleThreads[i] = NULL;
+            mCurrentRenderState->smNodeCurrentUniformScales[i] = 1.0f;
+            mCurrentRenderState->smScaleThreads[i] = NULL;
          }
    }
    else if (animatesAlignedScale())
    {
-      smNodeCurrentAlignedScales.setSize(mShape->nodes.size());
+      mCurrentRenderState->smNodeCurrentAlignedScales.setSize(mShape->nodes.size());
       for (S32 i=a; i<b; i++)
          if (scaleBeenSet.test(i))
          {
-            smNodeCurrentAlignedScales[i].set(1.0f,1.0f,1.0f);
-            smScaleThreads[i] = NULL;
+            mCurrentRenderState->smNodeCurrentAlignedScales[i].set(1.0f,1.0f,1.0f);
+            mCurrentRenderState->smScaleThreads[i] = NULL;
          }
    }
    else
    {
-      smNodeCurrentArbitraryScales.setSize(mShape->nodes.size());
+      mCurrentRenderState->smNodeCurrentArbitraryScales.setSize(mShape->nodes.size());
       for (S32 i=a; i<b; i++)
          if (scaleBeenSet.test(i))
          {
-            smNodeCurrentArbitraryScales[i].identity();
-            smScaleThreads[i] = NULL;
+            mCurrentRenderState->smNodeCurrentArbitraryScales[i].identity();
+            mCurrentRenderState->smScaleThreads[i] = NULL;
          }
    }
 
@@ -306,19 +306,19 @@ void TSShapeInstance::updateTransitionNodeTransforms(TSIntegerSet& transitionNod
    // for blended or scale-animated nodes, as all others are already up to date
    for (S32 i=transitionNodes.start(); i<MAX_TS_SET_SIZE; transitionNodes.next(i))
    {
-      if (smNodeLocalTransformDirty.test(i))
+      if (mCurrentRenderState->smNodeLocalTransformDirty.test(i))
       {
          if (scaleCurrentlyAnimated())
          {
             // @todo:No support for scale yet => need to do proper affine decomposition here
-            smNodeCurrentTranslations[i] = smNodeLocalTransforms[i].getPosition();
-            smNodeCurrentRotations[i].set(smNodeLocalTransforms[i]);
+            mCurrentRenderState->smNodeCurrentTranslations[i] = mCurrentRenderState->smNodeLocalTransforms[i].getPosition();
+            mCurrentRenderState->smNodeCurrentRotations[i].set(mCurrentRenderState->smNodeLocalTransforms[i]);
          }
          else
          {
             // Scale is identity => can do a cheap decomposition
-            smNodeCurrentTranslations[i] = smNodeLocalTransforms[i].getPosition();
-            smNodeCurrentRotations[i].set(smNodeLocalTransforms[i]);
+            mCurrentRenderState->smNodeCurrentTranslations[i] = mCurrentRenderState->smNodeLocalTransforms[i].getPosition();
+            mCurrentRenderState->smNodeCurrentRotations[i].set(mCurrentRenderState->smNodeLocalTransforms[i]);
          }
       }
    }
@@ -336,7 +336,7 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
    {
       if (nodeIndex<a)
          continue;
-      TSThread * thread = smRotationThreads[nodeIndex];
+      TSThread * thread = mCurrentRenderState->smRotationThreads[nodeIndex];
       thread = thread && thread->transitionData.inTransition ? thread : NULL;
       if (!thread)
       {
@@ -354,7 +354,7 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
          AssertFatal(thread!=NULL,"TSShapeInstance::handleRotTransitionNodes (rotation)");
       }
       QuatF tmpQ;
-      TSTransform::interpolate(mNodeReferenceRotations[nodeIndex].getQuatF(&tmpQ),smNodeCurrentRotations[nodeIndex],thread->transitionData.pos,&smNodeCurrentRotations[nodeIndex]);
+      TSTransform::interpolate(mNodeReferenceRotations[nodeIndex].getQuatF(&tmpQ),mCurrentRenderState->smNodeCurrentRotations[nodeIndex],thread->transitionData.pos,&mCurrentRenderState->smNodeCurrentRotations[nodeIndex]);
    }
 
    // then translation
@@ -362,7 +362,7 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
    end   = b;
    for (nodeIndex=start; nodeIndex<end; mTransitionTranslationNodes.next(nodeIndex))
    {
-      TSThread * thread = smTranslationThreads[nodeIndex];
+      TSThread * thread = mCurrentRenderState->smTranslationThreads[nodeIndex];
       thread = thread && thread->transitionData.inTransition ? thread : NULL;
       if (!thread)
       {
@@ -379,7 +379,7 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
          }
          AssertFatal(thread!=NULL,"TSShapeInstance::handleTransitionNodes (translation).");
       }
-      Point3F & p = smNodeCurrentTranslations[nodeIndex];
+      Point3F & p = mCurrentRenderState->smNodeCurrentTranslations[nodeIndex];
       Point3F & p1 = mNodeReferenceTranslations[nodeIndex];
       Point3F & p2 = p;
       F32 k = thread->transitionData.pos;
@@ -395,7 +395,7 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
       end   = b;
       for (nodeIndex=start; nodeIndex<end; mTransitionScaleNodes.next(nodeIndex))
       {
-         TSThread * thread = smScaleThreads[nodeIndex];
+         TSThread * thread = mCurrentRenderState->smScaleThreads[nodeIndex];
          thread = thread && thread->transitionData.inTransition ? thread : NULL;
          if (!thread)
          {
@@ -413,14 +413,14 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
             AssertFatal(thread!=NULL,"TSShapeInstance::handleTransitionNodes (scale).");
          }
          if (animatesUniformScale())
-            smNodeCurrentUniformScales[nodeIndex] += thread->transitionData.pos * (mNodeReferenceUniformScales[nodeIndex]-smNodeCurrentUniformScales[nodeIndex]);
+            mCurrentRenderState->smNodeCurrentUniformScales[nodeIndex] += thread->transitionData.pos * (mNodeReferenceUniformScales[nodeIndex]-mCurrentRenderState->smNodeCurrentUniformScales[nodeIndex]);
          else if (animatesAlignedScale())
-            TSTransform::interpolate(mNodeReferenceScaleFactors[nodeIndex],smNodeCurrentAlignedScales[nodeIndex],thread->transitionData.pos,&smNodeCurrentAlignedScales[nodeIndex]);
+            TSTransform::interpolate(mNodeReferenceScaleFactors[nodeIndex],mCurrentRenderState->smNodeCurrentAlignedScales[nodeIndex],thread->transitionData.pos,&mCurrentRenderState->smNodeCurrentAlignedScales[nodeIndex]);
          else
          {
             QuatF q;
-            TSTransform::interpolate(mNodeReferenceScaleFactors[nodeIndex],smNodeCurrentArbitraryScales[nodeIndex].mScale,thread->transitionData.pos,&smNodeCurrentArbitraryScales[nodeIndex].mScale);
-            TSTransform::interpolate(mNodeReferenceArbitraryScaleRots[nodeIndex].getQuatF(&q),smNodeCurrentArbitraryScales[nodeIndex].mRotate,thread->transitionData.pos,&smNodeCurrentArbitraryScales[nodeIndex].mRotate);
+            TSTransform::interpolate(mNodeReferenceScaleFactors[nodeIndex],mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex].mScale,thread->transitionData.pos,&mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex].mScale);
+            TSTransform::interpolate(mNodeReferenceArbitraryScaleRots[nodeIndex].getQuatF(&q),mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex].mRotate,thread->transitionData.pos,&mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex].mRotate);
          }
       }
    }
@@ -430,15 +430,15 @@ void TSShapeInstance::handleTransitionNodes(S32 a, S32 b)
    end   = b;
    for (nodeIndex=start; nodeIndex<end; transitionNodes.next(nodeIndex))
    {
-      TSTransform::setMatrix(smNodeCurrentRotations[nodeIndex], smNodeCurrentTranslations[nodeIndex], &smNodeLocalTransforms[nodeIndex]);
+      TSTransform::setMatrix(mCurrentRenderState->smNodeCurrentRotations[nodeIndex], mCurrentRenderState->smNodeCurrentTranslations[nodeIndex], &mCurrentRenderState->smNodeLocalTransforms[nodeIndex]);
       if (scaleCurrentlyAnimated())
       {
          if (animatesUniformScale())
-            TSTransform::applyScale(smNodeCurrentUniformScales[nodeIndex],&smNodeLocalTransforms[nodeIndex]);
+            TSTransform::applyScale(mCurrentRenderState->smNodeCurrentUniformScales[nodeIndex],&mCurrentRenderState->smNodeLocalTransforms[nodeIndex]);
          else if (animatesAlignedScale())
-               TSTransform::applyScale(smNodeCurrentAlignedScales[nodeIndex],&smNodeLocalTransforms[nodeIndex]);
+               TSTransform::applyScale(mCurrentRenderState->smNodeCurrentAlignedScales[nodeIndex],&mCurrentRenderState->smNodeLocalTransforms[nodeIndex]);
          else
-            TSTransform::applyScale(smNodeCurrentArbitraryScales[nodeIndex],&smNodeLocalTransforms[nodeIndex]);
+            TSTransform::applyScale(mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex],&mCurrentRenderState->smNodeLocalTransforms[nodeIndex]);
       }
    }
 }
@@ -449,24 +449,24 @@ void TSShapeInstance::handleNodeScale(S32 a, S32 b)
    {
       for (S32 i=a; i<b; i++)
          if (!mHandsOffNodes.test(i))
-            TSTransform::applyScale(smNodeCurrentUniformScales[i],&smNodeLocalTransforms[i]);
+            TSTransform::applyScale(mCurrentRenderState->smNodeCurrentUniformScales[i],&mCurrentRenderState->smNodeLocalTransforms[i]);
    }
    else if (animatesAlignedScale())
    {
       for (S32 i=a; i<b; i++)
          if (!mHandsOffNodes.test(i))
-            TSTransform::applyScale(smNodeCurrentAlignedScales[i],&smNodeLocalTransforms[i]);
+            TSTransform::applyScale(mCurrentRenderState->smNodeCurrentAlignedScales[i],&mCurrentRenderState->smNodeLocalTransforms[i]);
    }
    else
    {
       for (S32 i=a; i<b; i++)
          if (!mHandsOffNodes.test(i))
-            TSTransform::applyScale(smNodeCurrentArbitraryScales[i],&smNodeLocalTransforms[i]);
+            TSTransform::applyScale(mCurrentRenderState->smNodeCurrentArbitraryScales[i],&mCurrentRenderState->smNodeLocalTransforms[i]);
    }
 
    TSIntegerSet scaledNodes;
    scaledNodes.difference(mHandsOffNodes);
-   smNodeLocalTransformDirty.overlap(scaledNodes);
+   mCurrentRenderState->smNodeLocalTransformDirty.overlap(scaledNodes);
 }
 
 void TSShapeInstance::handleAnimatedScale(TSThread * thread, S32 a, S32 b, TSIntegerSet & scaleBeenSet)
@@ -534,28 +534,28 @@ void TSShapeInstance::handleAnimatedScale(TSThread * thread, S32 a, S32 b, TSInt
          {
             case 0:  // uniform -> uniform
             {
-               smNodeCurrentUniformScales[nodeIndex] = uniformScale;
+               mCurrentRenderState->smNodeCurrentUniformScales[nodeIndex] = uniformScale;
                break;
             }
             case 4:  // uniform -> aligned
             case 5:  // aligned -> aligned
-               smNodeCurrentAlignedScales[nodeIndex] = alignedScale;
+               mCurrentRenderState->smNodeCurrentAlignedScales[nodeIndex] = alignedScale;
                break;
             case 8:  // uniform -> arbitrary
             case 9:  // aligned -> arbitrary
             {
-               smNodeCurrentArbitraryScales[nodeIndex].identity();
-               smNodeCurrentArbitraryScales[nodeIndex].mScale = alignedScale;
+               mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex].identity();
+               mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex].mScale = alignedScale;
                break;
             }
             case 10: // arbitrary -> arbitary
             {
-               smNodeCurrentArbitraryScales[nodeIndex] = arbitraryScale;
+               mCurrentRenderState->smNodeCurrentArbitraryScales[nodeIndex] = arbitraryScale;
                break;
             }
             default: AssertFatal(0,"TSShapeInstance::handleAnimatedScale"); break;
          }
-         smScaleThreads[nodeIndex] = thread;
+         mCurrentRenderState->smScaleThreads[nodeIndex] = thread;
          scaleBeenSet.set(nodeIndex);
       }
    }
@@ -569,13 +569,13 @@ void TSShapeInstance::handleMaskedPositionNode(TSThread * th, S32 nodeIndex, S32
    TSTransform::interpolate(p1,p2,th->keyPos,&p);
 
    if (!mMaskPosXNodes.test(nodeIndex))
-      smNodeCurrentTranslations[nodeIndex].x = p.x;
+      mCurrentRenderState->smNodeCurrentTranslations[nodeIndex].x = p.x;
 
    if (!mMaskPosYNodes.test(nodeIndex))
-      smNodeCurrentTranslations[nodeIndex].y = p.y;
+      mCurrentRenderState->smNodeCurrentTranslations[nodeIndex].y = p.y;
 
    if (!mMaskPosZNodes.test(nodeIndex))
-      smNodeCurrentTranslations[nodeIndex].z = p.z;
+      mCurrentRenderState->smNodeCurrentTranslations[nodeIndex].z = p.z;
 }
 
 void TSShapeInstance::handleBlendSequence(TSThread * thread, S32 a, S32 b)
@@ -655,8 +655,8 @@ void TSShapeInstance::handleBlendSequence(TSThread * thread, S32 a, S32 b)
       }
 
       // apply blend transform
-      smNodeLocalTransforms[nodeIndex].mul(mat);
-      smNodeLocalTransformDirty.set(nodeIndex);
+      mCurrentRenderState->smNodeLocalTransforms[nodeIndex].mul(mat);
+      mCurrentRenderState->smNodeLocalTransformDirty.set(nodeIndex);
    }
 }
 

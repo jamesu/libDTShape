@@ -63,6 +63,69 @@ struct CollisionShapeInfo
    PhysicsCollision *colShape;
 };
 
+class TSIOState
+{
+public:
+   
+   /// Default value for mNumSkipLoadDetails in TSShape
+   S32 smNumSkipLoadDetails;
+   
+   /// by default we initialize shape when we read...
+   bool smInitOnRead;
+   
+   /// @name Version Info
+   /// @{
+   
+   /// Most recent version...the one we write
+   S32 smVersion;
+   /// Version currently being read, only valid during read
+   S32 smReadVersion;
+   static const U32 smMostRecentExporterVersion;
+   ///@}
+   
+   /// @name Mesh Loading temp storage
+   /// @{
+   // structures used to share data between detail levels...
+   // used (and valid) during load only
+   Vector<Point3F*> smVertsList;
+   Vector<Point3F*> smNormsList;
+   Vector<U8*>      smEncodedNormsList;
+   Vector<Point2F*> smTVertsList;
+   Vector<Point2F*> smTVerts2List;
+   Vector<ColorI*> smColorsList;
+   
+   Vector<bool>     smDataCopied;
+   
+   Vector<MatrixF*> smInitTransformList;
+   Vector<S32*>     smVertexIndexList;
+   Vector<S32*>     smBoneIndexList;
+   Vector<F32*>     smWeightList;
+   Vector<S32*>     smNodeIndexList;
+   
+   bool smUseTriangles; // convert all primitives to triangle lists on load
+   bool smUseOneStrip; // join triangle strips into one long strip on load
+   S32  smMinStripSize;     // smallest number of _faces_ allowed per strip (all else put in tri list)
+   bool smUseEncodedNormals;
+   /// @}
+   
+   TSIOState();
+   
+   TSIOState& operator= (TSIOState &rhs)
+   {
+      smVersion = rhs.smVersion;
+      smReadVersion = rhs.smReadVersion;
+      smInitOnRead = rhs.smInitOnRead;
+      smNumSkipLoadDetails = rhs.smNumSkipLoadDetails;
+      
+      smUseTriangles = rhs.smUseTriangles;
+      smUseOneStrip = rhs.smUseOneStrip;
+      smMinStripSize = rhs.smMinStripSize;
+      smUseEncodedNormals = rhs.smUseEncodedNormals;
+      return *this;
+   }
+   
+};
+
 /// TSShape stores generic data for a 3space model.
 ///
 /// TSShape and TSShapeInstance act in conjunction to allow the rendering and
@@ -207,8 +270,8 @@ class TSShape : public StrongRefBase
       /// @name IO
       /// @{
 
-      void read(Stream *, bool readNameIndex = true);
-      void write(Stream *, bool writeNameIndex = true) const;
+      void read(Stream *, TSIOState &loadState, bool readNameIndex = true);
+      void write(Stream *, TSIOState &loadState, bool writeNameIndex = true) const;
       /// @}
    };
 
@@ -363,7 +426,8 @@ class TSShape : public StrongRefBase
    S32 mSmallestVisibleDL;    ///< @see mSmallestVisibleSize
    S32 mReadVersion;          ///< File version that this shape was read from.
    U32 mFlags;                ///< hasTranslucancy
-   U32 data;                  ///< User-defined data storage.
+   
+   static const U32 smMostRecentExporterVersion;
 
    /// If enabled detail selection will use the
    /// legacy screen error method for lod.
@@ -405,6 +469,10 @@ class TSShape : public StrongRefBase
 
    S8* mShapeData;
    U32 mShapeDataSize;
+   
+   /// don't load this many of the highest detail levels (although we always
+   /// load one renderable detail if there is one)
+   U32 mNumSkipLoadDetails;
    
    DTShape::Path mPath;
 
@@ -551,42 +619,24 @@ class TSShape : public StrongRefBase
    U32 getVertexSize() const { return mVertSize; }
 
    /// @}
-
+   
    /// @name Alpha Transitions
    /// These control default values for alpha transitions between detail levels
    /// @{
-
-   static F32 smAlphaOutLastDetail;
-   static F32 smAlphaInBillboard;
-   static F32 smAlphaOutBillboard;
-   static F32 smAlphaInDefault;
-   static F32 smAlphaOutDefault;
+   static const F32 smAlphaOutLastDetail;
+   static const F32 smAlphaInBillboard;
+   static const F32 smAlphaOutBillboard;
+   static const F32 smAlphaInDefault;
+   static const F32 smAlphaOutDefault;
    /// @}
-
-   /// don't load this many of the highest detail levels (although we always
-   /// load one renderable detail if there is one)
-   static S32 smNumSkipLoadDetails;
-
-   /// by default we initialize shape when we read...
-   static bool smInitOnRead;
-
-   /// @name Version Info
-   /// @{
-
-   /// Most recent version...the one we write
-   static S32 smVersion;
-   /// Version currently being read, only valid during read
-   static S32 smReadVersion;
-   static const U32 smMostRecentExporterVersion;
-   ///@}
 
    /// @name Persist Methods
    /// Methods for saving/loading shapes to/from streams
    /// @{
 
    bool canWriteOldFormat() const;
-   void write(Stream *, bool saveOldFormat=false);
-   bool read(Stream *);
+   void write(Stream *, TSIOState *options = NULL);
+   bool read(Stream *, TSIOState *options = NULL);
    void readOldShape(Stream * s, S32 * &, S16 * &, S8 * &, S32 &, S32 &, S32 &);
    void writeName(Stream *, S32 nameIndex);
    S32  readName(Stream *, bool addName);
@@ -594,9 +644,9 @@ class TSShape : public StrongRefBase
    /// Initializes our TSShape to be ready to receive put mesh data
    void createEmptyShape();
 
-   void exportSequences(Stream *);
-   void exportSequence(Stream * s, const TSShape::Sequence& seq, bool saveOldFormat);
-   bool importSequences(Stream *, const String& sequencePath);
+   void exportSequences(Stream *, TSIOState *options = NULL);
+   void exportSequence(Stream * s, const TSShape::Sequence& seq, TSIOState *options = NULL);
+   bool importSequences(Stream *, const String& sequencePath, TSIOState *options = NULL);
 
    /// @}
 
@@ -612,8 +662,8 @@ class TSShape : public StrongRefBase
    /// uses TSShape::Alloc structure
    /// @{
 
-   void assembleShape();
-   void disassembleShape();
+   void assembleShape(TSIOState &loadState);
+   void disassembleShape(TSIOState &loadState);
    ///@}
 
    /// mem buffer transfer helper (indicate when we don't want to include a particular mesh/decal)

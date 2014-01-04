@@ -63,8 +63,8 @@ public:
    /// DEPRECATED
    // void render(S32 frame, S32 decalFrame, TSMaterialList *);
 
-   void disassemble();
-   void assemble(bool skip);
+   void disassemble(TSIOState &loadState);
+   void assemble(TSIOState &loadState, bool skip);
 };
 
 //-----------------------------------------------------------------------------

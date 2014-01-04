@@ -111,6 +111,8 @@ public:
    TSShapeInstance *sShapeInstance;
    TSThread *sThread;
    
+   TSRenderState *sRenderState;
+   
    U32 sCurrentSequenceIdx;
    S32 sSequences[kNumTSAppSequences];
    
@@ -187,12 +189,15 @@ AppState::AppState()
    deltaCameraPos = Point3F(0,0,0);
    
    sOldTicks = 0;
+   sRenderState = NULL;
 }
 
 AppState::~AppState()
 {
    if (sShader)
       delete sShader;
+   if (sRenderState)
+      delete sRenderState;
    CleanupShape();
    
    if (window)
@@ -321,7 +326,7 @@ bool AppState::LoadShape()
       return false;
    }
    
-   sShapeInstance = new TSShapeInstance(sShape, true);
+   sShapeInstance = new TSShapeInstance(sShape, sRenderState, true);
    
    // Load all dsq files
    for (int i=0; i<kNumTSAppSequences; i++)
@@ -380,7 +385,6 @@ void AppState::CleanupShape()
 void AppState::DrawShape(F32 dt)
 {
    GLTSSceneRenderState dummyScene;
-   TSRenderState renderState;
    
    sCameraPosition += deltaCameraPos * dt;
    sRot += sDeltaRot * dt;
@@ -430,44 +434,45 @@ void AppState::DrawShape(F32 dt)
    sShader->use();
    
    // Now we can render
-   renderState.setSceneState(&dummyScene);
-   renderState.reset();
+   sRenderState->setSceneState(&dummyScene);
+   sRenderState->reset();
    
    // Animate & render shape to the renderState
+   sShapeInstance->beginUpdate(sRenderState);
    sShapeInstance->advanceTime(dt);
    sShapeInstance->setCurrentDetail(0);
    sShapeInstance->animateNodeSubtrees(true);
    sShapeInstance->animate();
-   sShapeInstance->render(renderState);
+   sShapeInstance->render(*sRenderState);
    
    // Ensure generated primitives are in the right z-order
-   renderState.sortRenderInsts();
+   sRenderState->sortRenderInsts();
    
    // Render solid stuff
-   for (int i=0; i<renderState.mRenderInsts.size(); i++)
+   for (int i=0; i<sRenderState->mRenderInsts.size(); i++)
    {
       glModelView = invView;
       glModelView *= dummyScene.mWorldMatrix;
-      glModelView.mul(*renderState.mRenderInsts[i]->objectToWorld);
+      glModelView.mul(*sRenderState->mRenderInsts[i]->objectToWorld);
       
       // Update transform, & render buffers
       sShader->setModelViewMatrix(glModelView);
       sShader->updateTransforms();
 	  
-      renderState.mRenderInsts[i]->render(&renderState);
+      sRenderState->mRenderInsts[i]->render(sRenderState);
    }
    
    // Render translucent stuff
-   for (int i=0; i<renderState.mTranslucentRenderInsts.size(); i++)
+   for (int i=0; i<sRenderState->mTranslucentRenderInsts.size(); i++)
    {
       glModelView = invView;
       glModelView *= dummyScene.mWorldMatrix;
-      glModelView.mul(*renderState.mTranslucentRenderInsts[i]->objectToWorld);
+      glModelView.mul(*sRenderState->mTranslucentRenderInsts[i]->objectToWorld);
       
       // Update transform, & render buffers
       sShader->setModelViewMatrix(glModelView);
       sShader->updateTransforms();
-      renderState.mTranslucentRenderInsts[i]->render(&renderState);
+      sRenderState->mTranslucentRenderInsts[i]->render(sRenderState);
    }
    
    glDisable(GL_DEPTH_TEST);
@@ -589,6 +594,9 @@ int AppState::main(int argc, char **argv)
 #endif
    
    sShader = new GLSimpleShader();
+   
+   // Init render state
+   sRenderState = new TSRenderState();
    
    bool loaded = LoadShape();
    

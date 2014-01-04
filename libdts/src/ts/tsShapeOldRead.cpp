@@ -194,10 +194,17 @@ void TSShape::fixupOldSkins(S32 numMeshes, S32 numSkins, S32 numDetails, S32 * d
 //-------------------------------------------------
 // export all sequences
 //-------------------------------------------------
-void TSShape::exportSequences(Stream * s)
+void TSShape::exportSequences(Stream * s, TSIOState *options)
 {
+   TSIOState saveState;
+   if (options)
+   {
+      saveState = *options;
+   }
+
+   
    // write version
-   s->write(smVersion);
+   s->write(saveState.smVersion);
 
    S32 i,sz;
 
@@ -284,7 +291,7 @@ void TSShape::exportSequences(Stream * s)
       writeName(s,seq.nameIndex);
 
       // now write the sequence itself
-      seq.write(s,false); // false --> don't write name index
+      seq.write(s,saveState,false); // false --> don't write name index
    }
 
    // write out all the triggers...
@@ -299,14 +306,18 @@ void TSShape::exportSequences(Stream * s)
 //-------------------------------------------------
 // export a single sequence
 //-------------------------------------------------
-void TSShape::exportSequence(Stream * s, const TSShape::Sequence& seq, bool saveOldFormat)
+void TSShape::exportSequence(Stream * s, const TSShape::Sequence& seq, TSIOState *options)
 {
-   S32 currentVersion = smVersion;
-   if ( saveOldFormat )
-      smVersion = 24;
+   TSIOState saveState;
+   if (options)
+   {
+      saveState = *options;
+   }
+
+   S32 currentVersion = saveState.smVersion;
 
    // write version
-   s->write(smVersion);
+   s->write(saveState.smVersion);
 
    // write node names
    s->write( nodes.size() );
@@ -416,7 +427,7 @@ void TSShape::exportSequence(Stream * s, const TSShape::Sequence& seq, bool save
       tmpSeq.firstGroundFrame = 0;
       tmpSeq.firstTrigger = 0;
 
-      tmpSeq.write( s, false );
+      tmpSeq.write( s, saveState, false );
    }
 
    // write the sequence triggers
@@ -426,29 +437,35 @@ void TSShape::exportSequence(Stream * s, const TSShape::Sequence& seq, bool save
       s->write( triggers[i].state );
       s->write( triggers[i].pos );
    }
-
-   smVersion = currentVersion;
 }
 
 //-------------------------------------------------
 // import sequences into existing shape
 //-------------------------------------------------
-bool TSShape::importSequences(Stream * s, const String& sequencePath)
+bool TSShape::importSequences(Stream * s, const String& sequencePath, TSIOState *options)
 {
+   TSIOState loadState;
+   if (options)
+   {
+      loadState = *options;
+   }
+   
    // write version
-   s->read(&smReadVersion);
-   if (smReadVersion>smVersion)
+   U32 readVersion = 0;
+   s->read(&readVersion);
+   if (readVersion>loadState.smVersion)
    {
       // error -- don't support future version yet :>
       Log::errorf("Sequence import failed:  shape exporter newer than running executable.");
       return false;
    }
-   if (smReadVersion<19)
+   if (readVersion<19)
    {
       // error -- don't support future version yet :>
-      Log::errorf("Sequence import failed:  deprecated version (%i).",smReadVersion);
+      Log::errorf("Sequence import failed:  deprecated version (%i).",readVersion);
       return false;
    }
+   loadState.smReadVersion = readVersion;
 
    Vector<S32> nodeMap;   // node index of each node from imported sequences
    Vector<S32> objectMap; // object index of objects from imported sequences
@@ -491,9 +508,9 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
    s->read(&oldShapeNumObjects);
 
    // adjust all the new keyframes
-   S32 adjNodeRots = smReadVersion<22 ? nodeRotations.size() - nodeMap.size() : nodeRotations.size();
-   S32 adjNodeTrans = smReadVersion<22 ? nodeTranslations.size() - nodeMap.size() : nodeTranslations.size();
-   S32 adjGroundStates = smReadVersion<22 ? 0 : groundTranslations.size(); // groundTrans==groundRot
+   S32 adjNodeRots = readVersion<22 ? nodeRotations.size() - nodeMap.size() : nodeRotations.size();
+   S32 adjNodeTrans = readVersion<22 ? nodeTranslations.size() - nodeMap.size() : nodeTranslations.size();
+   S32 adjGroundStates = readVersion<22 ? 0 : groundTranslations.size(); // groundTrans==groundRot
 
    // Read the node states into temporary vectors, then use the
    // nodeMap to discard unused transforms and map others to our nodes
@@ -504,7 +521,7 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
    Vector<Quat16>    seqArbitraryScaleRots;
    Vector<Point3F>   seqArbitraryScaleFactors;
 
-   if (smReadVersion>21)
+   if (readVersion>21)
    {
       s->read(&sz);
       seqRotations.setSize(sz);
@@ -604,11 +621,11 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
       seq.nameIndex = readName(s,true);
 
       // read the rest of the sequence
-      seq.read(s,false);
+      seq.read(s,loadState,false);
       seq.baseRotation = nodeRotations.size();
       seq.baseTranslation = nodeTranslations.size();
 
-      if (smReadVersion > 21)
+      if (loadState.smReadVersion > 21)
       {
          if (seq.animatesUniformScale())
             seq.baseScale = nodeUniformScales.size();
@@ -695,7 +712,7 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
       seq.firstGroundFrame += adjGroundStates;
    }
 
-   if (smReadVersion<22)
+   if (readVersion<22)
    {
       for (i=startSeqNum; i<sequences.size(); i++)
       {
@@ -723,7 +740,7 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
       s->read(&triggers[i+oldSz].pos);
    }
 
-   if (smInitOnRead)
+   if (loadState.smInitOnRead)
       init();
 
    return true;
@@ -732,14 +749,14 @@ bool TSShape::importSequences(Stream * s, const String& sequencePath)
 //-------------------------------------------------
 // read/write sequence
 //-------------------------------------------------
-void TSShape::Sequence::read(Stream * s, bool readNameIndex)
+void TSShape::Sequence::read(Stream * s, TSIOState &loadState, bool readNameIndex)
 {
-   AssertISV(smReadVersion>=19,"Reading old sequence");
+   AssertISV(loadState.smReadVersion>=19,"Reading old sequence");
 
    if (readNameIndex)
       s->read(&nameIndex);
    flags = 0;
-   if (TSShape::smReadVersion>21)
+   if (loadState.smReadVersion>21)
       s->read(&flags);
    else
       flags=0;
@@ -747,7 +764,7 @@ void TSShape::Sequence::read(Stream * s, bool readNameIndex)
    s->read(&numKeyframes);
    s->read(&duration);
 
-   if (TSShape::smReadVersion<22)
+   if (loadState.smReadVersion<22)
    {
       bool tmp = false;
       s->read(&tmp);
@@ -764,7 +781,7 @@ void TSShape::Sequence::read(Stream * s, bool readNameIndex)
    s->read(&priority);
    s->read(&firstGroundFrame);
    s->read(&numGroundFrames);
-   if (TSShape::smReadVersion>21)
+   if (loadState.smReadVersion>21)
    {
       s->read(&baseRotation);
       s->read(&baseTranslation);
@@ -786,7 +803,7 @@ void TSShape::Sequence::read(Stream * s, bool readNameIndex)
 
    // now the membership sets:
    rotationMatters.read(s);
-   if (TSShape::smReadVersion<22)
+   if (loadState.smReadVersion<22)
       translationMatters=rotationMatters;
    else
    {
@@ -813,7 +830,7 @@ void TSShape::Sequence::read(Stream * s, bool readNameIndex)
       dirtyFlags |= TSShapeInstance::MatFrameDirty;
 }
 
-void TSShape::Sequence::write(Stream * s, bool writeNameIndex) const
+void TSShape::Sequence::write(Stream * s, TSIOState &loadState, bool writeNameIndex) const
 {
    if (writeNameIndex)
       s->write(nameIndex);

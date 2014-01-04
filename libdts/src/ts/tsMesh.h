@@ -68,6 +68,7 @@ class ConvexFeature;
 class ShapeBase;
 class TSMeshRenderer;
 class TSMeshInstanceRenderData;
+class TSIOState;
 
 struct TSDrawPrimitive
 {
@@ -136,8 +137,6 @@ protected:
    void setFlags(U32 flag) { meshType |= flag; }
    void clearFlags(U32 flag) { meshType &= ~flag; }
    U32 getFlags( U32 flag = 0xFFFFFFFF ) const { return meshType & flag; }
-
-   const Point3F* getNormals( S32 firstVert );
 
    S32 parentMesh; ///< index into shapes mesh list
    S32 numFrames;
@@ -318,9 +317,9 @@ protected:
    /// @}
 
    /// persist methods...
-   virtual void assemble( bool skip );
-   static TSMesh* assembleMesh( U32 meshType, bool skip );
-   virtual void disassemble();
+   virtual void assemble( TSIOState &loadState, bool skip );
+   static TSMesh* assembleMesh( TSIOState &loadState, U32 meshType, bool skip );
+   virtual void disassemble(TSIOState &loadState);
 
    void createVBIB();
    void createTangents(const Vector<Point3F> &_verts, const Vector<Point3F> &_norms);
@@ -334,12 +333,6 @@ protected:
    /// Creates mRenderer
    void initRender();
 
-   /// on load...optionally convert primitives to other form
-   static bool smUseTriangles;
-   static bool smUseOneStrip;
-   static S32  smMinStripSize;
-   static bool smUseEncodedNormals;
-
    /// Enables mesh instancing on non-skin meshes that
    /// have less that this count of verts.
    static S32 smMaxInstancingVerts;
@@ -350,35 +343,20 @@ protected:
                       TSDrawPrimitive *primitivesOut, S32 *indicesOut) const;
    void convertToSingleStrip(const TSDrawPrimitive *primitivesIn, const S32 *indicesIn,
                              S32 numPrimIn, S32 &numPrimOut, S32 &numIndicesOut,
-                             TSDrawPrimitive *primitivesOut, S32 *indicesOut) const;
+                             TSDrawPrimitive *primitivesOut, S32 *indicesOut, S32 minStripSize) const;
    void leaveAsMultipleStrips(const TSDrawPrimitive *primitivesIn, const S32 *indicesIn,
                               S32 numPrimIn, S32 &numPrimOut, S32 &numIndicesOut,
-                              TSDrawPrimitive *primitivesOut, S32 *indicesOut) const;
+                              TSDrawPrimitive *primitivesOut, S32 *indicesOut, S32 minStripSize) const;
 
    /// methods used during assembly to share vertexand other info
    /// between meshes (and for skipping detail levels on load)
-   S32* getSharedData32( S32 parentMesh, S32 size, S32 **source, bool skip );
-   S8* getSharedData8( S32 parentMesh, S32 size, S8  **source, bool skip );
+   S32* getSharedData32( S32 parentMesh, S32 size, S32 **source, TSIOState &loadState, bool skip );
+   S8* getSharedData8( S32 parentMesh, S32 size, S8  **source,  TSIOState &loadState, bool skip );
 
    /// @name Assembly Variables
    /// variables used during assembly (for skipping mesh detail levels
    /// on load and for sharing verts between meshes)
    /// @{
-
-   static Vector<Point3F*> smVertsList;
-   static Vector<Point3F*> smNormsList;
-   static Vector<U8*>      smEncodedNormsList;
-   
-   static Vector<Point2F*> smTVertsList;
-
-   // Optional second texture uvs.
-   static Vector<Point2F*> smTVerts2List;
-
-   // Optional vertex colors.
-   static Vector<ColorI*> smColorsList;
-
-   static Vector<bool>     smDataCopied;
-
    static const Point3F smU8ToNormalTable[];
    /// @}
 
@@ -494,7 +472,7 @@ public:
    Vector<S32> vertexIndex;
 
    /// set verts and normals...
-   void updateSkin( const Vector<MatrixF> &transforms, TSMeshInstanceRenderData *renderData = NULL );
+   void updateSkin( const Vector<MatrixF> &transforms, TSRenderState &rdata );
 
    // render methods..
    void render( TSMeshRenderer &renderer );
@@ -512,16 +490,8 @@ public:
    void computeBounds( const MatrixF &transform, Box3F &bounds, S32 frame, Point3F *center, F32 *radius );
 
    /// persist methods...
-   void assemble( bool skip );
-   void disassemble();
-
-   /// variables used during assembly (for skipping mesh detail levels
-   /// on load and for sharing verts between meshes)
-   static Vector<MatrixF*> smInitTransformList;
-   static Vector<S32*>     smVertexIndexList;
-   static Vector<S32*>     smBoneIndexList;
-   static Vector<F32*>     smWeightList;
-   static Vector<S32*>     smNodeIndexList;
+   void assemble( TSIOState &loadState, bool skip );
+   void disassemble( TSIOState &loadState );
 
    TSSkinMesh();
 };
