@@ -39,6 +39,11 @@
 #include "core/log.h"
 #include "core/util/hashFunction.h"
 
+#ifdef LIBDTSHAPE_ENABLE_PROFILE_PATH
+static char sProfilerBuf[1024];
+#endif
+
+
 //-----------------------------------------------------------------------------
 
 BEGIN_NS(DTShape)
@@ -302,17 +307,9 @@ String Profiler::constructProfilePath(ProfilerData * pd)
       U32 len = dStrlen(pd->mParent->mPath);
       if (!len)
          connector = "";
-      len += dStrlen(connector);
-      len += dStrlen(pd->mRoot->mName);
-
-      U32 mark = FrameAllocator::getWaterMark();
-      char * buf = (char*)FrameAllocator::alloc(len+1);
-      dStrcpy(buf,pd->mParent->mPath);
-      dStrcat(buf,connector);
-      dStrcat(buf,pd->mRoot->mName);
-      const char * ret = StringTable->insert(buf);
-      FrameAllocator::setWaterMark(mark);
       
+      dSprintf(sProfilerBuf, sizeof(sProfilerBuf), "%s%s%s", pd->mParent->mPath, connector, pd->mRoot->mName);
+      String ret = sProfilerBuf;
       gProfiler->mEnabled = saveEnable;
       
       return ret;
