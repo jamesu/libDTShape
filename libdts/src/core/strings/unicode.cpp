@@ -22,7 +22,6 @@
 
 #include <stdio.h>
 
-#include "core/frameAllocator.h"
 #include "core/strings/unicode.h"
 #include "core/strings/stringFunctions.h"
 
@@ -36,6 +35,7 @@
 #endif
 
 #include "core/log.h"
+#include "core/tempAlloc.h"
 
 //-----------------------------------------------------------------------------
 
@@ -254,7 +254,7 @@ UTF16* convertUTF8toUTF16( const UTF8* unistring)
    
    // allocate plenty of memory.
    U32 nCodepoints, len = dStrlen(unistring) + 1;
-   FrameTemp<UTF16> buf(len);
+   TempAlloc<UTF16> buf(len);
    
    // perform conversion
    nCodepoints = convertUTF8toUTF16( unistring, buf, len);
@@ -276,7 +276,7 @@ UTF8*  convertUTF16toUTF8( const UTF16* unistring)
 
    // allocate plenty of memory.
    U32 nCodeunits, len = dStrlen(unistring) * 3 + 1;
-   FrameTemp<UTF8> buf(len);
+   TempAlloc<UTF8> buf(len);
       
    // perform conversion
    nCodeunits = convertUTF16toUTF8( unistring, buf, len);

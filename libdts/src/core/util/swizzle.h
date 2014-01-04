@@ -24,7 +24,7 @@
 #define _SWIZZLE_H_
 
 #include "platform/platform.h"
-#include "core/frameAllocator.h"
+#include "core/tempAlloc.h"
 
 //-----------------------------------------------------------------------------
 
@@ -150,11 +150,9 @@ inline void Swizzle<T, mapLength>::InPlace( void *memory, const dsize_t size ) c
 {
    // Just in case the inliner messes up the FrameTemp scoping (not sure if it would) -patw
    {
-      // FrameTemp should work because the PNG loading code uses the FrameAllocator, so
-      // it should only get used on an image w/ that size as max -patw
-      FrameTemp<U8> buffer( size );
-      dMemcpy( ~buffer, memory, size );
-      ToBuffer( memory, ~buffer, size );
+      TempAlloc<U8> buffer( size );
+      dMemcpy(buffer.ptr, memory, size );
+      ToBuffer( memory, buffer.ptr, size );
    }
 }
 

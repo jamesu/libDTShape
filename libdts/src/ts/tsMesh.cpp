@@ -518,8 +518,7 @@ void TSMesh::support( S32 frame, const Point3F &v, F32 *currMaxDP, Point3F *curr
    if ( vertsPerFrame == 0 )
       return;
 
-   U32 waterMark = FrameAllocator::getWaterMark();
-   F32* pDots = (F32*)FrameAllocator::alloc( sizeof(F32) * vertsPerFrame );
+   TempAlloc<F32> pDots(vertsPerFrame);
 
    S32 firstVert = vertsPerFrame * frame;
    m_point3F_bulk_dot( &v.x,
@@ -539,8 +538,6 @@ void TSMesh::support( S32 frame, const Point3F &v, F32 *currMaxDP, Point3F *curr
          index   = i;
       }
    }
-
-   FrameAllocator::setWaterMark(waterMark);
 
    if ( index != -1 )
    {

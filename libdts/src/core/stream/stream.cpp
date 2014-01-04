@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 
 #include "core/color.h"
-#include "core/frameAllocator.h"
 
 #include "core/stream/stream.h"
 

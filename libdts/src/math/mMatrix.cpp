@@ -22,7 +22,6 @@
 
 #include "platform/platform.h"
 #include "core/strings/stringFunctions.h"
-#include "core/frameAllocator.h"
 
 #include "math/mMatrix.h"
 #include "core/log.h"
@@ -183,21 +182,6 @@ EulerF MatrixF::toEuler() const
    }
 
    return r;
-}
-
-void MatrixF::dumpMatrix(const char *caption /* =NULL */) const
-{
-   U32 size = dStrlen(caption);
-   FrameTemp<char> spacer(size+1);
-   char *spacerRef = spacer;
-
-   dMemset(spacerRef, ' ', size);
-   spacerRef[size] = 0;
-
-   Log::printf("%s = | %-8.4f %-8.4f %-8.4f %-8.4f |", caption,    m[idx(0,0)], m[idx(0, 1)], m[idx(0, 2)], m[idx(0, 3)]);
-   Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(1,0)], m[idx(1, 1)], m[idx(1, 2)], m[idx(1, 3)]);
-   Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(2,0)], m[idx(2, 1)], m[idx(2, 2)], m[idx(2, 3)]);
-   Log::printf("%s   | %-8.4f %-8.4f %-8.4f %-8.4f |", spacerRef,  m[idx(3,0)], m[idx(3, 1)], m[idx(3, 2)], m[idx(3, 3)]);
 }
 
 //-----------------------------------------------------------------------------

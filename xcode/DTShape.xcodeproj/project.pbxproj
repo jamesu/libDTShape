@@ -500,8 +500,6 @@
 		32EFB640184A547800D93F75 /* color.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB512184A547800D93F75 /* color.h */; };
 		32EFB643184A547800D93F75 /* dataChunker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB515184A547800D93F75 /* dataChunker.cpp */; };
 		32EFB644184A547800D93F75 /* dataChunker.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB516184A547800D93F75 /* dataChunker.h */; };
-		32EFB64A184A547800D93F75 /* frameAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB51C184A547800D93F75 /* frameAllocator.cpp */; };
-		32EFB64B184A547800D93F75 /* frameAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB51D184A547800D93F75 /* frameAllocator.h */; };
 		32EFB64E184A547800D93F75 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB520184A547800D93F75 /* log.cpp */; };
 		32EFB64F184A547800D93F75 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB521184A547800D93F75 /* log.h */; };
 		32EFB652184A547800D93F75 /* fileStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB526184A547800D93F75 /* fileStream.cpp */; };
@@ -1216,8 +1214,6 @@
 		32EFB512184A547800D93F75 /* color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = color.h; sourceTree = "<group>"; };
 		32EFB515184A547800D93F75 /* dataChunker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dataChunker.cpp; sourceTree = "<group>"; };
 		32EFB516184A547800D93F75 /* dataChunker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dataChunker.h; sourceTree = "<group>"; };
-		32EFB51C184A547800D93F75 /* frameAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frameAllocator.cpp; sourceTree = "<group>"; };
-		32EFB51D184A547800D93F75 /* frameAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frameAllocator.h; sourceTree = "<group>"; };
 		32EFB520184A547800D93F75 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log.cpp; sourceTree = "<group>"; };
 		32EFB521184A547800D93F75 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		32EFB526184A547800D93F75 /* fileStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fileStream.cpp; sourceTree = "<group>"; };
@@ -2168,8 +2164,6 @@
 				32EFB512184A547800D93F75 /* color.h */,
 				32EFB515184A547800D93F75 /* dataChunker.cpp */,
 				32EFB516184A547800D93F75 /* dataChunker.h */,
-				32EFB51C184A547800D93F75 /* frameAllocator.cpp */,
-				32EFB51D184A547800D93F75 /* frameAllocator.h */,
 				32EFB520184A547800D93F75 /* log.cpp */,
 				32EFB521184A547800D93F75 /* log.h */,
 				32EFB525184A547800D93F75 /* stream */,
@@ -2573,7 +2567,6 @@
 				3264AAC81866783E009E6458 /* domGles_texcombiner_commandAlpha_type.h in Headers */,
 				32EFB70B184A547800D93F75 /* appNode.h in Headers */,
 				3264AA761866783E009E6458 /* domAccessor.h in Headers */,
-				32EFB64B184A547800D93F75 /* frameAllocator.h in Headers */,
 				3264AB271866783E009E6458 /* daeDocument.h in Headers */,
 				3264AAF91866783E009E6458 /* domLinestrips.h in Headers */,
 				32EFB653184A547800D93F75 /* fileStream.h in Headers */,
@@ -3025,7 +3018,6 @@
 				3264ABE81866783F009E6458 /* domSkew.cpp in Sources */,
 				3264AC6C186678CF009E6458 /* pcre_refcount.c in Sources */,
 				3264AB881866783F009E6458 /* domFx_surface_format_hint_common.cpp in Sources */,
-				32EFB64A184A547800D93F75 /* frameAllocator.cpp in Sources */,
 				3264ABC61866783F009E6458 /* domLibrary_lights.cpp in Sources */,
 				3264ABE71866783F009E6458 /* domScale.cpp in Sources */,
 				32EFB6A2184A547800D93F75 /* mMath_C.cpp in Sources */,

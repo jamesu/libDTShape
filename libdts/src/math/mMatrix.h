@@ -219,8 +219,6 @@ public:
    F32& operator ()(S32 row, S32 col) { return m[idx(col,row)]; }
    F32 operator ()(S32 row, S32 col) const { return m[idx(col,row)]; }
 
-   void dumpMatrix(const char *caption=NULL) const;
-
    // Math operator overloads
    //------------------------------------
    friend MatrixF operator * ( const MatrixF &m1, const MatrixF &m2 );

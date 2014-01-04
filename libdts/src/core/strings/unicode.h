@@ -23,8 +23,8 @@
 #ifndef _UNICODE_H_
 #define _UNICODE_H_
 
-#ifndef _LIBDTSHAPE_TYPES_H_
-#include "platform/types.h"
+#ifndef _PLATFORM_H_
+#include "platform/platform.h"
 #endif
 
 //-----------------------------------------------------------------------------

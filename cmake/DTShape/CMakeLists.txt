@@ -68,7 +68,6 @@ set(DTSHAPE_SOURCES
 	../../libdts/src/core/strings/stringFunctions.cpp
 	../../libdts/src/core/strings/findMatch.cpp
 	../../libdts/src/core/color.cpp
-	../../libdts/src/core/frameAllocator.cpp
 	../../libdts/src/core/log.cpp
 	../../libdts/src/core/util/path.cpp
 	../../libdts/src/core/util/timeClass.cpp

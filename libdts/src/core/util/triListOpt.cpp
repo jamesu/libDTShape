@@ -21,9 +21,9 @@
 //-----------------------------------------------------------------------------
 
 #include "core/util/triListOpt.h"
-#include "core/frameAllocator.h"
 #include "platform/profiler.h"
 #include "math/mMathFn.h"
+#include "core/tempAlloc.h"
 
 //-----------------------------------------------------------------------------
 
@@ -48,8 +48,8 @@ void OptimizeTriangleOrdering(const dsize_t numVerts, const dsize_t numIndices, 
    //
    // Step 1: Run through the data, and initialize
    //
-   FrameTemp<VertData> vertexData(numVerts);
-   FrameTemp<TriData> triangleData(NumPrimitives);
+   TempAlloc<VertData> vertexData(numVerts);
+   TempAlloc<TriData> triangleData(NumPrimitives);
 
    U32 curIdx = 0;
    for(int tri = 0; tri < NumPrimitives; tri++)

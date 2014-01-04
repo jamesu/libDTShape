@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "libdtshape.h"
 #include "ts/tsRender.h"
+#include "core/frameAllocator.h"
 
 BEGIN_NS(DTShapeInit)
 
@@ -33,8 +34,6 @@ using namespace DTShape;
 void init(U32 opts)
 {
    Processor::init();
-   
-   FrameAllocator::init(1024*1024); // 1mb
    
    Math::init(((opts >> 16) & 0xFFFF));
 
