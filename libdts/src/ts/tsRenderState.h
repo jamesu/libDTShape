@@ -217,6 +217,9 @@ public:
    /// Render Workspace normal store
    Vector<Point3F> gNormalStore;
    
+   /// Global preference for rendering imposters to shadows.
+   bool smDetailCanShadow;
+   
    /// @name Workspace for Node Transforms
    /// @{
    Vector<QuatF>   smNodeCurrentRotations;

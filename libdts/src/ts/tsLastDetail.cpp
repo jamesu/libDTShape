@@ -48,9 +48,6 @@ GFXImplementVertexFormat( ImposterState )
 
 Vector<TSLastDetail*> TSLastDetail::smLastDetails;
 
-bool TSLastDetail::smCanShadow = true;
-
-
 TSLastDetail::TSLastDetail(   TSShape *shape,
                               const String &cachePath,
                               U32 numEquatorSteps,

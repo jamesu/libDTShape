@@ -454,7 +454,7 @@ void TSShapeInstance::render( TSRenderState &rdata, S32 dl, F32 intraDL )
    {
       PROFILE_SCOPE( TSShapeInstance_RenderBillboards );
       
-      if ( !rdata.isNoRenderTranslucent() && ( TSLastDetail::smCanShadow || !rdata.getSceneState()->isShadowPass() ) )
+      if ( !rdata.isNoRenderTranslucent() && ( rdata.smDetailCanShadow || !rdata.getSceneState()->isShadowPass() ) )
          mShape->billboardDetails[ dl ]->render( rdata, mAlphaAlways ? mAlphaAlwaysValue : 1.0f );
 
       return;

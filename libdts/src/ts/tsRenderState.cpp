@@ -60,6 +60,8 @@ TSRenderState::TSRenderState()
    smLastScaledDistance = 0.0f;
    smLastPixelSize = 0.0f;
    
+   smDetailCanShadow = true;
+   
 }
 
 TSRenderState::TSRenderState( TSRenderState &state )

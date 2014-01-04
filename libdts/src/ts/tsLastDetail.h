@@ -165,9 +165,6 @@ public:
 
    ~TSLastDetail();
 
-   /// Global preference for rendering imposters to shadows.
-   static bool smCanShadow;
-
    /// Calls update on all TSLastDetail objects in the system.
    /// @see update()
    static void updateImposterImages( bool forceUpdate = false );
