@@ -223,23 +223,6 @@ void Stream::_write(const String & str)
    write(len,str.c_str());
 }
 
-void Stream::_read(String * str)
-{
-   U16 len;
-
-   U8 len8;
-   read(&len8);
-   if (len8==255)
-      read(&len);
-   else
-      len = len8;
-
-   char * buffer = (char*)FrameAllocator::alloc(len);
-   read(len, buffer);
-   *str = String(buffer,len);
-}
-
-
 bool Stream::write(const ColorI& rColor)
 {
    bool success = write(rColor.red);

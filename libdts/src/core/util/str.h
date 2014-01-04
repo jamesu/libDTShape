@@ -35,13 +35,14 @@ template< class T > class Vector;
 
 
 typedef UTF8 StringChar;
-
+class Stream;
 
 /// The String class represents a 0-terminated array of characters.
 class String
 {
 public:
    class StringData;
+   friend class Stream;
 
    /// Default mode is case sensitive starting from the left
    enum Mode

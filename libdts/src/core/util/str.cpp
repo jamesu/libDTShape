@@ -56,6 +56,8 @@ END_NS
 #include "platform/profiler.h"
 #include "platform/platformIntrinsics.h"
 
+#include "core/stream/stream.h"
+
 #  define _new new
 
 BEGIN_NS(DTShape)
@@ -1749,6 +1751,25 @@ String String::GetTrailingNumber(const char* str, S32& number)
       p--;
 
    return base.substr(0, p - base.c_str());
+}
+
+//-----------------------------------------------------------------------------
+
+void Stream::_read(String * str)
+{
+   U16 len;
+   
+   U8 len8;
+   read(&len8);
+   if (len8==255)
+      read(&len);
+   else
+      len = len8;
+   
+   String::StringData *data = new ( len ) String::StringData( NULL );
+   
+   read(len, data->utf8());
+   *str = String(data);
 }
 
 END_NS
