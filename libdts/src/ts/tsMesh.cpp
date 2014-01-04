@@ -36,7 +36,6 @@
 #include "core/log.h"
 #include "collision/convex.h"
 #include "collision/optimizedPolyList.h"
-#include "core/frameAllocator.h"
 #include "platform/profiler.h"
 #include "ts/tsMaterialManager.h"
 #include "core/util/triListOpt.h"
@@ -2546,7 +2545,7 @@ void TSMesh::disassemble(TSIOState &loadState)
 
    // optimize triangle draw order during disassemble
    {
-      FrameTemp<TriListOpt::IndexType> tmpIdxs(indices.size());
+      TempAlloc<TriListOpt::IndexType> tmpIdxs(indices.size());
       for ( S32 i = 0; i < primitives.size(); i++ )
       {
          const TSDrawPrimitive& prim = primitives[i];
@@ -2555,8 +2554,8 @@ void TSMesh::disassemble(TSIOState &loadState)
          if ( (prim.matIndex & TSDrawPrimitive::TypeMask) == TSDrawPrimitive::Triangles )
          {
             TriListOpt::OptimizeTriangleOrdering(verts.size(), prim.numElements,
-               indices.address() + prim.start, tmpIdxs.address());
-            dCopyArray(indices.address() + prim.start, tmpIdxs.address(), 
+               indices.address() + prim.start, tmpIdxs.ptr);
+            dCopyArray(indices.address() + prim.start, tmpIdxs.ptr,
                prim.numElements);
          }
       }

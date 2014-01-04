@@ -25,7 +25,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "libdtshape.h"
 #include "ts/tsRender.h"
-#include "core/frameAllocator.h"
 
 BEGIN_NS(DTShapeInit)
 
