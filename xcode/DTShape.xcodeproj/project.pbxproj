@@ -585,7 +585,6 @@
 		32EFB6BE184A547800D93F75 /* mRandomSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB59B184A547800D93F75 /* mRandomSet.h */; };
 		32EFB6BF184A547800D93F75 /* mRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB59C184A547800D93F75 /* mRect.cpp */; };
 		32EFB6C0184A547800D93F75 /* mRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB59D184A547800D93F75 /* mRect.h */; };
-		32EFB6C1184A547800D93F75 /* mSilhouetteExtractor.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB59E184A547800D93F75 /* mSilhouetteExtractor.h */; };
 		32EFB6C2184A547800D93F75 /* mSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB59F184A547800D93F75 /* mSolver.cpp */; };
 		32EFB6C3184A547800D93F75 /* mSphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32EFB5A0184A547800D93F75 /* mSphere.cpp */; };
 		32EFB6C4184A547800D93F75 /* mSphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 32EFB5A1184A547800D93F75 /* mSphere.h */; };
@@ -720,7 +719,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		320CB6A01666DFF70032E196 /* libDTShape.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libDTShape.a; path = libDTShape.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		320CB6A01666DFF70032E196 /* libDTShape.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDTShape.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3264A8BF1866715B009E6458 /* fileio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fileio.cpp; sourceTree = "<group>"; };
 		3264A8C1186671EB009E6458 /* fileio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileio.h; sourceTree = "<group>"; };
 		3264A8C41866783D009E6458 /* changes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changes.txt; sourceTree = "<group>"; };
@@ -1302,7 +1301,6 @@
 		32EFB59B184A547800D93F75 /* mRandomSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mRandomSet.h; sourceTree = "<group>"; };
 		32EFB59C184A547800D93F75 /* mRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mRect.cpp; sourceTree = "<group>"; };
 		32EFB59D184A547800D93F75 /* mRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mRect.h; sourceTree = "<group>"; };
-		32EFB59E184A547800D93F75 /* mSilhouetteExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mSilhouetteExtractor.h; sourceTree = "<group>"; };
 		32EFB59F184A547800D93F75 /* mSolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mSolver.cpp; sourceTree = "<group>"; };
 		32EFB5A0184A547800D93F75 /* mSphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mSphere.cpp; sourceTree = "<group>"; };
 		32EFB5A1184A547800D93F75 /* mSphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mSphere.h; sourceTree = "<group>"; };
@@ -2288,7 +2286,6 @@
 				32EFB59B184A547800D93F75 /* mRandomSet.h */,
 				32EFB59C184A547800D93F75 /* mRect.cpp */,
 				32EFB59D184A547800D93F75 /* mRect.h */,
-				32EFB59E184A547800D93F75 /* mSilhouetteExtractor.h */,
 				32EFB59F184A547800D93F75 /* mSolver.cpp */,
 				32EFB5A0184A547800D93F75 /* mSphere.cpp */,
 				32EFB5A1184A547800D93F75 /* mSphere.h */,
@@ -2650,7 +2647,6 @@
 				3264AC7F186678CF009E6458 /* ucptable.h in Headers */,
 				3264AAF51866783E009E6458 /* domLibrary_physics_scenes.h in Headers */,
 				3264AAFB1866783E009E6458 /* domMaterial.h in Headers */,
-				32EFB6C1184A547800D93F75 /* mSilhouetteExtractor.h in Headers */,
 				3264AB2F1866783E009E6458 /* daeIOPlugin.h in Headers */,
 				3264AA941866783E009E6458 /* domConstants.h in Headers */,
 				3264AA861866783E009E6458 /* domCg_samplerCUBE.h in Headers */,
