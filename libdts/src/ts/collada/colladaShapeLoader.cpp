@@ -59,11 +59,6 @@ const char* sFileExtensions[] = {
    ".dds"
 };
 
-// 
-static DAE sDAE;                 // Collada model database (holds the last loaded file)
-static DTShape::Path sLastPath;   // Path of the last loaded Collada file
-static FileTime sLastModTime;    // Modification time of the last loaded Collada file
-
 //-----------------------------------------------------------------------------
 // Custom warning/error message handler
 class myErrorHandler : public daeErrorHandler
@@ -81,25 +76,8 @@ class myErrorHandler : public daeErrorHandler
 
 //-----------------------------------------------------------------------------
 
-ColladaShapeLoader::ColladaShapeLoader(domCOLLADA* _root)
-   : root(_root)
+ColladaShapeLoader::ColladaShapeLoader()
 {
-   // Extract the global scale and up_axis from the top level <asset> element,
-   F32 unit = 1.0f;
-   domUpAxisType upAxis = UPAXISTYPE_Z_UP;
-   if (root->getAsset()) {
-      if (root->getAsset()->getUnit())
-         unit = root->getAsset()->getUnit()->getMeter();
-      if (root->getAsset()->getUp_axis())
-         upAxis = root->getAsset()->getUp_axis()->getValue();
-   }
-
-   // Set import options (if they are not set to override)
-   if (ColladaUtils::getOptions().unit <= 0.0f)
-      ColladaUtils::getOptions().unit = unit;
-
-   if (ColladaUtils::getOptions().upAxis == UPAXISTYPE_COUNT)
-      ColladaUtils::getOptions().upAxis = upAxis;
 }
 
 ColladaShapeLoader::~ColladaShapeLoader()
@@ -567,8 +545,31 @@ bool ColladaShapeLoader::checkAndMountSketchup(const DTShape::Path& path, String
 }
 
 //-----------------------------------------------------------------------------
+void ColladaShapeLoader::setRoot(domCOLLADA* newRoot)
+{
+   root = newRoot;
+   
+   // Extract the global scale and up_axis from the top level <asset> element,
+   F32 unit = 1.0f;
+   domUpAxisType upAxis = UPAXISTYPE_Z_UP;
+   if (root->getAsset()) {
+      if (root->getAsset()->getUnit())
+         unit = root->getAsset()->getUnit()->getMeter();
+      if (root->getAsset()->getUp_axis())
+         upAxis = root->getAsset()->getUp_axis()->getValue();
+   }
+   
+   // Set import options (if they are not set to override)
+   if (ColladaUtils::getOptions().unit <= 0.0f)
+      ColladaUtils::getOptions().unit = unit;
+   
+   if (ColladaUtils::getOptions().upAxis == UPAXISTYPE_COUNT)
+      ColladaUtils::getOptions().upAxis = upAxis;
+}
+
+//-----------------------------------------------------------------------------
 /// Get the root collada DOM element for the given DAE file
-domCOLLADA* ColladaShapeLoader::getDomCOLLADA(const DTShape::Path& path)
+domCOLLADA* ColladaShapeLoader::openDomCOLLADA(const DTShape::Path& path)
 {
    daeErrorHandler::setErrorHandler(&sErrorHandler);
 
@@ -578,24 +579,31 @@ domCOLLADA* ColladaShapeLoader::getDomCOLLADA(const DTShape::Path& path)
    FileTime daeModifyTime;
    if (Platform::getFileTimes(path.getFullPath(), NULL, &daeModifyTime))
    {
-      if ((path == sLastPath) && (Platform::compareFileTimes(sLastModTime, daeModifyTime) >= 0))
-         return sDAE.getRoot(path.getFullPath().c_str());
+      if ((path == mLastPath) && (Platform::compareFileTimes(mLastModTime, daeModifyTime) >= 0))
+      {
+         domCOLLADA *ret = mDAE.getRoot(path.getFullPath().c_str());
+         setRoot(ret);
+         return ret;
+      }
    }
 
-   sDAE.clear();
-   sDAE.setBaseURI("");
+   mDAE.clear();
+   mDAE.setBaseURI("");
 
    TSShapeLoader::updateProgress(TSShapeLoader::Load_ParseFile, "Parsing XML...");
-   domCOLLADA* root = readColladaFile(path.getFullPath());
-   if (!root)
+   domCOLLADA* loadRoot = readColladaFile(path.getFullPath());
+   if (!loadRoot)
    {
       TSShapeLoader::updateProgress(TSShapeLoader::Load_Complete, "Import failed");
-      sDAE.clear();
+      mDAE.clear();
+      root = NULL;
+      mLastPath = String();
       return NULL;
    }
-
-   sLastPath = path;
-   sLastModTime = daeModifyTime;
+   
+   setRoot(loadRoot);
+   mLastPath = path;
+   mLastModTime = daeModifyTime;
 
    return root;
 }
@@ -603,7 +611,7 @@ domCOLLADA* ColladaShapeLoader::getDomCOLLADA(const DTShape::Path& path)
 domCOLLADA* ColladaShapeLoader::readColladaFile(const String& path)
 {
    // Check if this file is already loaded into the database
-   domCOLLADA* root = sDAE.getRoot(path.c_str());
+   domCOLLADA* root = mDAE.getRoot(path.c_str());
    if (root)
       return root;
 
@@ -624,7 +632,7 @@ domCOLLADA* ColladaShapeLoader::readColladaFile(const String& path)
       return NULL;
    }
 
-   root = sDAE.openFromMemory(path.c_str(), (const char*)data);
+   root = mDAE.openFromMemory(path.c_str(), (const char*)data);
    dFree(data);
    
    if (!root || !root->getLibrary_visual_scenes_array().getCount()) {
@@ -714,10 +722,9 @@ TSShape* loadColladaShape(const DTShape::Path &path)
 
    // Load Collada model and convert to 3space
    TSShape* tss = 0;
-   domCOLLADA* root = ColladaShapeLoader::getDomCOLLADA(daePath);
-   if (root)
+   ColladaShapeLoader loader;
+   if (loader.openDomCOLLADA(daePath))
    {
-      ColladaShapeLoader loader(root);
       tss = loader.generateShape(daePath);
       if (tss)
       {

@@ -27,6 +27,8 @@
 #include "ts/loader/tsShapeLoader.h"
 #endif
 
+#include <dae.h>
+
 //-----------------------------------------------------------------------------
 
 class domCOLLADA;
@@ -51,18 +53,24 @@ class ColladaShapeLoader : public TSShapeLoader
    void cleanup();
 
 public:
-   ColladaShapeLoader(domCOLLADA* _root);
+   ColladaShapeLoader();
    ~ColladaShapeLoader();
+   
+   void setRoot(domCOLLADA* newRoot);
 
    void enumerateScene();
    bool ignoreNode(const String& name);
    bool ignoreMesh(const String& name);
    void computeBounds(Box3F& bounds);
+   
+   DAE mDAE;                 // Collada model database (holds the last loaded file)
+   DTShape::Path mLastPath;   // Path of the last loaded Collada file
+   FileTime mLastModTime;    // Modification time of the last loaded Collada file
 
    static bool canLoadCachedDTS(const DTShape::Path& path);
    static bool checkAndMountSketchup(const DTShape::Path& path, String& mountPoint, DTShape::Path& daePath);
-   static domCOLLADA* getDomCOLLADA(const DTShape::Path& path);
-   static domCOLLADA* readColladaFile(const String& path);
+   domCOLLADA* openDomCOLLADA(const DTShape::Path& path);
+   domCOLLADA* readColladaFile(const String& path);
 };
 
 //-----------------------------------------------------------------------------

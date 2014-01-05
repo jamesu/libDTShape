@@ -157,10 +157,10 @@ ConsoleFunction( enumColladaForImport, bool, 3, 3,
    // and get the path to the DAE file.
    String mountPoint;
    DTShape::Path daePath;
-   bool isSketchup = ColladaShapeLoader::checkAndMountSketchup(path, mountPoint, daePath);
+   bool isSketchup = checkAndMountSketchup(path, mountPoint, daePath);
 
    // Load the Collada file into memory
-   domCOLLADA* root = ColladaShapeLoader::getDomCOLLADA(daePath);
+   domCOLLADA* root = getDomCOLLADA(daePath);
    if (!root)
    {
       TSShapeLoader::updateProgress(TSShapeLoader::Load_Complete, "Load complete");
