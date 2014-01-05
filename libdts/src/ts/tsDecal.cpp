@@ -36,11 +36,11 @@ BEGIN_NS(DTShape)
 // used for transfer to/from memory buffers
 //-----------------------------------------------------
 
-#define tsalloc TSShape::smTSAlloc
+#define tsalloc ioState.tsalloc
 
-void TSDecalMesh::assemble(TSIOState &loadState, bool)
+void TSDecalMesh::assemble(TSIOState &ioState, bool)
 {
-   if (loadState.smReadVersion<20)
+   if (ioState.smReadVersion<20)
    {
       // read empty mesh...decals used to be derived from meshes
       tsalloc.checkGuard();
@@ -62,7 +62,7 @@ void TSDecalMesh::assemble(TSIOState &loadState, bool)
    tsalloc.align32();
    indices.set(ptr16,sz);
 
-   if (loadState.smReadVersion<20)
+   if (ioState.smReadVersion<20)
    {
       // read more empty mesh stuff...decals used to be derived from meshes
       tsalloc.getPointer32(3);
@@ -73,7 +73,7 @@ void TSDecalMesh::assemble(TSIOState &loadState, bool)
    ptr32 = tsalloc.getPointer32(sz);
    startPrimitive.set(ptr32,sz);
 
-   if (loadState.smReadVersion>=19)
+   if (ioState.smReadVersion>=19)
    {
    ptr32 = tsalloc.getPointer32(sz*4);
    texgenS.set(ptr32,startPrimitive.size());
@@ -91,7 +91,7 @@ void TSDecalMesh::assemble(TSIOState &loadState, bool)
    tsalloc.checkGuard();
 }
 
-void TSDecalMesh::disassemble(TSIOState &saveState)
+void TSDecalMesh::disassemble(TSIOState &ioState)
 {
    tsalloc.set32(primitives.size());
    tsalloc.copyToBuffer32((S32*)primitives.address(),primitives.size());

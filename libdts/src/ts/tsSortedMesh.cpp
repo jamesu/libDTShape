@@ -96,19 +96,19 @@ S32 TSSortedMesh::getNumPolys()
 // used for transfer to/from memory buffers
 //-----------------------------------------------------
 
-#define tsalloc TSShape::smTSAlloc
+#define tsalloc ioState.tsalloc
 
-void TSSortedMesh::assemble(TSIOState &loadState, bool skip)
+void TSSortedMesh::assemble(TSIOState &ioState, bool skip)
 {
-   bool save1 = loadState.smUseTriangles;
-   bool save2 = loadState.smUseOneStrip;
-   loadState.smUseTriangles = false;
-   loadState.smUseOneStrip = false;
+   bool save1 = ioState.smUseTriangles;
+   bool save2 = ioState.smUseOneStrip;
+   ioState.smUseTriangles = false;
+   ioState.smUseOneStrip = false;
 
-   TSMesh::assemble(loadState, skip);
+   TSMesh::assemble(ioState, skip);
 
-   loadState.smUseTriangles = save1;
-   loadState.smUseOneStrip = save2;
+   ioState.smUseTriangles = save1;
+   ioState.smUseOneStrip = save2;
 
    S32 numClusters = tsalloc.get32();
    S32 * ptr32 = tsalloc.copyToShape32(numClusters*8);
@@ -135,9 +135,9 @@ void TSSortedMesh::assemble(TSIOState &loadState, bool skip)
    tsalloc.checkGuard();
 }
 
-void TSSortedMesh::disassemble(TSIOState &loadState)
+void TSSortedMesh::disassemble(TSIOState &ioState)
 {
-   TSMesh::disassemble(loadState);
+   TSMesh::disassemble(ioState);
 
    tsalloc.set32(clusters.size());
    tsalloc.copyToBuffer32((S32*)clusters.address(),clusters.size()*8);

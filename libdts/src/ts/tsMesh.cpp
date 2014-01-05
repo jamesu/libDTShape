@@ -1765,9 +1765,9 @@ U8 TSMesh::encodeNormal( const Point3F &normal )
 // TSMesh assemble from/ dissemble to memory buffer
 //-----------------------------------------------------
 
-#define tsalloc TSShape::smTSAlloc
+#define tsalloc ioState.tsalloc
 
-TSMesh* TSMesh::assembleMesh( TSIOState &loadState, U32 meshType, bool skip )
+TSMesh* TSMesh::assembleMesh( TSIOState &ioState, U32 meshType, bool skip )
 {
    static TSMesh tempStandardMesh;
    static TSSkinMesh tempSkinMesh;
@@ -1853,10 +1853,10 @@ TSMesh* TSMesh::assembleMesh( TSIOState &loadState, U32 meshType, bool skip )
    tsalloc.setSkipMode( skip );
 
    if ( mesh )
-      mesh->assemble( loadState, skip );
+      mesh->assemble( ioState, skip );
 
    if ( decal )
-      decal->assemble( loadState, skip );
+      decal->assemble( ioState, skip );
 
    tsalloc.setSkipMode( false );
 
@@ -2241,7 +2241,7 @@ void TSMesh::leaveAsMultipleStrips(	const TSDrawPrimitive *primitivesIn,
 // that pointer (in the case that we don't skip this mesh).
 // If we do have a parent mesh, then we return a pointer to the data in the shape buffer,
 // copying the data in there ourselves if our parent didn't already do it (i.e., if it was skipped).
-S32 * TSMesh::getSharedData32( S32 parentMesh, S32 size, S32 **source, TSIOState &loadState, bool skip )
+S32 * TSMesh::getSharedData32( S32 parentMesh, S32 size, S32 **source, TSIOState &ioState, bool skip )
 {
    S32 * ptr;
    if( parentMesh < 0 )
@@ -2251,7 +2251,7 @@ S32 * TSMesh::getSharedData32( S32 parentMesh, S32 size, S32 **source, TSIOState
       ptr = source[parentMesh];
       // if we skipped the previous mesh (and we're not skipping this one) then
       // we still need to copy points into the shape...
-      if ( !loadState.smDataCopied[parentMesh] && !skip )
+      if ( !ioState.smDataCopied[parentMesh] && !skip )
       {
          S32 * tmp = ptr;
          ptr = tsalloc.allocShape32( size );
@@ -2262,7 +2262,7 @@ S32 * TSMesh::getSharedData32( S32 parentMesh, S32 size, S32 **source, TSIOState
    return ptr;
 }
 
-S8 * TSMesh::getSharedData8( S32 parentMesh, S32 size, S8 **source, TSIOState &loadState, bool skip )
+S8 * TSMesh::getSharedData8( S32 parentMesh, S32 size, S8 **source, TSIOState &ioState, bool skip )
 {
    S8 * ptr;
    if( parentMesh < 0 )
@@ -2272,7 +2272,7 @@ S8 * TSMesh::getSharedData8( S32 parentMesh, S32 size, S8 **source, TSIOState &l
       ptr = source[parentMesh];
       // if we skipped the previous mesh (and we're not skipping this one) then
       // we still need to copy points into the shape...
-      if ( !loadState.smDataCopied[parentMesh] && !skip )
+      if ( !ioState.smDataCopied[parentMesh] && !skip )
       {
          S8 * tmp = ptr;
          ptr = tsalloc.allocShape8( size );
@@ -2307,7 +2307,7 @@ void TSMesh::initRender()
    mRenderer = TSMeshRenderer::create();
 }
 
-void TSMesh::assemble( TSIOState &loadState, bool skip )
+void TSMesh::assemble( TSIOState &ioState, bool skip )
 {
    tsalloc.checkGuard();
 
@@ -2319,39 +2319,39 @@ void TSMesh::assemble( TSIOState &loadState, bool skip )
    mRadius = (F32)tsalloc.get32();
 
    S32 numVerts = tsalloc.get32();
-   S32 *ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)loadState.smVertsList.address(), loadState, skip );
+   S32 *ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)ioState.smVertsList.address(), ioState, skip );
    verts.set( (Point3F*)ptr32, numVerts );
 
    S32 numTVerts = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)loadState.smTVertsList.address(), loadState, skip );
+   ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)ioState.smTVertsList.address(), ioState, skip );
    tverts.set( (Point2F*)ptr32, numTVerts );
 
-   if ( loadState.smReadVersion > 25 )
+   if ( ioState.smReadVersion > 25 )
    {
       numTVerts = tsalloc.get32();
-      ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)loadState.smTVerts2List.address(), loadState, skip );
+      ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)ioState.smTVerts2List.address(), ioState, skip );
       tverts2.set( (Point2F*)ptr32, numTVerts );
 
       S32 numVColors = tsalloc.get32();
-      ptr32 = getSharedData32( parentMesh, numVColors, (S32**)loadState.smColorsList.address(), loadState, skip );
+      ptr32 = getSharedData32( parentMesh, numVColors, (S32**)ioState.smColorsList.address(), ioState, skip );
       colors.set( (ColorI*)ptr32, numVColors );
    }
 
    S8 *ptr8;
-   if ( loadState.smReadVersion > 21 && loadState.smUseEncodedNormals)
+   if ( ioState.smReadVersion > 21 && ioState.smUseEncodedNormals)
    {
       // we have encoded normals and we want to use them...
       if ( parentMesh < 0 )
          tsalloc.getPointer32( numVerts * 3 ); // advance past norms, don't use
       norms.set( NULL, 0 );
 
-      ptr8 = getSharedData8( parentMesh, numVerts, (S8**)loadState.smEncodedNormsList.address(), loadState, skip );
+      ptr8 = getSharedData8( parentMesh, numVerts, (S8**)ioState.smEncodedNormsList.address(), ioState, skip );
       encodedNorms.set( ptr8, numVerts );
    }
-   else if ( loadState.smReadVersion > 21 )
+   else if ( ioState.smReadVersion > 21 )
    {
       // we have encoded normals but we don't want to use them...
-      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)loadState.smNormsList.address(), loadState, skip );
+      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)ioState.smNormsList.address(), ioState, skip );
       norms.set( (Point3F*)ptr32, numVerts );
 
       if ( parentMesh < 0 )
@@ -2361,7 +2361,7 @@ void TSMesh::assemble( TSIOState &loadState, bool skip )
    else
    {
       // no encoded normals...
-      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)loadState.smNormsList.address(), loadState, skip );
+      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)ioState.smNormsList.address(), ioState, skip );
       norms.set( (Point3F*)ptr32, numVerts );
       encodedNorms.set( NULL, 0 );
    }
@@ -2373,7 +2373,7 @@ void TSMesh::assemble( TSIOState &loadState, bool skip )
    S32 *indIn;
    bool deleteInputArrays = false;
 
-   if (loadState.smReadVersion > 25)
+   if (ioState.smReadVersion > 25)
    {
       // mesh primitives (start, numElements) and indices are stored as 32 bit values
       szPrimIn = tsalloc.get32();
@@ -2415,12 +2415,12 @@ void TSMesh::assemble( TSIOState &loadState, bool skip )
 
    // count the number of output primitives and indices
    S32 szPrimOut = szPrimIn, szIndOut = szIndIn;
-   if (loadState.smUseTriangles)
+   if (ioState.smUseTriangles)
       convertToTris(primIn, indIn, szPrimIn, szPrimOut, szIndOut, NULL, NULL);
-   else if (loadState.smUseOneStrip)
-      convertToSingleStrip(primIn, indIn, szPrimIn, szPrimOut, szIndOut, NULL, NULL, loadState.smMinStripSize);
+   else if (ioState.smUseOneStrip)
+      convertToSingleStrip(primIn, indIn, szPrimIn, szPrimOut, szIndOut, NULL, NULL, ioState.smMinStripSize);
    else
-      leaveAsMultipleStrips(primIn, indIn, szPrimIn, szPrimOut, szIndOut, NULL, NULL, loadState.smMinStripSize);
+      leaveAsMultipleStrips(primIn, indIn, szPrimIn, szPrimOut, szIndOut, NULL, NULL, ioState.smMinStripSize);
 
    // allocate enough space for the new primitives and indices (all 32 bits)
    TSDrawPrimitive *primOut = (TSDrawPrimitive*)tsalloc.allocShape32(3*szPrimOut);
@@ -2428,12 +2428,12 @@ void TSMesh::assemble( TSIOState &loadState, bool skip )
 
    // copy output primitives and indices
    S32 chkPrim = szPrimOut, chkInd = szIndOut;
-   if (loadState.smUseTriangles)
+   if (ioState.smUseTriangles)
       convertToTris(primIn, indIn, szPrimIn, chkPrim, chkInd, primOut, indOut);
-   else if (loadState.smUseOneStrip)
-      convertToSingleStrip(primIn, indIn, szPrimIn, chkPrim, chkInd, primOut, indOut, loadState.smMinStripSize);
+   else if (ioState.smUseOneStrip)
+      convertToSingleStrip(primIn, indIn, szPrimIn, chkPrim, chkInd, primOut, indOut, ioState.smMinStripSize);
    else
-      leaveAsMultipleStrips(primIn, indIn, szPrimIn, chkPrim, chkInd, primOut, indOut, loadState.smMinStripSize);
+      leaveAsMultipleStrips(primIn, indIn, szPrimIn, chkPrim, chkInd, primOut, indOut, ioState.smMinStripSize);
    AssertFatal(chkPrim==szPrimOut && chkInd==szIndOut,"TSMesh::primitive conversion");
 
    // store output
@@ -2460,14 +2460,14 @@ void TSMesh::assemble( TSIOState &loadState, bool skip )
 
    tsalloc.checkGuard();
 
-   if ( tsalloc.allocShape32( 0 ) && loadState.smReadVersion < 19 )
+   if ( tsalloc.allocShape32( 0 ) && ioState.smReadVersion < 19 )
       computeBounds(); // only do this if we copied the data...
 
    if(getMeshType() != SkinMeshType)
       createTangents(verts, norms);
 }
 
-void TSMesh::disassemble(TSIOState &loadState)
+void TSMesh::disassemble(TSIOState &ioState)
 {
    tsalloc.setGuard();
 
@@ -2515,7 +2515,7 @@ void TSMesh::disassemble(TSIOState &loadState)
    if ( parentMesh < 0 )
       tsalloc.copyToBuffer32( (S32*)tverts.address(), 2 * tverts.size() ); // if no parent mesh, then save off our tverts
 
-   if (loadState.smVersion > 25)
+   if (ioState.smVersion > 25)
    {
       // tverts2...
       tsalloc.set32( tverts2.size() );
@@ -2561,7 +2561,7 @@ void TSMesh::disassemble(TSIOState &loadState)
       }
    }
 
-   if (loadState.smVersion > 25)
+   if (ioState.smVersion > 25)
    {
       // primitives...
       tsalloc.set32( primitives.size() );
@@ -2606,35 +2606,35 @@ void TSMesh::disassemble(TSIOState &loadState)
 //-----------------------------------------------------------------------------
 // TSSkinMesh assemble from/ dissemble to memory buffer
 //-----------------------------------------------------------------------------
-void TSSkinMesh::assemble( TSIOState &loadState, bool skip )
+void TSSkinMesh::assemble( TSIOState &ioState, bool skip )
 {
    // avoid a crash on computeBounds...
    batchData.initialVerts.set( NULL, 0 );
 
-   TSMesh::assemble( loadState, skip );
+   TSMesh::assemble( ioState, skip );
 
    S32 sz = tsalloc.get32();
    S32 numVerts = sz;
-   S32 * ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)loadState.smVertsList.address(), loadState, skip );
+   S32 * ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)ioState.smVertsList.address(), ioState, skip );
    batchData.initialVerts.set( (Point3F*)ptr32, sz );
 
    S8 * ptr8;
-   if ( loadState.smReadVersion>21 && loadState.smUseEncodedNormals )
+   if ( ioState.smReadVersion>21 && ioState.smUseEncodedNormals )
    {
       // we have encoded normals and we want to use them...
       if ( parentMesh < 0 )
          tsalloc.getPointer32( numVerts * 3 ); // advance past norms, don't use
       batchData.initialNorms.set( NULL, 0 );
 
-      ptr8 = getSharedData8( parentMesh, numVerts, (S8**)loadState.smEncodedNormsList.address(), loadState, skip );
+      ptr8 = getSharedData8( parentMesh, numVerts, (S8**)ioState.smEncodedNormsList.address(), ioState, skip );
       encodedNorms.set( ptr8, numVerts );
       // Note: we don't set the encoded normals flag because we handle them in updateSkin and
       //       hide the fact that we are using them from base class (TSMesh)
    }
-   else if ( loadState.smReadVersion > 21 )
+   else if ( ioState.smReadVersion > 21 )
    {
       // we have encoded normals but we don't want to use them...
-      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)loadState.smNormsList.address(), loadState, skip );
+      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)ioState.smNormsList.address(), ioState, skip );
       batchData.initialNorms.set( (Point3F*)ptr32, numVerts );
 
       if ( parentMesh < 0 )
@@ -2645,32 +2645,32 @@ void TSSkinMesh::assemble( TSIOState &loadState, bool skip )
    else
    {
       // no encoded normals...
-      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)loadState.smNormsList.address(), loadState, skip );
+      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)ioState.smNormsList.address(), ioState, skip );
       batchData.initialNorms.set( (Point3F*)ptr32, numVerts );
       encodedNorms.set( NULL, 0 );
    }
 
    sz = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, 16 * sz, (S32**)loadState.smInitTransformList.address(), loadState, skip );
+   ptr32 = getSharedData32( parentMesh, 16 * sz, (S32**)ioState.smInitTransformList.address(), ioState, skip );
    batchData.initialTransforms.set( ptr32, sz );
 
    sz = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)loadState.smVertexIndexList.address(), loadState, skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)ioState.smVertexIndexList.address(), ioState, skip );
    vertexIndex.set( ptr32, sz );
 
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)loadState.smBoneIndexList.address(), loadState, skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)ioState.smBoneIndexList.address(), ioState, skip );
    boneIndex.set( ptr32, sz );
 
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)loadState.smWeightList.address(), loadState, skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)ioState.smWeightList.address(), ioState, skip );
    weight.set( (F32*)ptr32, sz );
 
    sz = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)loadState.smNodeIndexList.address(), loadState, skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)ioState.smNodeIndexList.address(), ioState, skip );
    batchData.nodeIndex.set( ptr32, sz );
 
    tsalloc.checkGuard();
 
-   if ( tsalloc.allocShape32( 0 ) && loadState.smReadVersion < 19 )
+   if ( tsalloc.allocShape32( 0 ) && ioState.smReadVersion < 19 )
       TSMesh::computeBounds(); // only do this if we copied the data...
 
    createTangents(batchData.initialVerts, batchData.initialNorms);
@@ -2679,9 +2679,9 @@ void TSSkinMesh::assemble( TSIOState &loadState, bool skip )
 //-----------------------------------------------------------------------------
 // disassemble
 //-----------------------------------------------------------------------------
-void TSSkinMesh::disassemble(TSIOState &loadState)
+void TSSkinMesh::disassemble(TSIOState &ioState)
 {
-   TSMesh::disassemble(loadState);
+   TSMesh::disassemble(ioState);
 
    tsalloc.set32( batchData.initialVerts.size() );
    // if we have no parent mesh, then save off our verts & norms

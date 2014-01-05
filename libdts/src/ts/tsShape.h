@@ -108,6 +108,9 @@ public:
    bool smUseEncodedNormals;
    /// @}
    
+   /// TS Allocator
+   TSShapeAlloc tsalloc;
+   
    TSIOState();
    
    TSIOState& operator= (TSIOState &rhs)
@@ -652,8 +655,6 @@ class TSShape : public StrongRefBase
 
    /// @name Persist Helper Functions
    /// @{
-
-   static TSShapeAlloc smTSAlloc;
 
    void fixEndian(S32 *, S16 *, S8 *, S32, S32, S32);
    /// @}
