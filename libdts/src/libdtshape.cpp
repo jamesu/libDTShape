@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "libdtshape.h"
 #include "ts/tsRender.h"
+#include "core/log.h"
 
 BEGIN_NS(DTShapeInit)
 
@@ -32,6 +33,8 @@ using namespace DTShape;
 
 void init(U32 opts)
 {
+   Log::init();
+   
    Processor::init();
    
    Math::init(((opts >> 16) & 0xFFFF));
