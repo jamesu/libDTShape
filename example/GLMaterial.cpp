@@ -92,7 +92,7 @@ bool GLTSMaterialInstance::isTranslucent()
 
 bool GLTSMaterialInstance::isValid()
 {
-   return mTexture != NULL;
+   return mTexture != 0;
 }
 
 void GLTSMaterialInstance::activate()

@@ -70,7 +70,7 @@ typedef struct AnimSequenceInfo {
    int start;
    int end;
    bool cyclic;
-};
+} AnimSequenceInfo;
 
 const char* sTSAppSequenceNames[] = {
    "Root",
@@ -622,6 +622,8 @@ void AppState::OnAppLog(U32 level, LogEntry *logEntry)
          break;
       case LogEntry::Error:
          fprintf(stderr, "%s\n", logEntry->mData);
+         break;
+      default:
          break;
    }
 }
