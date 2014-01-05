@@ -26,9 +26,6 @@
 
 #endif
 
-// Define if you implement custom IO, then implement TwistFork::Core::File
-//#define LIBDTSHAPE_CUSTOM_IO
-
 //
 
 // Allow DTS files to be generated from collada files
