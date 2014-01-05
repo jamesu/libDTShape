@@ -43,6 +43,9 @@ struct TempAlloc
       : size( size )
    {
       ptr = ( T* ) dMalloc( size * sizeof( T ) );
+      
+      for( int i = 0; i < size; i++ )
+         constructInPlace<T>( &ptr[i] );
    }
    ~TempAlloc()
    {
