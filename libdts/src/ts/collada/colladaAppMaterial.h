@@ -55,8 +55,8 @@ public:
    F32                        specularPower;
    bool                       doubleSided;
 
-   ColladaAppMaterial(const char* matName);
-   ColladaAppMaterial(const domMaterial* pMat);
+   ColladaAppMaterial(const char* matName, TSShapeLoader *loader);
+   ColladaAppMaterial(const domMaterial* pMat, TSShapeLoader *loader);
    ~ColladaAppMaterial() { delete effectExt; }
 
    String getName() const { return name; }

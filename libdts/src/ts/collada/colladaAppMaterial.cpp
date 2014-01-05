@@ -54,8 +54,9 @@ String cleanString(const String& str)
 
 //------------------------------------------------------------------------------
 
-ColladaAppMaterial::ColladaAppMaterial(const char* matName)
-:  mat(0),
+ColladaAppMaterial::ColladaAppMaterial(const char* matName, TSShapeLoader *loader)
+:  AppMaterial(loader),
+   mat(0),
    effect(0),
    effectExt(0)
 {
@@ -71,8 +72,9 @@ ColladaAppMaterial::ColladaAppMaterial(const char* matName)
    doubleSided = false;
 }
 
-ColladaAppMaterial::ColladaAppMaterial(const domMaterial *pMat)
-:  mat(pMat),
+ColladaAppMaterial::ColladaAppMaterial(const domMaterial *pMat, TSShapeLoader *loader)
+:  AppMaterial(loader),
+   mat(pMat),
    diffuseColor(ColorF::ONE),
    specularColor(ColorF::ONE),
    specularPower(8.0f),
@@ -156,9 +158,9 @@ ColladaAppMaterial::ColladaAppMaterial(const domMaterial *pMat)
 
    // Get the paths for the various textures => Collada indirection at its finest!
    // <texture>.<newparam>.<sampler2D>.<source>.<newparam>.<surface>.<init_from>.<image>.<init_from>
-   diffuseMap = getSamplerImagePath(effect, getTextureSampler(effect, domDiffuse));
-   specularMap = getSamplerImagePath(effect, getTextureSampler(effect, domSpecular));
-   normalMap = getSamplerImagePath(effect, effectExt->bumpSampler);
+   diffuseMap = getSamplerImagePath(effect, getTextureSampler(effect, domDiffuse), mLoader->shapePath);
+   specularMap = getSamplerImagePath(effect, getTextureSampler(effect, domSpecular), mLoader->shapePath);
+   normalMap = getSamplerImagePath(effect, effectExt->bumpSampler, mLoader->shapePath);
 
    // Set the material name
    name = ColladaUtils::getOptions().matNamePrefix;
@@ -195,7 +197,7 @@ TSMaterial *ColladaAppMaterial::createMaterial(const DTShape::Path& path) const
 {
    // The filename and material name are used as TorqueScript identifiers, so
    // clean them up first
-   String cleanFile = cleanString(TSShapeLoader::getShapePath().getFileName());
+   String cleanFile = cleanString(mLoader->shapePath.getFileName());
    String cleanName = cleanString(getName());
 
    // Prefix the material name with the filename (if not done already by TSShapeConstructor prefix)

@@ -130,8 +130,8 @@ namespace ColladaUtils
    const domCommon_color_or_texture_type_complexType* findEffectDiffuse(const domEffect* effect);
    const domCommon_color_or_texture_type_complexType* findEffectSpecular(const domEffect* effect);
    const domFx_sampler2D_common_complexType* getTextureSampler(const domEffect* effect, const domCommon_color_or_texture_type_complexType* texture);
-   String getSamplerImagePath(const domEffect* effect, const domFx_sampler2D_common_complexType* sampler2D);
-   String resolveImagePath(const domImage* image);
+   String getSamplerImagePath(const domEffect* effect, const domFx_sampler2D_common_complexType* sampler2D, const DTShape::Path &shapePath);
+   String resolveImagePath(const domImage* image, const DTShape::Path &shapePath);
 
    // Collada export helper functions
    DTShape::Path findTexture(const DTShape::Path& diffuseMap);

@@ -98,7 +98,6 @@ protected:
    Vector<AppMesh*>              appMeshes;
 
    // Variables used during loading, but that can be discarded afterwards
-   static DTShape::Path           shapePath;
 
    AppNode*                      boundsNode;
    Vector<AppNode*>              appNodes;            ///< Nodes in the loaded shape
@@ -115,6 +114,7 @@ protected:
    
 public:
    Vector<AppMaterial*>          appMaterials;
+   DTShape::Path                 shapePath;
 
 protected:
    //--------------------------------------------------------------------------
@@ -185,8 +185,6 @@ public:
       fixedSize = 2;
    }
    virtual ~TSShapeLoader();
-
-   static const DTShape::Path& getShapePath() { return shapePath; }
 
    static void zapScale(MatrixF& mat);
    

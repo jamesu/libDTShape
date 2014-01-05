@@ -149,7 +149,8 @@ const domFx_sampler2D_common_complexType* ColladaUtils::getTextureSampler(const 
 }
 
 String ColladaUtils::getSamplerImagePath(const domEffect* effect,
-                                         const domFx_sampler2D_common_complexType* sampler2D)
+                                         const domFx_sampler2D_common_complexType* sampler2D,
+                                         const DTShape::Path &shapePath)
 {
    // <sampler2D>.<source>.<newparam>.<surface>.<init_from>.<image>.<init_from>
    const domProfile_COMMON* profile = findEffectCommonProfile(effect);
@@ -168,7 +169,7 @@ String ColladaUtils::getSamplerImagePath(const domEffect* effect,
             xsIDREF& idRef = surfaceInit->getInit_from_array()[0]->getValue();
             const domImage* image = daeSafeCast<domImage>(idRef.getElement());
             if (image && image->getInit_from())
-               return resolveImagePath(image);
+               return resolveImagePath(image, shapePath);
          }
       }
    }
@@ -177,7 +178,7 @@ String ColladaUtils::getSamplerImagePath(const domEffect* effect,
 }
 
 // Resolve image path into something we can use.
-String ColladaUtils::resolveImagePath(const domImage* image)
+String ColladaUtils::resolveImagePath(const domImage* image, const DTShape::Path &shapePath)
 {
    // 1. If the URI string contains an absolute path, use it if
    //    it is inside the Torque folder, otherwise force textures
@@ -217,13 +218,13 @@ String ColladaUtils::resolveImagePath(const domImage* image)
    {
       // Relative path => prepend with shape path
       DTShape::Path tempPath(imageStr);
-      imagePath = TSShapeLoader::getShapePath();
+      imagePath = shapePath;
       imagePath.appendPath(tempPath);
       imagePath.setFileName(tempPath.getFileName());
    }
 
    // No need to specify the path if it is in the same folder as the model
-   if (imagePath.getPath() == TSShapeLoader::getShapePath().getPath())
+   if (imagePath.getPath() == shapePath.getPath())
       imagePath.setPath("");
 
    // Don't care about the extension

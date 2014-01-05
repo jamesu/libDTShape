@@ -463,9 +463,9 @@ S32 ColladaAppMesh::addMaterial(const char* symbol)
             // Check if this material needs to be added to the shape global list
             if (matIndex == mLoader->appMaterials.size()) {
                if (mat)
-                  mLoader->appMaterials.push_back(new ColladaAppMaterial(mat));
+                  mLoader->appMaterials.push_back(new ColladaAppMaterial(mat, mLoader));
                else
-                  mLoader->appMaterials.push_back(new ColladaAppMaterial(symbol));
+                  mLoader->appMaterials.push_back(new ColladaAppMaterial(symbol, mLoader));
             }
 
             break;

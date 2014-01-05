@@ -39,7 +39,6 @@ const F32 TSShapeLoader::DefaultTime = -1.0f;
 const double TSShapeLoader::MinFrameRate = 15.0f;
 const double TSShapeLoader::MaxFrameRate = 60.0f;
 const double TSShapeLoader::AppGroundFrameRate = 10.0f;
-DTShape::Path TSShapeLoader::shapePath;
 
 //------------------------------------------------------------------------------
 // Utility functions

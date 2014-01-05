@@ -29,12 +29,16 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
+class TSShapeLoader;
+
 struct AppMaterial
 {
    U32 flags;
    F32 reflectance;
+   
+   TSShapeLoader *mLoader;
 
-   AppMaterial() : flags(0), reflectance(1.0f) { }
+   AppMaterial(TSShapeLoader *loader) : flags(0), reflectance(1.0f) { }
    virtual ~AppMaterial() {}
    
    virtual String getName() const { return "unnamed"; }

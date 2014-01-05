@@ -387,6 +387,7 @@ String findTextureExtension(const DTShape::Path &texPath)
    return String();
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 /// Copy a texture from a KMZ to a cache. Note that the texture filename is modified
 void copySketchupTexture(const DTShape::Path &path, String &textureFilename)
@@ -426,6 +427,7 @@ void copySketchupTexture(const DTShape::Path &path, String &textureFilename)
    cachedTexPath.setExtension("");
    textureFilename = cachedTexPath.getFullPath();
 }
+#endif
 
 //-----------------------------------------------------------------------------
 /// Add collada materials to materials.cs
