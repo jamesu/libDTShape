@@ -53,11 +53,6 @@ using namespace DTShape::ColladaUtils;
 BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
-
-bool ColladaAppMesh::fixedSizeEnabled = false;
-S32 ColladaAppMesh::fixedSize = 2;
-
-//-----------------------------------------------------------------------------
 // Define a VertTuple dictionary to allow fast tuple lookups
 namespace DictHash
 {
@@ -357,7 +352,7 @@ const char* ColladaAppMesh::getName(bool allowFixed)
 
    // If all geometry is being fixed to the same size, append the size
    // to the name
-   return allowFixed && fixedSizeEnabled ? avar("%s %d", nodeName, fixedSize) : nodeName;
+   return allowFixed && mLoader->fixedSizeEnabled ? avar("%s %d", nodeName, mLoader->fixedSize) : nodeName;
 }
 
 MatrixF ColladaAppMesh::getMeshTransform(F32 time)

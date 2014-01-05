@@ -285,7 +285,7 @@ void ColladaShapeLoader::enumerateScene()
          break;
    }
 
-   ColladaAppMesh::fixDetailSize( singleDetail, ColladaUtils::getOptions().singleDetailSize );
+   fixDetailSize( singleDetail, ColladaUtils::getOptions().singleDetailSize );
 
    // Process the top level nodes
    for (S32 iNode = 0; iNode < sceneNodes.size(); iNode++) {

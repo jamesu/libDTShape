@@ -180,12 +180,24 @@ protected:
    void install();
 
 public:
-   TSShapeLoader() : boundsNode(0) { }
+   TSShapeLoader() : boundsNode(0) {
+      fixedSizeEnabled = false;
+      fixedSize = 2;
+   }
    virtual ~TSShapeLoader();
 
    static const DTShape::Path& getShapePath() { return shapePath; }
 
    static void zapScale(MatrixF& mat);
+   
+   void fixDetailSize(bool fixed, S32 size=2)
+   {
+      fixedSizeEnabled = fixed;
+      fixedSize = size;
+   }
+   
+   bool fixedSizeEnabled;
+   S32 fixedSize;
 
    TSShape* generateShape(const DTShape::Path& path);
 };

@@ -91,9 +91,6 @@ protected:
    Vector<VertTuple> vertTuples;                      ///<
    Map<String,U32> boundMaterials;                    ///< Local map of symbols to materials
 
-   static bool fixedSizeEnabled;                      ///< Set to true to fix the detail size to a particular value for all geometry
-   static S32 fixedSize;                              ///< The fixed detail size value for all geometry
-
    //-----------------------------------------------------------------------
 
    /// Get the morph controller for this mesh (if any)
@@ -128,12 +125,6 @@ public:
    ~ColladaAppMesh()
    {
       delete geomExt;
-   }
-
-   static void fixDetailSize(bool fixed, S32 size=2)
-   {
-      fixedSizeEnabled = fixed;
-      fixedSize = size;
    }
 
    /// Get the name of this mesh
