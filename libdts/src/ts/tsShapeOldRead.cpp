@@ -314,8 +314,6 @@ void TSShape::exportSequence(Stream * s, const TSShape::Sequence& seq, TSIOState
       saveState = *options;
    }
 
-   S32 currentVersion = saveState.smVersion;
-
    // write version
    s->write(saveState.smVersion);
 
