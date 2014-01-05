@@ -558,14 +558,6 @@ void FileStream::setStatus()
 
 FileStream* FileStream::clone() const
 {
-   FileStream::AccessMode mode;
-   if( hasCapability( StreamWrite ) && hasCapability( StreamRead ) )
-      mode = FileStream::ReadWrite;
-   else if( hasCapability( StreamWrite ) )
-      mode = FileStream::Write;
-   else
-      mode = FileStream::Read;
-   
    File *clone = mFile->clone();
    if (!clone)
       return NULL;
