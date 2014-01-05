@@ -60,8 +60,8 @@ static char* TrimFirstWord(char* str)
    return value;
 }
 
-ColladaAppNode::ColladaAppNode(const domNode* node, ColladaAppNode* parent)
-      : p_domNode(node), appParent(parent), nodeExt(new ColladaExtension_node(node)),
+ColladaAppNode::ColladaAppNode(const domNode* node, TSShapeLoader *loader, ColladaAppNode* parent)
+      : AppNode(loader), p_domNode(node), appParent(parent), nodeExt(new ColladaExtension_node(node)),
       lastTransformTime(TSShapeLoader::DefaultTime-1), defaultTransformValid(false),
       invertMeshes(false)
 {
@@ -121,7 +121,7 @@ void ColladaAppNode::buildChildList()
          case COLLADA_TYPE::NODE:
          {
             domNode* node = daeSafeCast<domNode>(child);
-            mChildNodes.push_back(new ColladaAppNode(node, this));
+            mChildNodes.push_back(new ColladaAppNode(node, mLoader, this));
             break;
          }
 
@@ -130,7 +130,7 @@ void ColladaAppNode::buildChildList()
             domInstance_node* instanceNode = daeSafeCast<domInstance_node>(child);
             domNode* node = daeSafeCast<domNode>(instanceNode->getUrl().getElement());
             if (node)
-               mChildNodes.push_back(new ColladaAppNode(node, this));
+               mChildNodes.push_back(new ColladaAppNode(node, mLoader, this));
             else
                Log::warnf("Failed to resolve instance_node with url=%s", instanceNode->getUrl().originalStr().c_str());
             break;
@@ -155,13 +155,13 @@ void ColladaAppNode::buildMeshList()
             if (instanceGeom) {
                domGeometry* geometry = daeSafeCast<domGeometry>(instanceGeom->getUrl().getElement());
                if (geometry && geometry->getMesh())
-                  mMeshes.push_back(new ColladaAppMesh(instanceGeom, this));
+                  mMeshes.push_back(new ColladaAppMesh(instanceGeom, this, mLoader));
             }
             break;
          }
 
          case COLLADA_TYPE::INSTANCE_CONTROLLER:
-            mMeshes.push_back(new ColladaAppMesh(daeSafeCast<domInstance_controller>(child), this));
+            mMeshes.push_back(new ColladaAppMesh(daeSafeCast<domInstance_controller>(child), this, mLoader));
             break;
       }
    }

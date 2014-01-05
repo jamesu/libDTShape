@@ -29,10 +29,8 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-Vector<AppMaterial*> AppMesh::appMaterials;
-
-AppMesh::AppMesh()
-   : flags(0), numFrames(0), numMatFrames(0), vertsPerFrame(0)
+AppMesh::AppMesh(TSShapeLoader *loader)
+   : flags(0), numFrames(0), numMatFrames(0), vertsPerFrame(0), mLoader(loader)
 {
 }
 

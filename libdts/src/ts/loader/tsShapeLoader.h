@@ -112,7 +112,11 @@ protected:
    Vector<Point3F*>              nodeScaleCache;
 
    Point3F                       shapeOffset;         ///< Offset used to translate the shape origin
+   
+public:
+   Vector<AppMaterial*>          appMaterials;
 
+protected:
    //--------------------------------------------------------------------------
 
    // Collect the nodes, objects and sequences for the scene

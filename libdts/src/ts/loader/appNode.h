@@ -57,10 +57,12 @@ protected:
    Vector<AppNode*>  mChildNodes;
    char* mName;
    char* mParentName;
+   
+   TSShapeLoader *mLoader;
 
 public:
 
-   AppNode();
+   AppNode(TSShapeLoader *loader);
    virtual ~AppNode();
 
    S32 getNumMesh();

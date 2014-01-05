@@ -28,10 +28,11 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
-AppNode::AppNode()
+AppNode::AppNode(TSShapeLoader *loader)
 {
    mName = NULL;
    mParentName = NULL;
+   mLoader = loader;
 }
 
 AppNode::~AppNode()

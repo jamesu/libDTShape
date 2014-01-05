@@ -43,6 +43,7 @@ BEGIN_NS(DTShape)
 //-----------------------------------------------------------------------------
 
 class AppNode;
+class TSShapeLoader;
 
 class AppMesh
 {
@@ -74,10 +75,11 @@ public:
    S32                           detailSize;
    MatrixF                       objectOffset;
    Vector<AppNode*>              bones;
-   static Vector<AppMaterial*>   appMaterials;
+   
+   TSShapeLoader *mLoader;
 
 public:
-   AppMesh();
+   AppMesh(TSShapeLoader *loader);
    virtual ~AppMesh();
 
    void computeBounds(Box3F& bounds);

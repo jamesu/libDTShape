@@ -693,11 +693,11 @@ void TSShapeLoader::generateMaterialList()
 {
    // Install the materials into the material list
    shape->materialList = new TSMaterialList;
-   for (int iMat = 0; iMat < AppMesh::appMaterials.size(); iMat++)
+   for (int iMat = 0; iMat < appMaterials.size(); iMat++)
    {
-      updateProgress(Load_GenerateMaterials, "Generating materials...", AppMesh::appMaterials.size(), iMat);
+      updateProgress(Load_GenerateMaterials, "Generating materials...", appMaterials.size(), iMat);
 
-      AppMaterial* appMat = AppMesh::appMaterials[iMat];
+      AppMaterial* appMat = appMaterials[iMat];
       shape->materialList->push_back(appMat->getName(), appMat->getFlags(), U32(-1), U32(-1), U32(-1), 1.0f, appMat->getReflectance());
    }
 }
@@ -1259,9 +1259,9 @@ TSShapeLoader::~TSShapeLoader()
    clearNodeTransformCache();
 
    // Clear shared AppMaterial list
-   for (int iMat = 0; iMat < AppMesh::appMaterials.size(); iMat++)
-      delete AppMesh::appMaterials[iMat];
-   AppMesh::appMaterials.clear();
+   for (int iMat = 0; iMat < appMaterials.size(); iMat++)
+      delete appMaterials[iMat];
+   appMaterials.clear();
 
    // Delete Subshapes
    delete boundsNode;

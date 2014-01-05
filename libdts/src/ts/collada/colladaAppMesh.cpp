@@ -330,16 +330,16 @@ public:
 
 //------------------------------------------------------------------------------
 
-ColladaAppMesh::ColladaAppMesh(const domInstance_geometry* instance, ColladaAppNode* node)
-   : instanceGeom(instance), instanceCtrl(0), appNode(node), geomExt(0)
+ColladaAppMesh::ColladaAppMesh(const domInstance_geometry* instance, ColladaAppNode* node, TSShapeLoader *loader)
+   : AppMesh(loader), instanceGeom(instance), instanceCtrl(0), appNode(node), geomExt(0)
 {
    flags = 0;
    numFrames = 0;
    numMatFrames = 0;
 }
 
-ColladaAppMesh::ColladaAppMesh(const domInstance_controller* instance, ColladaAppNode* node)
-   : instanceGeom(0), instanceCtrl(instance), appNode(node), geomExt(0)
+ColladaAppMesh::ColladaAppMesh(const domInstance_controller* instance, ColladaAppNode* node, TSShapeLoader *loader)
+   :  AppMesh(loader), instanceGeom(0), instanceCtrl(instance), appNode(node), geomExt(0)
 {
    flags = 0;
    numFrames = 0;
@@ -381,8 +381,8 @@ bool ColladaAppMesh::animatesMatFrame(const AppSequence* appSeq)
    // - by animating the morph weights for morph targets with different UVs
 
    // Check if the MAYA profile texture transform is animated
-   for (int iMat = 0; iMat < appMaterials.size(); iMat++) {
-      ColladaAppMaterial* appMat = static_cast<ColladaAppMaterial*>(appMaterials[iMat]);
+   for (Vector<AppMaterial*>::iterator itr = mLoader->appMaterials.begin(); itr != mLoader->appMaterials.end(); itr++) {
+      ColladaAppMaterial* appMat = static_cast<ColladaAppMaterial*>(*itr);
       if (appMat->effectExt &&
           appMat->effectExt->animatesTextureTransform(appSeq->getStart(), appSeq->getEnd()))
          return true;
@@ -460,17 +460,17 @@ S32 ColladaAppMesh::addMaterial(const char* symbol)
 
             // Find the index of the bound material in the shape global list
             const domMaterial* mat = daeSafeCast<domMaterial>(matArray[iBind]->getTarget().getElement());
-            for (matIndex = 0; matIndex < appMaterials.size(); matIndex++) {
-               if (static_cast<ColladaAppMaterial*>(appMaterials[matIndex])->mat == mat)
+            for (matIndex = 0; matIndex < mLoader->appMaterials.size(); matIndex++) {
+               if (static_cast<ColladaAppMaterial*>(mLoader->appMaterials[matIndex])->mat == mat)
                   break;
             }
 
             // Check if this material needs to be added to the shape global list
-            if (matIndex == appMaterials.size()) {
+            if (matIndex == mLoader->appMaterials.size()) {
                if (mat)
-                  appMaterials.push_back(new ColladaAppMaterial(mat));
+                  mLoader->appMaterials.push_back(new ColladaAppMaterial(mat));
                else
-                  appMaterials.push_back(new ColladaAppMaterial(symbol));
+                  mLoader->appMaterials.push_back(new ColladaAppMaterial(symbol));
             }
 
             break;
@@ -535,7 +535,7 @@ void ColladaAppMesh::getPrimitives(const domGeometry* geometry)
       // Get the AppMaterial associated with this primitive
       ColladaAppMaterial* appMat = 0;
       if (!(primitive.matIndex & TSDrawPrimitive::NoMaterial))
-         appMat = static_cast<ColladaAppMaterial*>(appMaterials[primitive.matIndex & TSDrawPrimitive::MaterialMask]);
+         appMat = static_cast<ColladaAppMaterial*>(mLoader->appMaterials[primitive.matIndex & TSDrawPrimitive::MaterialMask]);
 
       // Force the material to be double-sided if this geometry is double-sided.
       if (geomExt->double_sided && appMat && appMat->effectExt)
@@ -685,7 +685,7 @@ void ColladaAppMesh::getVertexData(const domGeometry* geometry, F32 time, const 
          streams.readInputs(meshPrims[tuple.prim]->getInputs());
          S32 matIndex = addMaterial(meshPrims[tuple.prim]->getMaterial());
          if (matIndex != TSDrawPrimitive::NoMaterial)
-            appMat = static_cast<ColladaAppMaterial*>(appMaterials[matIndex]);
+            appMat = static_cast<ColladaAppMaterial*>(mLoader->appMaterials[matIndex]);
          else
             appMat = 0;
 
@@ -1084,7 +1084,7 @@ void ColladaAppMesh::lookupSkinData()
             "defaulting to instance_controller parent node '%s'", jointName, appNode->getName()));
          joint = appNode->getDomNode();
       }
-      bones[iJoint] = new ColladaAppNode(joint);
+      bones[iJoint] = new ColladaAppNode(joint, mLoader);
 
       initialTransforms[iJoint] = objectOffset;
 

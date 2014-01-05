@@ -39,6 +39,8 @@ BEGIN_NS(DTShape)
 
 //-----------------------------------------------------------------------------
 
+class TSShapeLoader;
+
 class ColladaAppNode : public AppNode
 {
    typedef AppNode Parent;
@@ -65,7 +67,7 @@ protected:
 
 public:
 
-   ColladaAppNode(const domNode* node, ColladaAppNode* parent = 0);
+   ColladaAppNode(const domNode* node, TSShapeLoader *loader, ColladaAppNode* parent = 0);
    virtual ~ColladaAppNode()
    {
       delete nodeExt;

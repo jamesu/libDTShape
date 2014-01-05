@@ -289,7 +289,7 @@ void ColladaShapeLoader::enumerateScene()
 
    // Process the top level nodes
    for (S32 iNode = 0; iNode < sceneNodes.size(); iNode++) {
-      ColladaAppNode* node = new ColladaAppNode(sceneNodes[iNode], 0);
+      ColladaAppNode* node = new ColladaAppNode(sceneNodes[iNode], this, 0);
       if (!processNode(node))
          delete node;
    }
@@ -300,7 +300,7 @@ void ColladaShapeLoader::enumerateScene()
       domVisual_scene* visualScene = root->getLibrary_visual_scenes_array()[0]->getVisual_scene_array()[0];
       domNode* dombounds = daeSafeCast<domNode>( visualScene->createAndPlace( "node" ) );
       dombounds->setName( "bounds" );
-      ColladaAppNode *appBounds = new ColladaAppNode(dombounds, 0);
+      ColladaAppNode *appBounds = new ColladaAppNode(dombounds, this, 0);
       if (!processNode(appBounds))
          delete appBounds;
    }

@@ -123,8 +123,8 @@ protected:
 
 public:
 
-   ColladaAppMesh(const domInstance_geometry* instance, ColladaAppNode* node);
-   ColladaAppMesh(const domInstance_controller* instance, ColladaAppNode* node);
+   ColladaAppMesh(const domInstance_geometry* instance, ColladaAppNode* node, TSShapeLoader *loader);
+   ColladaAppMesh(const domInstance_controller* instance, ColladaAppNode* node, TSShapeLoader *loader);
    ~ColladaAppMesh()
    {
       delete geomExt;
