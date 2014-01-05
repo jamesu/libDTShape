@@ -333,10 +333,6 @@ protected:
    /// Creates mRenderer
    void initRender();
 
-   /// Enables mesh instancing on non-skin meshes that
-   /// have less that this count of verts.
-   static S32 smMaxInstancingVerts;
-
    /// convert primitives on load...
    void convertToTris(const TSDrawPrimitive *primitivesIn, const S32 *indicesIn,
                       S32 numPrimIn, S32 & numPrimOut, S32 & numIndicesOut,
