@@ -1575,7 +1575,7 @@ S32 String::StrFormat::formatAppend( const char *format, void *args )
    if (_dynamicBuffer == NULL)
    {
       _len += vsnprintf(_fixedBuffer + _len, sizeof(_fixedBuffer) - _len, format, *(va_list*)args);
-      if (_len >= 0 && _len < sizeof(_fixedBuffer))
+      if (_len < sizeof(_fixedBuffer))
          return _len;
 
       // Start off the dynamic buffer at twice fixed buffer size
@@ -1589,7 +1589,7 @@ S32 String::StrFormat::formatAppend( const char *format, void *args )
    // keep doubling it's size until it is.  The buffer is not reallocated
    // using reallocate() to avoid unnecessary buffer copying.
    _len += vsnprintf(_dynamicBuffer + _len, _dynamicSize - _len, format, *(va_list*)args);
-   while (_len < 0 || _len >= _dynamicSize)
+   while (_len >= _dynamicSize)
    {
       _len = startLen;
       _dynamicBuffer = (char*)dRealloc(_dynamicBuffer, _dynamicSize *= 2);
@@ -1603,7 +1603,7 @@ S32 String::StrFormat::append(const char * str, S32 len)
 {
    if (_dynamicBuffer == NULL)
    {
-      if (_len+len >= 0 && _len+len < sizeof(_fixedBuffer))
+      if ((S32)_len+len >= 0 && _len+len < sizeof(_fixedBuffer))
       {
          dMemcpy(_fixedBuffer + _len, str, len);
          _len += len;
