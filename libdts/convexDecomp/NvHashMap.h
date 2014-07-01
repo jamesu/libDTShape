@@ -1521,7 +1521,7 @@ namespace CONVEX_DECOMPOSITION
 			NX_INLINE const Entry *find(const Key &k) const
 			{
 				if(!mHash.size())
-					return false;
+					return NULL;
 
 				NxU32 h = hash(k);
 				NxU32 index = mHash[h];
