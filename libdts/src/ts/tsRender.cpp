@@ -52,6 +52,8 @@ U32 GFXVertexElement::getSizeInBytes() const
       case GFXDeclType_Float4:
          return 16;
          
+         
+      case GFXDeclType_UByte4:
       case GFXDeclType_Color:
          return 4;
          
@@ -79,6 +81,7 @@ void GFXVertexFormat::copy( const GFXVertexFormat &format )
    mHasNormal = format.mHasNormal;
    mHasTangent = format.mHasTangent;
    mHasColor = format.mHasColor;
+   mHasBlend = format.mHasBlend;
    mTexCoordCount = format.mTexCoordCount;
    mSizeInBytes = format.mSizeInBytes;
    mElements = format.mElements;
@@ -147,6 +150,14 @@ bool GFXVertexFormat::hasColor() const
    return mHasColor;
 }
 
+bool GFXVertexFormat::hasBlend() const
+{
+   if ( mDirty )
+      const_cast<GFXVertexFormat*>(this)->_updateDirty();
+   
+   return mHasBlend;
+}
+
 U32 GFXVertexFormat::getTexCoordCount() const
 {
    if ( mDirty )
@@ -170,6 +181,7 @@ void GFXVertexFormat::_updateDirty()
    mTexCoordCount = 0;
    
    mHasColor = false;
+   mHasBlend = false;
    mHasNormal = false;
    mHasTangent = false;
    mSizeInBytes = 0;
@@ -186,6 +198,8 @@ void GFXVertexFormat::_updateDirty()
          mHasColor = true;
       else if ( element.isSemantic( GFXSemantic::TEXCOORD ) )
          ++mTexCoordCount;
+      else if ( element.isSemantic( GFXSemantic::BLENDINDICES ) )
+         mHasBlend = true;
       
       mSizeInBytes += element.getSizeInBytes();
    }

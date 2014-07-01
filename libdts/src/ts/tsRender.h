@@ -99,6 +99,9 @@ enum GFXDeclType
    /// @see GFXVertexColor
    GFXDeclType_Color,
    
+   /// Four-component, packed, unsigned bytes ranged 0-255
+   GFXDeclType_UByte4,
+   
    /// The count of total GFXDeclTypes.
    GFXDeclType_COUNT,
 };
@@ -133,7 +136,9 @@ namespace GFXSemantic
       TANGENT = 3,
       TANGENTW = 4,
       COLOR = 5,
-      TEXCOORD = 6
+      TEXCOORD = 6,
+      BLENDINDICES = 7,
+      BLENDWEIGHT = 8
    };
 }
 
@@ -269,6 +274,9 @@ public:
    /// Returns true if there is a COLOR semantic in this vertex format.
    bool hasColor() const;
    
+   /// Returns true if there is a BLENDINDICES semantic in this vertex format
+   bool hasBlend() const;
+   
    /// Returns the texture coordinate count by
    /// counting the number of TEXCOORD semantics.
    U32 getTexCoordCount() const;
@@ -311,6 +319,9 @@ protected:
    
    /// Is true if there is a COLOR semantic in this vertex format.
    bool mHasColor;
+   
+   /// Is true if there is a BLENDINDICES semantic in this vertex format.
+   bool mHasBlend;
    
    /// The texture coordinate count by counting the
    /// number of "TEXCOORD" semantics.
