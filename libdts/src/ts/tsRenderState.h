@@ -120,6 +120,10 @@ typedef struct TSRenderInst
    bool  reflective;
    F32   visibility;
    
+   // GPU skinning transforms
+   MatrixF* mNodeTransforms;
+   U32 mNumNodeTransforms;
+   
    void clear();
    void render(TSRenderState *state);
 } TSRenderInst;
@@ -256,6 +260,9 @@ public:
    F32 smLastScreenErrorTolerance;
    F32 smLastScaledDistance;
    F32 smLastPixelSize;
+   
+   /// Mesh object instance being rendered
+   void *mMeshObjectInstance;
 	
 protected:
    
@@ -313,6 +320,10 @@ public:
    ///@see mUseOriginSort
    void setOriginSort( bool enable ) { mUseOriginSort = enable; }
    bool useOriginSort() const { return mUseOriginSort; }
+   
+   ///@see mMeshObjectInstance
+   void setMeshObjectInstance( void* shape ) { mMeshObjectInstance = shape; }
+   void* getMeshObjectInstance() const { return mMeshObjectInstance; }
    
    /// Allocates a new TSRenderInst
    TSRenderInst *allocRenderInst();

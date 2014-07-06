@@ -411,9 +411,9 @@ void MeshFit::addBox( const Point3F& sides, const MatrixF& mat )
 
    for ( S32 i = 0; i < mesh->mVertexData.size(); i++ )
    {
-      Point3F v = mesh->mVertexData[i].vert();
+      Point3F v = mesh->mVertexData.getBase(i).vert();
       v.convolve( sides );
-      mesh->mVertexData[i].vert( v );
+      mesh->mVertexData.getBase(i).vert( v );
    }
    mesh->computeBounds();
 
@@ -440,8 +440,8 @@ void MeshFit::addSphere( F32 radius, const Point3F& center )
 
    for ( S32 i = 0; i < mesh->mVertexData.size(); i++ )
    {
-      Point3F v = mesh->mVertexData[i].vert();
-      mesh->mVertexData[i].vert( v * radius );
+      Point3F v = mesh->mVertexData.getBase(i).vert();
+      mesh->mVertexData.getBase(i).vert( v * radius );
    }
    mesh->computeBounds();
 
@@ -472,9 +472,9 @@ void MeshFit::addCapsule( F32 radius, F32 height, const MatrixF& mat )
    F32 offset = ( height / ( 2 * radius ) ) - 0.5f;
    for ( S32 i = 0; i < mesh->mVertexData.size(); i++ )
    {
-      Point3F v = mesh->mVertexData[i].vert();
+      Point3F v = mesh->mVertexData.getBase(i).vert();
       v.y += ( ( v.y > 0 ) ? offset : -offset );
-      mesh->mVertexData[i].vert( v * radius );
+      mesh->mVertexData.getBase(i).vert( v * radius );
    }
    mesh->computeBounds();
 

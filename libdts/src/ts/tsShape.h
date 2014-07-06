@@ -725,6 +725,9 @@ class TSShape : public StrongRefBase
    
    /// Interface to reuse loaded shapes
    static TSShape *loadShape(const String& filename);
+   
+   static bool smAllowHardwareSkinning;
+   static bool smUseHardwareSkinning;
 };
 
 typedef StrongRefPtr<TSShape> TSShapeRef;

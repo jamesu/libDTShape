@@ -917,7 +917,7 @@ TSMesh* TSShape::copyMesh( const TSMesh* srcMesh ) const
 
    if ( srcMesh->mVertexData.isReady() )
    {
-      mesh->mVertexData.set( NULL, 0, 0, false );
+      mesh->mVertexData.set( NULL, 0, 0, srcMesh->mVertexData.getColorOffset(), srcMesh->mVertexData.getBoneOffset(), false );
       void *aligned_mem = dMalloc_aligned( mVertSize * srcMesh->mVertexData.size(), 16 );
 
       // Copy the source data (note that the destination shape may have different vertex size)
@@ -936,7 +936,7 @@ TSMesh* TSShape::copyMesh( const TSMesh* srcMesh ) const
             dest += mVertSize;
          }
       }
-      mesh->mVertexData.set( aligned_mem, mVertSize, srcMesh->mVertexData.size() );
+      mesh->mVertexData.set( aligned_mem, mVertSize, srcMesh->mVertexData.size(), srcMesh->mVertexData.getColorOffset(), srcMesh->mVertexData.getBoneOffset() );
       mesh->mVertexData.setReady( true );
    }
    else

@@ -164,11 +164,15 @@ void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMes
 
    //coreRI->materialHint = rdata.getMaterialHint();
 
-   coreRI->visibility = meshVisibility; 
-
-   // NOTICE: SFXBB is removed and refraction is disabled!
-   //coreRI->backBuffTex = GFX->getSfxBackBuffer();
-
+   coreRI->visibility = meshVisibility;
+   
+   if ( getMeshType() == TSMesh::SkinMeshType )
+   {
+      TSShapeInstance::MeshObjectInstance *objInst = (TSShapeInstance::MeshObjectInstance*)rdata.getMeshObjectInstance();
+      coreRI->mNodeTransforms = objInst->mActiveTransforms.address();
+      coreRI->mNumNodeTransforms = objInst->mActiveTransforms.size();
+   }
+   
    for ( S32 i = 0; i < primitives.size(); i++ )
    {
       const TSDrawPrimitive &draw = primitives[i];
@@ -357,10 +361,10 @@ bool TSMesh::getFeatures( S32 frame, const MatrixF& mat, const VectorF&, ConvexF
    S32 i;
    S32 base = cf->mVertexList.size();
 
-   for ( i = 0; i < vertsPerFrame; i++ ) 
+   for ( i = 0; i < vertsPerFrame; i++ )
    {
       cf->mVertexList.increment();
-      mat.mulP( mVertexData[firstVert + i].vert(), &cf->mVertexList.last() );
+      mat.mulP( mVertexData.getBase(firstVert + i).vert(), &cf->mVertexList.last() );
    }
 
    // add the polys...
@@ -519,7 +523,7 @@ void TSMesh::support( S32 frame, const Point3F &v, F32 *currMaxDP, Point3F *curr
 
    S32 firstVert = vertsPerFrame * frame;
    m_point3F_bulk_dot( &v.x,
-                       &mVertexData[firstVert].vert().x,
+                       &mVertexData.getBase(firstVert).vert().x,
                        vertsPerFrame,
                        mVertexData.vertSize(),
                        pDots );
@@ -539,7 +543,7 @@ void TSMesh::support( S32 frame, const Point3F &v, F32 *currMaxDP, Point3F *curr
    if ( index != -1 )
    {
       *currMaxDP   = localdp;
-      *currSupport = mVertexData[index + firstVert].vert();
+      *currSupport = mVertexData.getBase(index + firstVert).vert();
    }
 }
 
@@ -820,9 +824,13 @@ bool TSMesh::addToHull( U32 idx0, U32 idx1, U32 idx2 )
    // ways and take the one that gives us the largest vector before we
    // normalize.
    Point3F normal1, normal2, normal3;
-   mCross(mVertexData[idx2].vert()-mVertexData[idx0].vert(),mVertexData[idx1].vert()-mVertexData[idx0].vert(),&normal1);
-   mCross(mVertexData[idx0].vert()-mVertexData[idx1].vert(),mVertexData[idx2].vert()-mVertexData[idx1].vert(),&normal2);
-   mCross(mVertexData[idx1].vert()-mVertexData[idx2].vert(),mVertexData[idx0].vert()-mVertexData[idx2].vert(),&normal3);
+   const Point3F& vertex0Data = mVertexData.getBase(idx0).vert();
+   const Point3F& vertex1Data = mVertexData.getBase(idx1).vert();
+   const Point3F& vertex2Data = mVertexData.getBase(idx2).vert();
+   
+   mCross(vertex2Data-vertex0Data,vertex1Data-vertex0Data,&normal1);
+   mCross(vertex0Data-vertex1Data,vertex2Data-vertex1Data,&normal2);
+   mCross(vertex1Data-vertex2Data,vertex0Data-vertex2Data,&normal3);
    Point3F normal = normal1;
    F32 greatestMagSquared = mDot(normal1, normal1);
    F32 magSquared = mDot(normal2, normal2);
@@ -841,7 +849,7 @@ bool TSMesh::addToHull( U32 idx0, U32 idx1, U32 idx2 )
        return false;
 
    normal.normalize();
-   F32 k = mDot( normal, mVertexData[idx0].vert() );
+   F32 k = mDot( normal, vertex0Data );
    for ( S32 i = 0; i < planeNormals.size(); i++ ) 
    {
       if ( mDot( planeNormals[i], normal ) > 0.99f && mFabs( k-planeConstants[i] ) < 0.01f )
@@ -906,7 +914,7 @@ bool TSMesh::buildConvexHull()
       // make sure all the verts on this frame are inside all the planes
       for ( i = 0; i < vertsPerFrame; i++ )
          for ( j = firstPlane; j < planeNormals.size(); j++ )
-            if ( mDot( mVertexData[firstVert + i].vert(), planeNormals[j] ) - planeConstants[j] < 0.01 ) // .01 == a little slack
+            if ( mDot( mVertexData.getBase(firstVert + i).vert(), planeNormals[j] ) - planeConstants[j] < 0.01 ) // .01 == a little slack
                error = true;
 
       if ( frame == 0 )
@@ -966,14 +974,14 @@ void TSMesh::computeBounds( const MatrixF &transform, Box3F &bounds, S32 frame, 
 
    if(mVertexData.isReady())
    {
-      baseVert = &mVertexData[0].vert();
+      baseVert = &mVertexData.getBase(0).vert();
       stride = mVertexData.vertSize();
 
       if ( frame < 0 )
          numVerts = mNumVerts;
       else
       {
-         baseVert = &mVertexData[frame * vertsPerFrame].vert();
+         baseVert = &mVertexData.getBase(frame * vertsPerFrame).vert();
          numVerts = vertsPerFrame;
       }
    }
@@ -1105,6 +1113,18 @@ TSMesh::~TSMesh()
 // TSSkinMesh methods
 //-----------------------------------------------------
 
+void TSSkinMesh::updateSkinBones( const Vector<MatrixF> &transforms, Vector<MatrixF>& dest )
+{
+   // Update transforms for current mesh
+   dest.setSize(batchData.nodeIndex.size());
+   
+   for( int i=0; i<batchData.nodeIndex.size(); i++ )
+   {
+      S32 node = batchData.nodeIndex[i];
+      dest[i].mul( transforms[node], batchData.initialTransforms[i] );
+   }
+}
+
 void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &rdata )
 {
    PROFILE_SCOPE( TSSkinMesh_UpdateSkin );
@@ -1128,19 +1148,23 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &r
       batchData.initialNorms.set( rdata.gNormalStore.address(), vertsPerFrame );
    }
 #endif
-
-   static Vector<MatrixF> sBoneTransforms;
-   sBoneTransforms.setSize( batchData.nodeIndex.size() );
-
-   // set up bone transforms
-   PROFILE_START(TSSkinMesh_UpdateTransforms);
-   for( int i=0; i<batchData.nodeIndex.size(); i++ )
+   const MatrixF * matrices = NULL;
+   
+   if (!TSShape::smUseHardwareSkinning)
    {
-      S32 node = batchData.nodeIndex[i];
-      sBoneTransforms[i].mul( transforms[node], batchData.initialTransforms[i] );
+      static Vector<MatrixF> sBoneTransforms;
+      sBoneTransforms.setSize( batchData.nodeIndex.size() );
+      
+      // set up bone transforms
+      PROFILE_START(TSSkinMesh_UpdateTransforms);
+      for( int i=0; i<batchData.nodeIndex.size(); i++ )
+      {
+         S32 node = batchData.nodeIndex[i];
+         sBoneTransforms[i].mul( transforms[node], batchData.initialTransforms[i] );
+      }
+      matrices = &sBoneTransforms[0];
+      PROFILE_END();
    }
-   const MatrixF * matrices = &sBoneTransforms[0];
-   PROFILE_END();
 
    // Perform skinning
    const bool bBatchByVert = !batchData.vertexBatchOperations.empty();
@@ -1155,8 +1179,12 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &r
 
       register Point3F skinnedVert;
       register Point3F skinnedNorm;
+      
+      // If using hardware skinning, don't update (data is set in createBatchData)
+      if (TSShape::smUseHardwareSkinning)
+         return;
 
-      for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchData.vertexBatchOperations.begin(); 
+      for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchData.vertexBatchOperations.begin();
          itr != batchData.vertexBatchOperations.end(); itr++ )
       {
          const BatchData::BatchedVertex &curVert = *itr;
@@ -1178,7 +1206,7 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &r
          }
 
          // Assign results 
-         __TSMeshVertexBase &dest = mVertexData[curVert.vertexIndex];
+         __TSMeshVertexBase &dest = mVertexData.getBase(curVert.vertexIndex);
          dest.vert(skinnedVert);
          dest.normal(skinnedNorm);
       }
@@ -1223,10 +1251,6 @@ S32 QSORT_CALLBACK _sort_BatchedVertWeight( const void *a, const void *b )
    return ( _a.vidx - _b.vidx );
 }
 
-// Batch by vertex is useful to emulate the old skinning, or to build batch data
-// sutable for GPU skinning.
-//#define _BATCH_BY_VERTEX
-
 void TSSkinMesh::createBatchData()
 {
    if(batchDataInitialized)
@@ -1267,14 +1291,14 @@ void TSSkinMesh::createBatchData()
          S32 opIdx = batchOperations.last().transformCount++;
 
          // Limit the number of weights per bone (keep the N largest influences)
-         if ( opIdx >= TSSkinMesh::BatchData::maxBonePerVert )
+         if ( opIdx >= TSSkinMesh::BatchData::maxBonePerVert || (TSShape::smAllowHardwareSkinning && opIdx >= TSSkinMesh::BatchData::maxBonePerVertGPU)  )
          {
             if ( !issuedWeightWarning )
             {
                issuedWeightWarning = true;
                Log::warnf( "At least one vertex has too many bone weights - limiting "
                   "to the largest %d influences (see maxBonePerVert in tsMesh.h).",
-                  TSSkinMesh::BatchData::maxBonePerVert );
+                          TSShape::smAllowHardwareSkinning ? TSSkinMesh::BatchData::maxBonePerVertGPU : TSSkinMesh::BatchData::maxBonePerVert );
             }
 
             // Too many weights => find and replace the smallest one
@@ -1328,68 +1352,124 @@ void TSSkinMesh::createBatchData()
       }
    }
 
-#ifdef _BATCH_BY_VERTEX
-   // Copy data to member, and be done
-   batchData.vertexBatchOperations.set(batchOperations.address(), batchOperations.size());
-
-   // Convert to batch-by-transform, which is better for CPU skinning, 
-   // where-as GPU skinning would data for batch-by-vertex operation
-#else
-   // Iterate the batch-by-vertex, and populate the batch-by-transform structs
-   for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchOperations.begin(); 
-      itr != batchOperations.end(); itr++ )
+   if (TSShape::smAllowHardwareSkinning)
    {
-      const BatchData::BatchedVertex &curTransform = *itr;
-      for( int i = 0; i < curTransform.transformCount; i++ )
+      // Copy data to member, and be done
+      batchData.vertexBatchOperations.set(batchOperations.address(), batchOperations.size());
+      
+      // Insert this data into the vertex array
+      for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchOperations.begin();
+          itr != batchOperations.end(); itr++ )
       {
-         const BatchData::TransformOp &transformOp = curTransform.transform[i];
-
-         // Find the proper batched transform, and add this vertex/weight to the
-         // list of verts affected by the transform
-         BatchData::BatchedTransform *bt = batchData.transformBatchOperations.retreive(transformOp.transformIndex);
-         if(!bt)
+         const BatchData::BatchedVertex &curTransform = *itr;
+         __TSMeshVertex_BoneData &v = mVertexData.getBone(curTransform.vertexIndex);
+         
+         __TSMeshIndex_List col;
+         Point4F weights(0,0,0,0);
+         
+         // max of 4 transforms per vert
+         switch (curTransform.transformCount)
          {
-            bt = new BatchData::BatchedTransform;
-            batchData.transformBatchOperations.insert(bt, transformOp.transformIndex);
-            bt->_tmpVec = new Vector<BatchData::BatchedVertWeight>;
-            batchData.transformKeys.push_back(transformOp.transformIndex);
+            case 0:
+               break;
+            case 1:
+               col.x = curTransform.transform[0].transformIndex;
+               weights.x = curTransform.transform[0].weight;
+               break;
+            case 2:
+               col.x = curTransform.transform[0].transformIndex;
+               weights.x = curTransform.transform[0].weight;
+               col.y = curTransform.transform[1].transformIndex;
+               weights.y = curTransform.transform[1].weight;
+               break;
+            case 3:
+               col.x = curTransform.transform[0].transformIndex;
+               weights.x = curTransform.transform[0].weight;
+               col.y = curTransform.transform[1].transformIndex;
+               weights.y = curTransform.transform[1].weight;
+               col.z = curTransform.transform[2].transformIndex;
+               weights.z = curTransform.transform[2].weight;
+               break;
+            case 4:
+               col.x = curTransform.transform[0].transformIndex;
+               weights.x = curTransform.transform[0].weight;
+               col.y = curTransform.transform[1].transformIndex;
+               weights.y = curTransform.transform[1].weight;
+               col.z = curTransform.transform[2].transformIndex;
+               weights.z = curTransform.transform[2].weight;
+               col.w = curTransform.transform[3].transformIndex;
+               weights.w = curTransform.transform[3].weight;
+               break;
+            default:
+               AssertFatal(false, "Too many weights!");
+               break;
          }
-
-         bt->_tmpVec->increment();
-         bt->_tmpVec->last().vert = batchData.initialVerts[curTransform.vertexIndex];
-         bt->_tmpVec->last().normal = batchData.initialNorms[curTransform.vertexIndex];
-         bt->_tmpVec->last().weight = transformOp.weight;
-         bt->_tmpVec->last().vidx = curTransform.vertexIndex;
+         
+         // set the position, normal, and tangent too
+         v.index(col);
+         v.weight(weights);
       }
    }
-
-   // Now iterate the resulting operations and convert the vectors to aligned
-   // memory locations
-   const int numBatchOps = batchData.transformKeys.size();
-   for(int i = 0; i < numBatchOps; i++)
+   else
    {
-      BatchData::BatchedTransform &curTransform = *batchData.transformBatchOperations.retreive(batchData.transformKeys[i]);
-      const S32 numVerts = curTransform._tmpVec->size();
+      // Convert to batch-by-transform, which is better for CPU skinning,
+      // where-as GPU skinning would data for batch-by-vertex operation
 
-      // Allocate a chunk of aligned memory and copy in values
-      curTransform.numElements = numVerts;
-      curTransform.alignedMem = reinterpret_cast<BatchData::BatchedVertWeight *>(dMalloc_aligned(sizeof(BatchData::BatchedVertWeight) * numVerts, 16));
-      AssertFatal(curTransform.alignedMem, "Aligned malloc failed! Debug!");
-      constructArrayInPlace(curTransform.alignedMem, numVerts);
-      dMemcpy(curTransform.alignedMem, curTransform._tmpVec->address(), numVerts * sizeof(BatchData::BatchedVertWeight));
+      // Iterate the batch-by-vertex, and populate the batch-by-transform structs
+      for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchOperations.begin(); 
+         itr != batchOperations.end(); itr++ )
+      {
+         const BatchData::BatchedVertex &curTransform = *itr;
+         for( int i = 0; i < curTransform.transformCount; i++ )
+         {
+            const BatchData::TransformOp &transformOp = curTransform.transform[i];
 
-      // Now free the vector memory
-      delete curTransform._tmpVec;
-      curTransform._tmpVec = NULL;
+            // Find the proper batched transform, and add this vertex/weight to the
+            // list of verts affected by the transform
+            BatchData::BatchedTransform *bt = batchData.transformBatchOperations.retreive(transformOp.transformIndex);
+            if(!bt)
+            {
+               bt = new BatchData::BatchedTransform;
+               batchData.transformBatchOperations.insert(bt, transformOp.transformIndex);
+               bt->_tmpVec = new Vector<BatchData::BatchedVertWeight>;
+               batchData.transformKeys.push_back(transformOp.transformIndex);
+            }
+
+            bt->_tmpVec->increment();
+            bt->_tmpVec->last().vert = batchData.initialVerts[curTransform.vertexIndex];
+            bt->_tmpVec->last().normal = batchData.initialNorms[curTransform.vertexIndex];
+            bt->_tmpVec->last().weight = transformOp.weight;
+            bt->_tmpVec->last().vidx = curTransform.vertexIndex;
+         }
+      }
+
+      // Now iterate the resulting operations and convert the vectors to aligned
+      // memory locations
+      const int numBatchOps = batchData.transformKeys.size();
+      for(int i = 0; i < numBatchOps; i++)
+      {
+         BatchData::BatchedTransform &curTransform = *batchData.transformBatchOperations.retreive(batchData.transformKeys[i]);
+         const S32 numVerts = curTransform._tmpVec->size();
+
+         // Allocate a chunk of aligned memory and copy in values
+         curTransform.numElements = numVerts;
+         curTransform.alignedMem = reinterpret_cast<BatchData::BatchedVertWeight *>(dMalloc_aligned(sizeof(BatchData::BatchedVertWeight) * numVerts, 16));
+         AssertFatal(curTransform.alignedMem, "Aligned malloc failed! Debug!");
+         constructArrayInPlace(curTransform.alignedMem, numVerts);
+         dMemcpy(curTransform.alignedMem, curTransform._tmpVec->address(), numVerts * sizeof(BatchData::BatchedVertWeight));
+
+         // Now free the vector memory
+         delete curTransform._tmpVec;
+         curTransform._tmpVec = NULL;
+      }
+
+      // Now sort the batch data so that the skin function writes close to linear output
+      for(int i = 0; i < numBatchOps; i++)
+      {
+         BatchData::BatchedTransform &curTransform = *batchData.transformBatchOperations.retreive(batchData.transformKeys[i]);
+         dQsort(curTransform.alignedMem, curTransform.numElements, sizeof(BatchData::BatchedVertWeight), _sort_BatchedVertWeight);
+      }
    }
-
-   // Now sort the batch data so that the skin function writes close to linear output
-   for(int i = 0; i < numBatchOps; i++)
-   {
-      BatchData::BatchedTransform &curTransform = *batchData.transformBatchOperations.retreive(batchData.transformKeys[i]);
-      dQsort(curTransform.alignedMem, curTransform.numElements, sizeof(BatchData::BatchedVertWeight), _sort_BatchedVertWeight);
-   }
-#endif
 }
 
 void TSSkinMesh::render( TSMeshRenderer &renderer )
@@ -2491,15 +2571,20 @@ void TSMesh::disassemble(TSIOState &ioState)
       // Fill arrays
       for(U32 i = 0; i < mNumVerts; i++)
       {
-         const __TSMeshVertexBase &cv = mVertexData[i];
+         const __TSMeshVertexBase &cv = mVertexData.getBase(i);
          verts[i] = cv.vert();
          tverts[i] = cv.tvert();
          norms[i] = cv.normal();
-
-         if(mHasColor)
-            cv.color().getColor(&colors[i]);
-         if(mHasTVert2)
-            tverts2[i] = cv.tvert2();
+         
+         if (mHasColor || mHasTVert2)
+         {
+            const __TSMeshVertex_3xUVColor &cvc = mVertexData.getColor(i);
+            if(mHasColor)
+               cvc.color().getColor(&colors[i]);
+            if(mHasTVert2)
+               tverts2[i] = cvc.tvert2();
+         }
+         
       }
    }
 
@@ -2884,6 +2969,26 @@ void TSSkinMesh::convertToAlignedMeshData()
 
 void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vector<Point3F> &_verts, const Vector<Point3F> &_norms )
 {
+   U32 colorOffset = 0;
+   U32 boneOffset = 0;
+   
+   mHasColor = !colors.empty();
+   AssertFatal(!mHasColor || colors.size() == _verts.size(), "Vector of color elements should be the same size as other vectors");
+   
+   mHasTVert2 = !tverts2.empty();
+   AssertFatal(!mHasTVert2 || tverts2.size() == _verts.size(), "Vector of tvert2 elements should be the same size as other vectors");
+   
+   if (mVertexFormat->hasBlend())
+   {
+      boneOffset = sizeof(__TSMeshVertexBase);
+   }
+   
+   if (mHasTVert2 || mHasColor)
+   {
+      colorOffset = sizeof(__TSMeshVertexBase);
+      if (boneOffset > 0) boneOffset += sizeof(__TSMeshVertex_3xUVColor);
+   }
+
    // If mVertexData is ready, and the input array is different than mVertexData
    // use mVertexData to quickly initialize the input array
    if(mVertexData.isReady() && vertexData.address() != mVertexData.address())
@@ -2896,7 +3001,7 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
       void *aligned_mem = dMalloc_aligned(mVertSize * mNumVerts, 16);
       AssertFatal(aligned_mem, "Aligned malloc failed! Debug!");
 
-      vertexData.set(aligned_mem, mVertSize, mNumVerts);
+      vertexData.set(aligned_mem, mVertSize, mNumVerts, colorOffset, boneOffset);
       vertexData.setReady(true);
 
 #if defined(LIBDTSHAPE_OS_XENON)
@@ -2915,38 +3020,39 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
    mNumVerts = _verts.size();
 
    // Initialize the vertex data
-   vertexData.set(NULL, 0, 0);
+   vertexData.set(NULL, 0, 0, colorOffset, boneOffset);
    vertexData.setReady(true);
 
    if(mNumVerts == 0)
       return;
-
-   mHasColor = !colors.empty();
-   AssertFatal(!mHasColor || colors.size() == _verts.size(), "Vector of color elements should be the same size as other vectors");
-
-   mHasTVert2 = !tverts2.empty();
-   AssertFatal(!mHasTVert2 || tverts2.size() == _verts.size(), "Vector of tvert2 elements should be the same size as other vectors");
-
+   
    // Create the proper array type
    void *aligned_mem = dMalloc_aligned(mVertSize * mNumVerts, 16);
    AssertFatal(aligned_mem, "Aligned malloc failed! Debug!");
 
    dMemset(aligned_mem, 0, mNumVerts * mVertSize);
-   vertexData.set(aligned_mem, mVertSize, mNumVerts);
-
+   vertexData.set(aligned_mem, mVertSize, mNumVerts, colorOffset, boneOffset);
+   
    for(U32 i = 0; i < mNumVerts; i++)
    {
-      __TSMeshVertexBase &v = vertexData[i];
+      __TSMeshVertexBase &v = vertexData.getBase(i);
       v.vert(_verts[i]);
       v.normal(_norms[i]);
       v.tangent(tangents[i]);
 
       if(i < tverts.size())
          v.tvert(tverts[i]);
-      if(mHasTVert2 && i < tverts2.size())
-         v.tvert2(tverts2[i]);
-      if(mHasColor && i < colors.size())
-         v.color(colors[i]);
+      
+      if (mHasTVert2 || mHasColor)
+      {
+         __TSMeshVertex_3xUVColor &vc = vertexData.getColor(i);
+         if(mHasTVert2 && i < tverts2.size())
+            vc.tvert2(tverts2[i]);
+         if(mHasColor && i < colors.size())
+            vc.color(colors[i]);
+      }
+      
+      // NOTE: skin verts are set later on
    }
 
    // Now that the data is in the aligned struct, free the Vector memory

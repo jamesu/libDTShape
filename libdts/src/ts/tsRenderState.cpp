@@ -60,6 +60,8 @@ TSRenderState::TSRenderState()
    smLastScaledDistance = 0.0f;
    smLastPixelSize = 0.0f;
    
+   mMeshObjectInstance = NULL;
+   
    smDetailCanShadow = true;
    
 }

@@ -181,8 +181,28 @@ protected:
       TSVertexColor _color;
       F32 _tvert3;  // Unused, but needed for alignment purposes
    };
+   
+   struct __TSMeshIndex_List {
+	   U8 x;
+	   U8 y;
+	   U8 z;
+	   U8 w;
+   };
+   
+   struct __TSMeshVertex_BoneData
+   {
+      __TSMeshIndex_List _indexes;
+      Point4F _weights;
+      
+      const __TSMeshIndex_List &index() const { return _indexes; }
+      void index(const __TSMeshIndex_List& c) { _indexes = c; }
+      
+      const Point4F &weight() const { return _weights; }
+      void weight(const Point4F &w) { _weights = w; }
+   };
+   
 #pragma pack()
-
+   
    struct TSMeshVertexArray
    {
    protected:
@@ -190,28 +210,53 @@ protected:
       dsize_t vertSz;
       bool vertexDataReady;
       U32 numElements;
-
+      
+      U32 colorOffset;
+      U32 boneOffset;
+      
    public:
-      TSMeshVertexArray() : base(NULL), vertexDataReady(false), numElements(0) {}
-      virtual ~TSMeshVertexArray() { set(NULL, 0, 0); }
-
-      virtual void set(void *b, dsize_t s, U32 n, bool autoFree = true ) 
+      TSMeshVertexArray() : base(NULL), vertexDataReady(false), numElements(0), colorOffset(0), boneOffset(0) {}
+      virtual ~TSMeshVertexArray() { set(NULL, 0, 0, 0, 0); }
+      
+      virtual void set( void *b, dsize_t s, U32 n, U32 inColorOffset, U32 inBoneOffset, bool autoFree = true )
       {
-         if(base && autoFree) 
-            dFree_aligned(base); 
-         base = reinterpret_cast<U8 *>(b); 
-         vertSz = s; 
-         numElements = n; 
+         if(base && autoFree)
+            dFree_aligned(base);
+         base = reinterpret_cast<U8 *>(b);
+         vertSz = s;
+         numElements = n;
+         colorOffset = inColorOffset;
+         boneOffset = inBoneOffset;
       }
-
-      // Vector-like interface
-      __TSMeshVertexBase &operator[](int idx) const { AssertFatal(idx < numElements, "Out of bounds access!"); return *reinterpret_cast<__TSMeshVertexBase *>(base + idx * vertSz); }
-      __TSMeshVertexBase *address() const { return reinterpret_cast<__TSMeshVertexBase *>(base); }
+      
+      __TSMeshVertexBase &getBase(int idx) const
+      {
+         AssertFatal(idx < numElements, "Out of bounds access!"); return *reinterpret_cast<__TSMeshVertexBase *>(base + idx * vertSz);
+      }
+      
+      __TSMeshVertex_3xUVColor &getColor(int idx) const
+      {
+         AssertFatal(idx < numElements, "Out of bounds access!"); return *reinterpret_cast<__TSMeshVertex_3xUVColor *>(base + (idx * vertSz) + colorOffset);
+      }
+      
+      __TSMeshVertex_BoneData &getBone(int idx) const
+      {
+         AssertFatal(idx < numElements, "Out of bounds access!"); return *reinterpret_cast<__TSMeshVertex_BoneData *>(base + (idx * vertSz) + boneOffset);
+      }
+      
+      __TSMeshVertexBase *address() const
+      {
+         return reinterpret_cast<__TSMeshVertexBase *>(base);
+      }
       U32 size() const { return numElements; }
       dsize_t mem_size() const { return numElements * vertSz; }
       dsize_t vertSize() const { return vertSz; }
       bool isReady() const { return vertexDataReady; }
       void setReady(bool r) { vertexDataReady = r; }
+      
+      inline U32 getColorOffset() const { return colorOffset; }
+      inline U32 getBoneOffset() const { return boneOffset; }
+      
    };
 
    bool mHasColor;
@@ -371,7 +416,8 @@ public:
    {
       enum Constants
       {
-         maxBonePerVert = 16,  // Abitrarily chosen
+         maxBonePerVert = 16,   // Abitrarily chosen
+         maxBonePerVertGPU = 4, // xyzw
       };
 
       /// @name Batch by vertex
@@ -467,6 +513,9 @@ public:
    Vector<S32> boneIndex;
    Vector<S32> vertexIndex;
 
+   /// set transforms...
+   void updateSkinBones( const Vector<MatrixF> &transforms, Vector<MatrixF>& dest );
+   
    /// set verts and normals...
    void updateSkin( const Vector<MatrixF> &transforms, TSRenderState &rdata );
 

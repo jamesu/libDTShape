@@ -465,6 +465,8 @@ void TSShapeInstance::render( TSRenderState &rdata, S32 dl, F32 intraDL )
    S32 end   = rdata.isNoRenderTranslucent() ? mShape->subShapeFirstTranslucentObject[ss] : mShape->subShapeFirstObject[ss] + mShape->subShapeNumObjects[ss];
    for (i=start; i<end; i++)
    {
+      rdata.setMeshObjectInstance(&mMeshObjects[i]);
+      
       // following line is handy for debugging, to see what part of the shape that it is rendering
       // const char *name = mShape->names[ mMeshObjects[i].object->nameIndex ];
       mMeshObjects[i].render( od, mMaterialList, rdata, mAlphaAlways ? mAlphaAlwaysValue : 1.0f );
@@ -681,6 +683,12 @@ void TSShapeInstance::MeshObjectInstance::render(  S32 objectDetail,
    // in the skin only updating once per frame in most cases.
    const U32 currTime = 0;// TODOSim::getCurrentTime();
    bool isSkinDirty = true;//currTime != mLastTime;
+   
+   // Store skin mesh transforms in mActiveTransforms
+   if (isSkinDirty && mesh->getMeshType() == TSMesh::SkinMeshType)
+   {
+      static_cast<TSSkinMesh*>(mesh)->updateSkinBones(*mTransforms, mActiveTransforms);
+   }
 
    mesh->render(  materials, 
                   rdata, 

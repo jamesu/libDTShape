@@ -53,6 +53,9 @@ const F32 TSShape::smAlphaOutBillboard = 0.15f;
 const F32 TSShape::smAlphaInDefault = -1.0f;
 const F32 TSShape::smAlphaOutDefault = -1.0f;
 
+bool TSShape::smAllowHardwareSkinning = true;
+bool TSShape::smUseHardwareSkinning = true;
+
 TSIOState::TSIOState()
 {
    smVersion = 26;
@@ -562,6 +565,7 @@ void TSShape::initVertexFeatures()
 {
    bool hasColors = false;
    bool hasTexcoord2 = false;
+   bool hasSkin = false;
 
    Vector<TSMesh*>::iterator iter = meshes.begin();
    for ( ; iter != meshes.end(); iter++ )
@@ -581,26 +585,48 @@ void TSShape::initVertexFeatures()
             hasColors |= !mesh->colors.empty();
             hasTexcoord2 |= !mesh->tverts2.empty();
          }
+         
+         hasSkin |= mesh->getMeshType() == TSMesh::SkinMeshType;
       }
    }
-
-   mVertSize = ( hasTexcoord2 || hasColors ) ? sizeof(TSMesh::__TSMeshVertex_3xUVColor) : sizeof(TSMesh::__TSMeshVertexBase);
+   
+   mVertSize = sizeof(TSMesh::__TSMeshVertexBase);
    mVertexFormat.clear();
-  
+   
    mVertexFormat.addElement( GFXSemantic::POSITION, GFXDeclType_Float3 );
    mVertexFormat.addElement( GFXSemantic::TANGENTW, GFXDeclType_Float, 3 );
    mVertexFormat.addElement( GFXSemantic::NORMAL, GFXDeclType_Float3 );
    mVertexFormat.addElement( GFXSemantic::TANGENT, GFXDeclType_Float3 );
-
+   
    mVertexFormat.addElement( GFXSemantic::TEXCOORD, GFXDeclType_Float2, 0 );
-
+   
    if(hasTexcoord2 || hasColors)
    {
       mVertexFormat.addElement( GFXSemantic::TEXCOORD, GFXDeclType_Float2, 1 );
       mVertexFormat.addElement( GFXSemantic::COLOR, GFXDeclType_Color );
+   }
+   
+   if (hasSkin && smAllowHardwareSkinning)
+   {
+      mVertexFormat.addElement( GFXSemantic::BLENDINDICES, GFXDeclType_UByte4 );
+      mVertexFormat.addElement( GFXSemantic::BLENDWEIGHT, GFXDeclType_Float4 );
+   }
+   
+   if ( (hasTexcoord2 || hasColors) )
+   {
+      if (!(hasSkin && smAllowHardwareSkinning) )
+      {
+         mVertexFormat.addElement( GFXSemantic::TEXCOORD, GFXDeclType_Float, 2 );
+      }
+   }
+   else if (hasSkin && smAllowHardwareSkinning)
+   {
+      mVertexFormat.addElement( GFXSemantic::TEXCOORD, GFXDeclType_Float2, 1 );
       mVertexFormat.addElement( GFXSemantic::TEXCOORD, GFXDeclType_Float, 2 );
    }
-
+   
+   mVertSize = mVertexFormat.getSizeInBytes();
+   
    // Go fix up meshes to include defaults for optional features
    // and initialize them if they're not a skin mesh.
    iter = meshes.begin();

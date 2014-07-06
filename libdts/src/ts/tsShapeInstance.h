@@ -162,6 +162,9 @@ class TSShapeInstance
       /// The time at which this mesh 
       /// was last rendered.
       U32 mLastTime;
+      
+      /// For GPU Skinning
+      Vector<MatrixF> mActiveTransforms;
 
       MeshObjectInstance();
       virtual ~MeshObjectInstance() {}
