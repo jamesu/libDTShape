@@ -38,6 +38,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 using namespace DTShape;
 
 class GLTSMaterial;
+class GLTSSceneRenderState;
 
 // Basic OpenGL Material Instance
 class GLTSMaterialInstance : public TSMaterialInstance
@@ -61,7 +62,7 @@ public:
    
    virtual const char* getName();
    
-   void activate();
+   void activate(GLTSSceneRenderState *sceneState, TSRenderInst *renderInst);
 };
 
 // Basic OpenGL Material

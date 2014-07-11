@@ -1367,6 +1367,8 @@ void TSSkinMesh::createBatchData()
          __TSMeshIndex_List col;
          Point4F weights(0,0,0,0);
          
+         //dMemset(&col, '\0', sizeof(col));
+         
          // max of 4 transforms per vert
          switch (curTransform.transformCount)
          {
@@ -1405,7 +1407,9 @@ void TSSkinMesh::createBatchData()
                break;
          }
          
-         // set the position, normal, and tangent too
+         // set the weights etc
+         //Log::printf("DBG: vert[%i] COLOR == [%u,%u,%u,%u] WEIGHT == [%f,%f,%f,%f]", curTransform.vertexIndex, col.x, col.y, col.z, col.w, weights.x, weights.y, weights.z, weights.w);
+         
          v.index(col);
          v.weight(weights);
       }
@@ -3000,6 +3004,7 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
       // storing an array of the data structures? That would certainly bloat memory.
       void *aligned_mem = dMalloc_aligned(mVertSize * mNumVerts, 16);
       AssertFatal(aligned_mem, "Aligned malloc failed! Debug!");
+      dMemset(aligned_mem, 0, mVertSize * mNumVerts);
 
       vertexData.set(aligned_mem, mVertSize, mNumVerts, colorOffset, boneOffset);
       vertexData.setReady(true);

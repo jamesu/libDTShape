@@ -26,9 +26,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "GLSimpleShader.h"
 #include "core/log.h"
 
-
 #ifdef HAVE_OPENGLES2
-const char sVertexProgram[] = "\n\
+const char* GLSimpleShader::sStandardVertexProgram = "\n\
 \n\
 attribute vec4 aPosition;\n\
 attribute vec4 aColor;\n\
@@ -64,7 +63,43 @@ vColor0.a = 1.0;\n\
 }\n\
 ";
 
-const char sFragmentProgram[] = "\n\
+const char* GLSimpleShader::sSkinnedVertexProgram = "\n\
+\n\
+attribute vec4 aPosition;\n\
+attribute vec4 aColor;\n\
+attribute vec2 aTexCoord0;\n\
+attribute vec3 aNormal;\n\
+\n\
+uniform mat4 worldMatrixProjection;\n\
+uniform mat4 worldMatrix;\n\
+uniform vec3 lightPos;\n\
+uniform vec3 lightColor;\n\
+\n\
+varying vec2 vTexCoord0;\n\
+varying vec4 vColor0;\n\
+\n\
+void main()\n\
+{\n\
+vec3 normal, lightDir;\n\
+vec4 diffuse;\n\
+float NdotL;\n\
+\n\
+normal = normalize(mat3(worldMatrix) * aNormal);\n\
+\n\
+lightDir = normalize(vec3(lightPos));\n\
+\n\
+NdotL = max(dot(normal, lightDir), 0.0);\n\
+\n\
+diffuse = vec4(lightColor, 1.0);\n\
+\n\
+gl_Position = worldMatrixProjection * aPosition;\n\
+vTexCoord0 = aTexCoord0;\n\
+vColor0 = NdotL * diffuse;\n\
+vColor0.a = 1.0;\n\
+}\n\
+";
+
+const char* GLSimpleShader::sStandardFragmentProgram = "\n\
 \n\
 varying vec2 vTexCoord0;\n\
 varying vec4 vColor0;\n\
@@ -79,7 +114,7 @@ gl_FragColor.b = gl_FragColor.b * vColor0.b * vColor0.a;\n\
 }\n\
 ";
 #else
-const char sVertexProgram[] = "\n\
+const char* GLSimpleShader::sStandardVertexProgram = "\n\
 #version 120\n\
 \n\
 attribute vec4 aPosition;\n\
@@ -116,7 +151,61 @@ vColor0.a = 1.0;\n\
 }\n\
 ";
 
-const char sFragmentProgram[] = "\n\
+const char* GLSimpleShader::sSkinnedVertexProgram = "\n\
+#version 120\n\
+\n\
+attribute vec3 aPosition;\n\
+attribute vec4 aColor;\n\
+attribute vec2 aTexCoord0;\n\
+attribute vec3 aNormal;\n\
+attribute vec4 aBlendIndices;\n\
+attribute vec4 aBlendWeights;\n\
+\n\
+uniform mat4 worldMatrixProjection;\n\
+uniform mat4 worldMatrix;\n\
+uniform vec3 lightPos;\n\
+uniform vec3 lightColor;\n\
+\n\
+uniform mat4 boneTransforms[64];\n\
+\n\
+varying vec2 vTexCoord0;\n\
+varying vec4 vColor0;\n\
+\n\
+void main()\n\
+{\n\
+vec3 normal, lightDir;\n\
+vec4 diffuse;\n\
+float NdotL;\n\
+\n\
+vec3 inPosition;\n\
+vec3 inNormal;\n\
+vec3 posePos = vec3(0.0);\n\
+vec3 poseNormal = vec3(0.0);\n\
+for (int i=0; i<4; i++) {\n\
+  mat4 mat = boneTransforms[int(aBlendIndices[i])];\n\
+  mat3 m33 = mat3x3(mat);\n\
+  posePos += (mat * vec4(aPosition, 1)).xyz * aBlendWeights[i];\n\
+  poseNormal += (m33 * aNormal) * aBlendWeights[i];\n\
+}\n\
+inPosition = posePos;\n\
+inNormal = normalize(poseNormal);\n\
+\n\
+normal = normalize(mat3(worldMatrix) * inNormal);\n\
+\n\
+lightDir = normalize(vec3(lightPos));\n\
+\n\
+NdotL = max(dot(normal, lightDir), 0.0);\n\
+\n\
+diffuse = vec4(lightColor, 1.0);\n\
+\n\
+gl_Position = worldMatrixProjection * vec4(inPosition, 1);\n\
+vTexCoord0 = aTexCoord0;\n\
+vColor0 = NdotL * diffuse;\n\
+vColor0.a = 1.0;\n\
+}\n\
+";
+
+const char* GLSimpleShader::sStandardFragmentProgram = "\n\
 #version 120\n\
 \n\
 varying vec2 vTexCoord0;\n\
@@ -133,14 +222,14 @@ gl_FragColor.b = gl_FragColor.b * vColor0.b * vColor0.a;\n\
 ";
 #endif
 
-GLSimpleShader::GLSimpleShader() :
+GLSimpleShader::GLSimpleShader(const char *vert, const char *fragment) :
 mProjectionMatrix(1),
 mModelViewMatrix(1)
 {
   GLuint program[2];
   
-  program[0] = compile(GL_VERTEX_SHADER, sVertexProgram);
-  program[1] = compile(GL_FRAGMENT_SHADER, sFragmentProgram);
+  program[0] = compile(GL_VERTEX_SHADER, vert);
+  program[1] = compile(GL_FRAGMENT_SHADER, fragment);
   
   mProgram = linkProgram(program);
   
@@ -168,6 +257,8 @@ GLuint GLSimpleShader::linkProgram(GLuint *shaders)
   glBindAttribLocation(program, kGLSimpleVertexAttrib_Color,  "aColor");
   glBindAttribLocation(program, kGLSimpleVertexAttrib_TexCoords, "aTexCoord0");
   glBindAttribLocation(program, kGLSimpleVertexAttrib_Normal, "aNormal");
+  glBindAttribLocation(program, kGLSimpleVertexAttrib_BlendIndices, "aBlendIndices");
+  glBindAttribLocation(program, kGLSimpleVertexAttrib_BlendWeights, "aBlendWeights");
 
   glLinkProgram(program);
   
@@ -200,6 +291,8 @@ GLuint GLSimpleShader::linkProgram(GLuint *shaders)
   mUniforms[1] = glGetUniformLocation(program, "worldMatrix");
   mUniforms[2] = glGetUniformLocation(program, "lightPos");
   mUniforms[3] = glGetUniformLocation(program, "lightColor");
+  mUniforms[4] = glGetUniformLocation(program, "sampler");
+  mUniforms[5] = glGetUniformLocation(program, "boneTransforms");
   
   return program;
 }
@@ -256,6 +349,11 @@ void GLSimpleShader::setProjectionMatrix(MatrixF &proj)
 void GLSimpleShader::setModelViewMatrix(MatrixF &modelview)
 {
   mModelViewMatrix = modelview;
+}
+
+void GLSimpleShader::updateBoneTransforms(U32 numTransforms, MatrixF *transformList)
+{
+  glUniformMatrix4fv(mUniforms[kGLSimpleUniformBoneTransforms], numTransforms, GL_TRUE, (F32*)transformList);
 }
 
 void GLSimpleShader::updateTransforms()

@@ -47,30 +47,17 @@ extern "C"
 #include "soil/SOIL.h"
 }
 
+
+#include "main.h"
+#include "GLSimpleShader.h"
+#include "GLMaterial.h"
+#include "GLTSMeshRenderer.h"
+
 #define TICK_TIME 32
-
-
-class GLTSMaterial;
 
 const char* GetAssetPath(const char *file);
 
 // DTS Sequences for sample shape
-
-enum TSAppSequences {
-   kTSRootAnim,
-   kTSForwardAnim,
-   kTSBackAnim,
-   kTSSideAnim,
-   kTSJumpAnim,
-   
-   kNumTSAppSequences
-};
-
-typedef struct AnimSequenceInfo {
-   int start;
-   int end;
-   bool cyclic;
-} AnimSequenceInfo;
 
 const char* sTSAppSequenceNames[] = {
    "Root",
@@ -89,87 +76,20 @@ AnimSequenceInfo sAppSequenceInfos[] = {
    {1000, 1010, false}
 };
 
-#include "GLSimpleShader.h"
-#include "GLMaterial.h"
-#include "GLTSMeshRenderer.h"
-
 GLStateTracker gGLStateTracker;
-
-class AppState
-{
-public:
-   SDL_Window *window;
-   SDL_GLContext glcontext;
-   
-   bool running;
-   
-   char shapeToLoad[256];
-   
-   static AppState *sInstance;
-   
-   TSShape *sShape;
-   TSShapeInstance *sShapeInstance;
-   TSThread *sThread;
-   
-   TSRenderState *sRenderState;
-   
-   U32 sCurrentSequenceIdx;
-   S32 sSequences[kNumTSAppSequences];
-   
-   GLTSMaterialManager sMaterialManager;
-   
-   GLSimpleShader *sShader;
-   
-   float sRot;
-   float sDeltaRot;
-   Point3F sCameraPosition;
-   Point3F sModelPosition;
-   MatrixF sProjectionMatrix;
-   
-   Point3F deltaCameraPos;
-   
-   U32 sOldTicks;
-   
-   AppState();
-   ~AppState();
-   
-   int main(int argc, char **argv);
-   void mainLoop();
-   
-   // Input handler
-   void onKeyChanged(int key, int state);
-   
-   // Loads sample shape
-   bool LoadShape();
-   
-   // Unloads shape
-   void CleanupShape();
-   
-   // Animates and draws shape
-   void DrawShape(F32 dt);
-   
-   // Transitions to a new sequence
-   void SwitchToSequence(U32 seqIdx, F32 transitionTime, bool doTransition);
-   
-   // Sets up projection matrix
-   void SetupProjection();
-   
-   static void OnAppLog(U32 level, LogEntry *logEntry);
-   static AppState *getInstance();
-};
 
 AppState *AppState::sInstance = NULL;
 
 TSMaterialManager *TSMaterialManager::instance()
 {
-   return &AppState::getInstance()->sMaterialManager;
+   return AppState::getInstance()->sMaterialManager;
 }
 
 AppState::AppState()
 {
    running = false;
    window = NULL;
-   dStrcpy(shapeToLoad, "soldier_rigged.cached.dts");
+   dStrcpy(shapeToLoad, "cube.dae");
    sInstance = this;
    
    sShape = NULL;
@@ -181,7 +101,8 @@ AppState::AppState()
       sSequences[i] = -1;
    
    sShader = NULL;
-   
+   mCurrentShader = NULL;
+      
    sRot = 180.0f;
    sDeltaRot = 0.0f;
    sCameraPosition = Point3F(0,-10,1);
@@ -190,6 +111,8 @@ AppState::AppState()
    
    sOldTicks = 0;
    sRenderState = NULL;
+   
+   sMaterialManager = new GLTSMaterialManager();
 }
 
 AppState::~AppState()
@@ -198,6 +121,8 @@ AppState::~AppState()
       delete sShader;
    if (sRenderState)
       delete sRenderState;
+   if (sMaterialManager)
+      delete sMaterialManager;
    CleanupShape();
    
    if (window)
@@ -421,17 +346,18 @@ void AppState::DrawShape(F32 dt)
    dummyScene.mViewMatrix.mulV(lightPos);
    
    // Calculate base modelview
-   MatrixF glModelView = dummyScene.mWorldMatrix;
    MatrixF invView = dummyScene.mViewMatrix;
    invView.inverse();
+   MatrixF glModelView = dummyScene.mWorldMatrix;
    glModelView *= invView;
    
-   // Set shader uniforms
-   sShader->setProjectionMatrix(dummyScene.mProjectionMatrix);
-   sShader->setModelViewMatrix(glModelView);
-   sShader->setLightPosition(lightPos);
-   sShader->setLightColor(ColorF(1,1,1,1));
-   sShader->use();
+   // Set base shader uniforms
+   mCurrentShader = TSShape::smUseHardwareSkinning ? sSkinningShader : sShader;
+   mCurrentShader->setProjectionMatrix(dummyScene.mProjectionMatrix);
+   mCurrentShader->setModelViewMatrix(glModelView);
+   mCurrentShader->setLightPosition(lightPos);
+   mCurrentShader->setLightColor(ColorF(1,1,1,1));
+   mCurrentShader->use();
    
    // Now we can render
    sRenderState->setSceneState(&dummyScene);
@@ -451,27 +377,13 @@ void AppState::DrawShape(F32 dt)
    // Render solid stuff
    for (int i=0; i<sRenderState->mRenderInsts.size(); i++)
    {
-      glModelView = invView;
-      glModelView *= dummyScene.mWorldMatrix;
-      glModelView.mul(*sRenderState->mRenderInsts[i]->objectToWorld);
-      
-      // Update transform, & render buffers
-      sShader->setModelViewMatrix(glModelView);
-      sShader->updateTransforms();
-	  
       sRenderState->mRenderInsts[i]->render(sRenderState);
    }
-   
+  
    // Render translucent stuff
    for (int i=0; i<sRenderState->mTranslucentRenderInsts.size(); i++)
    {
-      glModelView = invView;
-      glModelView *= dummyScene.mWorldMatrix;
-      glModelView.mul(*sRenderState->mTranslucentRenderInsts[i]->objectToWorld);
-      
       // Update transform, & render buffers
-      sShader->setModelViewMatrix(glModelView);
-      sShader->updateTransforms();
       sRenderState->mTranslucentRenderInsts[i]->render(sRenderState);
    }
    
@@ -593,8 +505,10 @@ int AppState::main(int argc, char **argv)
    Log::errorf("Using GLEW %s", glewGetString(GLEW_VERSION));
 #endif
    
-   sShader = new GLSimpleShader();
-   
+   sShader = new GLSimpleShader(GLSimpleShader::sStandardVertexProgram, GLSimpleShader::sStandardFragmentProgram);
+   sSkinningShader = new GLSimpleShader(GLSimpleShader::sSkinnedVertexProgram, GLSimpleShader::sStandardFragmentProgram);
+   mCurrentShader = NULL;
+
    // Init render state
    sRenderState = new TSRenderState();
    

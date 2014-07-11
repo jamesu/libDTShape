@@ -23,6 +23,8 @@
 
 #include "GLTSMeshRenderer.h"
 #include "GLMaterial.h"
+#include "core/log.h"
+#include "ts/tsShape.h"
 
 static GLenum drawTypes[] = { GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN };
 #define getDrawType(a) (drawTypes[a])
@@ -73,9 +75,16 @@ void GLTSMeshRenderer::prepare(TSMesh *mesh, TSMeshInstanceRenderData *meshRende
            glGenBuffers(1, &renderData->mVB);
         glBindBuffer(GL_ARRAY_BUFFER, renderData->mVB);
         glBufferData(GL_ARRAY_BUFFER, size, NULL, mesh->mDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+
+        //Log::printf("Update buffer");
      }
      else
      {
+        // Don't update if we're using hw skinning
+        if (TSShape::smUseHardwareSkinning)
+        {
+          return;
+        }
         glBindBuffer(GL_ARRAY_BUFFER, renderData->mVB);
         size = mesh->mVertexFormat->getSizeInBytes() * renderData->mNumVerts;
      }
@@ -124,6 +133,8 @@ void GLTSMeshRenderer::bindArrays(const GFXVertexFormat *fmt)
   bool hasColor = false;
   bool hasTexcoord = false;
   bool hasNormal = false;
+  bool hasBlendWeights = false;
+  bool hasBlendIndices = false;
   U32 attribs = 0;
   
   // Loop thru the vertex format elements adding the array state...
@@ -150,7 +161,7 @@ void GLTSMeshRenderer::bindArrays(const GFXVertexFormat *fmt)
         attribs |= kGLSimpleVertexAttribFlag_Normal;
         if (!hasNormal)
         {
-           glVertexAttribPointer(kGLSimpleVertexAttrib_Normal, element.getSizeInBytes() / 3, GL_FLOAT, GL_TRUE, stride, buffer );
+           glVertexAttribPointer(kGLSimpleVertexAttrib_Normal, element.getSizeInBytes() / 4, GL_FLOAT, GL_TRUE, stride, buffer );
            hasNormal = true;
         }
         buffer += element.getSizeInBytes();
@@ -162,6 +173,26 @@ void GLTSMeshRenderer::bindArrays(const GFXVertexFormat *fmt)
         {
            glVertexAttribPointer(kGLSimpleVertexAttrib_Color, element.getSizeInBytes(), GL_UNSIGNED_BYTE, GL_TRUE, stride, buffer );
            hasColor = true;
+        }
+        buffer += element.getSizeInBytes();
+     }
+     else if ( element.isSemantic( GFXSemantic::BLENDINDICES ))
+     {
+        attribs |= kGLSimpleVertexAttribFlag_BlendIndices;
+        if (!hasBlendIndices)
+        {
+           glVertexAttribPointer(kGLSimpleVertexAttrib_BlendIndices, element.getSizeInBytes(), GL_UNSIGNED_BYTE, GL_FALSE, stride, buffer );
+           hasBlendIndices = true;
+        }
+        buffer += element.getSizeInBytes();
+     }
+     else if ( element.isSemantic( GFXSemantic::BLENDWEIGHT ))
+     {
+        attribs |= kGLSimpleVertexAttribFlag_BlendWeights;
+        if (!hasBlendWeights)
+        {
+           glVertexAttribPointer(kGLSimpleVertexAttrib_BlendWeights, element.getSizeInBytes() / 4, GL_FLOAT, GL_FALSE, stride, buffer );
+           hasBlendWeights = true;
         }
         buffer += element.getSizeInBytes();
      }
@@ -197,7 +228,7 @@ void GLTSMeshRenderer::doRenderInst(TSMesh *mesh, TSRenderInst *inst, TSRenderSt
 {
   //Platform::outputDebugString("[TSM:%x:%x]Rendering with material %s", this, inst->renderData, inst->matInst ? inst->matInst->getName() : "NIL");
   
-  ((GLTSMaterialInstance*)inst->matInst)->activate();
+  ((GLTSMaterialInstance*)inst->matInst)->activate((GLTSSceneRenderState*)renderState->getSceneState(), inst);
   
   S32 matIdx = -1;
   

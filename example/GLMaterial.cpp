@@ -23,10 +23,16 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "SDL.h"
+#include "GLIncludes.h"
 #include "GLMaterial.h"
+#include "GLSimpleShader.h"
+#include "GLTSMeshRenderer.h"
+
 #include "soil/SOIL.h"
 #include "core/strings/stringFunctions.h"
 #include "core/util/tVector.h"
+#include "main.h"
 
 static const char *sMaterialTextureExts[] = {
   "png",
@@ -95,7 +101,7 @@ bool GLTSMaterialInstance::isValid()
    return mTexture != 0;
 }
 
-void GLTSMaterialInstance::activate()
+void GLTSMaterialInstance::activate(GLTSSceneRenderState *sceneState, TSRenderInst *renderInst)
 {
    // Set texture
    if (mTexture)
@@ -107,6 +113,22 @@ void GLTSMaterialInstance::activate()
    {
       glDisable(GL_TEXTURE_2D);
    }
+
+   // Bind shader parameters. We'll use the current shader from the app instance
+   AppState *app = AppState::getInstance();
+
+   // Calculate base matrix for the render inst
+   MatrixF invView = sceneState->mViewMatrix;
+   invView.inverse();
+   MatrixF glModelView = invView;
+   glModelView *= sceneState->mWorldMatrix;
+   glModelView.mul(*renderInst->objectToWorld);
+
+   // Update transforms
+   GLSimpleShader *currentShader = app->mCurrentShader;
+   currentShader->setModelViewMatrix(glModelView);
+   currentShader->updateBoneTransforms(renderInst->mNumNodeTransforms, renderInst->mNodeTransforms);
+   currentShader->updateTransforms();
 }
 
 int GLTSMaterialInstance::getStateHint()

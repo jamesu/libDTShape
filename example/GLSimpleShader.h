@@ -39,6 +39,8 @@ enum {
    kGLSimpleVertexAttrib_Color,
    kGLSimpleVertexAttrib_TexCoords,
    kGLSimpleVertexAttrib_Normal,
+   kGLSimpleVertexAttrib_BlendIndices,
+   kGLSimpleVertexAttrib_BlendWeights,
    
    kGLSimpleVertexAttrib_MAX,
 };
@@ -51,6 +53,9 @@ enum {
    kGLSimpleVertexAttribFlag_Color        = 1 << 1,
    kGLSimpleVertexAttribFlag_TexCoords    = 1 << 2,
    kGLSimpleVertexAttribFlag_Normal       = 1 << 3,
+
+   kGLSimpleVertexAttribFlag_BlendIndices = 1 << 4,
+   kGLSimpleVertexAttribFlag_BlendWeights = 1 << 5,
    
    kGLSimpleVertexAttribFlag_PosColorTexNormal = ( kGLSimpleVertexAttribFlag_Position | kGLSimpleVertexAttribFlag_Color | kGLSimpleVertexAttribFlag_TexCoords | kGLSimpleVertexAttribFlag_Normal ),
 };
@@ -61,6 +66,8 @@ enum {
    kGLSimpleUniformLightPos,
    kGLSimpleUniformLightColor,
    kGLSimpleUniformSampler,
+
+   kGLSimpleUniformBoneTransforms,
    
    kGLSimpleUniform_MAX,
 };
@@ -73,7 +80,9 @@ public:
    mPositionEnabled(false),
    mColorEnabled(false),
    mTexCoordEnabled(false),
-   mNormalEnabled(false)
+   mNormalEnabled(false),
+   mWeightsEnabled(false),
+   mIndicesEnabled(false)
    {
    }
    
@@ -83,6 +92,8 @@ public:
       bool colorOn = flags & kGLSimpleVertexAttribFlag_Color;
       bool texOn = flags & kGLSimpleVertexAttribFlag_TexCoords;
       bool normalOn = flags & kGLSimpleVertexAttribFlag_Normal;
+      bool blendWeightsOn = flags & kGLSimpleVertexAttribFlag_BlendWeights;
+      bool blendIndicesOn = flags & kGLSimpleVertexAttribFlag_BlendIndices;
       
       if (posOn != mPositionEnabled)
       {
@@ -119,19 +130,39 @@ public:
             glDisableVertexAttribArray(kGLSimpleVertexAttrib_Normal);
          mNormalEnabled = normalOn;
       }
+      
+      if (blendWeightsOn != mWeightsEnabled)
+      {
+         if (blendWeightsOn)
+            glEnableVertexAttribArray(kGLSimpleVertexAttrib_BlendWeights);
+         else
+            glDisableVertexAttribArray(kGLSimpleVertexAttrib_BlendWeights);
+         mWeightsEnabled = blendWeightsOn;
+      }
+      
+      if (blendIndicesOn != mIndicesEnabled)
+      {
+         if (blendIndicesOn)
+            glEnableVertexAttribArray(kGLSimpleVertexAttrib_BlendIndices);
+         else
+            glDisableVertexAttribArray(kGLSimpleVertexAttrib_BlendIndices);
+         mIndicesEnabled = blendIndicesOn;
+      }
    }
    
    bool mPositionEnabled;
    bool mColorEnabled;
    bool mTexCoordEnabled;
    bool mNormalEnabled;
+   bool mWeightsEnabled;
+   bool mIndicesEnabled;
 };
 
 // Simple Shader compiler
 class GLSimpleShader
 {
 public:
-   GLSimpleShader();
+   GLSimpleShader(const char *vert, const char *fragment);
    ~GLSimpleShader();
    
    GLuint linkProgram(GLuint *shaders);
@@ -145,6 +176,7 @@ public:
    void setProjectionMatrix(MatrixF &proj);
    void setModelViewMatrix(MatrixF &modelview);
    
+   void updateBoneTransforms(U32 numTransforms, MatrixF *transformList);
    void updateTransforms();
    
    MatrixF mProjectionMatrix;
@@ -155,6 +187,10 @@ public:
    
    GLuint            mProgram;
    GLint             mUniforms[kGLSimpleUniform_MAX];
+
+   static const char *sStandardVertexProgram;
+   static const char *sSkinnedVertexProgram;
+   static const char *sStandardFragmentProgram;
 };
 
 #endif
