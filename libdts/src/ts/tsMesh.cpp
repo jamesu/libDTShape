@@ -172,6 +172,10 @@ void TSMesh::innerRender( TSMaterialList *materials, TSRenderState &rdata, TSMes
       coreRI->mNodeTransforms = objInst->mActiveTransforms.address();
       coreRI->mNumNodeTransforms = objInst->mActiveTransforms.size();
    }
+   else
+   {
+      coreRI->mNumNodeTransforms = 0;
+   }
    
    for ( S32 i = 0; i < primitives.size(); i++ )
    {
@@ -3033,6 +3037,7 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
    
    // Create the proper array type
    void *aligned_mem = dMalloc_aligned(mVertSize * mNumVerts, 16);
+   dMemset(aligned_mem, 0, mVertSize * mNumVerts);
    AssertFatal(aligned_mem, "Aligned malloc failed! Debug!");
 
    dMemset(aligned_mem, 0, mNumVerts * mVertSize);
@@ -3056,8 +3061,20 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
          if(mHasColor && i < colors.size())
             vc.color(colors[i]);
       }
+   }
+   
+   // Set some dummy weights in case this mesh isn't a skin and the shape uses a skin format
+   if (mVertexFormat->hasBlend())
+   {
+      __TSMeshIndex_List list = {0,0,0,0};
+      Point4F weight(1,0,0,0);
       
-      // NOTE: skin verts are set later on
+      for (U32 i=0; i<mNumVerts; i++)
+      {
+         __TSMeshVertex_BoneData &v = vertexData.getBone(i);
+         v.index(list);
+         v.weight(weight);
+      }
    }
 
    // Now that the data is in the aligned struct, free the Vector memory

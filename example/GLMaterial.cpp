@@ -34,6 +34,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "core/util/tVector.h"
 #include "main.h"
 
+#include "ts/tsShape.h"
+
 static const char *sMaterialTextureExts[] = {
   "png",
   "dds"
@@ -83,6 +85,20 @@ bool GLTSMaterialInstance::init(const GFXVertexFormat *fmt)
          break;
    }
    
+   // Choose correct shader based on skinning requirements
+   
+   AppState *app = AppState::getInstance();
+   mVertexFormat = fmt;
+   
+   if (DTShape::TSShape::smUseHardwareSkinning && mVertexFormat->hasBlend())
+   {
+      mShader = app->sSkinningShader;
+   }
+   else
+   {
+      mShader = app->sShader;
+   }
+   
    return mTexture != 0;
 }
 
@@ -124,11 +140,26 @@ void GLTSMaterialInstance::activate(GLTSSceneRenderState *sceneState, TSRenderIn
    glModelView *= sceneState->mWorldMatrix;
    glModelView.mul(*renderInst->objectToWorld);
 
-   // Update transforms
-   GLSimpleShader *currentShader = app->mCurrentShader;
-   currentShader->setModelViewMatrix(glModelView);
-   currentShader->updateBoneTransforms(renderInst->mNumNodeTransforms, renderInst->mNodeTransforms);
-   currentShader->updateTransforms();
+   // Update transforms using correct shader for mesh
+   mShader->setProjectionMatrix(sceneState->mProjectionMatrix);
+   mShader->setModelViewMatrix(glModelView);
+   mShader->setLightPosition(app->mLightPos);
+   mShader->setLightColor(ColorF(1,1,1,1));
+   mShader->use();
+   
+   if (renderInst->mNumNodeTransforms == 0)
+   {
+      // First (and only) bone transform should be identity
+      MatrixF identity(1);
+      mShader->updateBoneTransforms(1, &identity);
+   }
+   else
+   {
+      // Use matrix list from render instance
+      mShader->updateBoneTransforms(renderInst->mNumNodeTransforms, renderInst->mNodeTransforms);
+   }
+   
+   mShader->updateTransforms();
 }
 
 int GLTSMaterialInstance::getStateHint()

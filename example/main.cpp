@@ -342,8 +342,8 @@ void AppState::DrawShape(F32 dt)
    dummyScene.mViewMatrix *= calc;
    
    // Calculate lighting vector
-   Point3F lightPos = -sCameraPosition;
-   dummyScene.mViewMatrix.mulV(lightPos);
+   mLightPos = -sCameraPosition;
+   dummyScene.mViewMatrix.mulV(mLightPos);
    
    // Calculate base modelview
    MatrixF invView = dummyScene.mViewMatrix;
@@ -352,10 +352,10 @@ void AppState::DrawShape(F32 dt)
    glModelView *= invView;
    
    // Set base shader uniforms
-   mCurrentShader = TSShape::smUseHardwareSkinning ? sSkinningShader : sShader;
+   mCurrentShader = sShader;
    mCurrentShader->setProjectionMatrix(dummyScene.mProjectionMatrix);
    mCurrentShader->setModelViewMatrix(glModelView);
-   mCurrentShader->setLightPosition(lightPos);
+   mCurrentShader->setLightPosition(mLightPos);
    mCurrentShader->setLightColor(ColorF(1,1,1,1));
    mCurrentShader->use();
    

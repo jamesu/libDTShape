@@ -68,6 +68,7 @@ public:
    DTShape::MatrixF sProjectionMatrix;
    
    DTShape::Point3F deltaCameraPos;
+   DTShape::Point3F mLightPos;
    
    U32 sOldTicks;
    

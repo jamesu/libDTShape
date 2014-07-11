@@ -39,6 +39,7 @@ using namespace DTShape;
 
 class GLTSMaterial;
 class GLTSSceneRenderState;
+class GLSimpleShader;
 
 // Basic OpenGL Material Instance
 class GLTSMaterialInstance : public TSMaterialInstance
@@ -46,6 +47,8 @@ class GLTSMaterialInstance : public TSMaterialInstance
 public:
    GLTSMaterial *mMaterial;
    GLuint mTexture;
+   GLSimpleShader *mShader;
+   const GFXVertexFormat *mVertexFormat;
    
    GLTSMaterialInstance(GLTSMaterial *mat);
    ~GLTSMaterialInstance();
