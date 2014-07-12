@@ -11,7 +11,7 @@ libDTShape supports both classic "compiled" dts models, and also collada models.
 To summarize:
 
 * Rigid animation
-* Skinned animation
+* Skinned animation (Software and Hardware Accelerated)
 * Animation triggers
 * Ground frames
 * Multiple animation threads & blending
