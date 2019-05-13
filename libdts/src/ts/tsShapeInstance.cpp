@@ -657,8 +657,10 @@ void TSShapeInstance::MeshObjectInstance::render(  S32 objectDetail,
       return;
 
    TSMesh *mesh = getMesh(objectDetail);
+   lastMesh = mesh;
    if ( !mesh )
       return;
+   
 
    const MatrixF &transform = getTransform();
 

@@ -55,6 +55,7 @@ const F32 TSShape::smAlphaOutDefault = -1.0f;
 
 bool TSShape::smAllowHardwareSkinning = true;
 bool TSShape::smUseHardwareSkinning = true;
+bool TSShape::smUseComputeSkinning = true;
 
 TSIOState::TSIOState()
 {

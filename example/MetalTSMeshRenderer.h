@@ -26,103 +26,44 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "GLSimpleShader.h"
 #include "ts/tsRenderState.h"
 #include "ts/tsMesh.h"
+#include <Metal/Metal.h>
 
-// Generic interface which provides scene info to the rendering code
-class GLTSSceneRenderState : public TSSceneRenderState
-{
-public:
-   MatrixF mWorldMatrix;
-   MatrixF mViewMatrix;
-   MatrixF mProjectionMatrix;
-   
-   GLTSSceneRenderState()
-   {
-      mWorldMatrix = MatrixF(1);
-      mViewMatrix = MatrixF(1);
-      mProjectionMatrix = MatrixF(1);
-   }
-   
-   ~GLTSSceneRenderState()
-   {
-   }
-   
-   virtual TSMaterialInstance *getOverrideMaterial( TSMaterialInstance *inst ) const
-   {
-      return inst;
-   }
-   
-   virtual Point3F getCameraPosition() const
-   {
-      return mViewMatrix.getPosition();
-   }
-   
-   virtual Point3F getDiffuseCameraPosition() const
-   {
-      return mViewMatrix.getPosition();
-   }
-   
-   virtual RectF getViewport() const
-   {
-      return RectF(0,0,800,600);
-   }
-   
-   virtual Point2F getWorldToScreenScale() const
-   {
-      return Point2F(1,1);
-   }
-   
-   virtual const MatrixF *getWorldMatrix() const
-   {
-      return &mWorldMatrix;
-   }
-   
-   virtual bool isShadowPass() const
-   {
-      return false;
-   }
-   
-   // Shared matrix stuff
-   virtual const MatrixF *getViewMatrix() const
-   {
-      return &mViewMatrix;
-   }
-   
-   virtual const MatrixF *getProjectionMatrix() const
-   {
-      return &mProjectionMatrix;
-   }
-};
+#include "mtl_shared.h"
+
+using namespace DTShape;
 
 // Basic OpenGL Buffer Information
-class GLTSMeshInstanceRenderData : public TSMeshInstanceRenderData
+class MetalTSMeshInstanceRenderData : public TSMeshInstanceRenderData
 {
 public:
-   GLTSMeshInstanceRenderData() : mVB(0), mNumVerts(0) {;}
+   MetalTSMeshInstanceRenderData() : mVB(), mNumVerts(0), mVBOffset(0) { memset(&mComputeParams, '\0', sizeof(mComputeParams)); }
    
-   ~GLTSMeshInstanceRenderData()
+   ~MetalTSMeshInstanceRenderData()
    {
-      if (mVB != 0)
-         glDeleteBuffers(1, &mVB);
-      mVB = 0;
-      mNumVerts = 0;
    }
    
-   GLuint mVB;
+   id<MTLBuffer> mVB;
+   U32 mVBOffset;
    U32 mNumVerts;
+   SkinParams mComputeParams;
 };
 
 // Generic interface which stores vertex buffers and such for TSMeshes
-class GLTSMeshRenderer : public TSMeshRenderer
+class MetalTSMeshRenderer : public TSMeshRenderer
 {
 public:
-   GLTSMeshRenderer();
-   virtual ~GLTSMeshRenderer();
+   MetalTSMeshRenderer();
+   virtual ~MetalTSMeshRenderer();
    
-   GLuint mPB;
+   static id<MTLDevice> smDevice;
+   static id<MTLRenderCommandEncoder> smCurrentRenderEncoder;
+   
+   id<MTLBuffer> mPB;
+   id<MTLBuffer> mVB;
    int mNumIndices;
+   int mNumVerts;
    
    virtual void prepare(TSMesh *mesh, TSMeshInstanceRenderData *meshRenderData);
    

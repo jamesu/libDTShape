@@ -336,6 +336,12 @@ public:
    
    /// Sorts TSRenderInsts
    void sortRenderInsts();
+   
+   template<typename T> T* allocCustom()
+   {
+      return mChunker.alloc<T>();
+   }
+
 
    /// @}
 };

@@ -1181,11 +1181,11 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &r
 
       AssertFatal( batchData.vertexBatchOperations.size() == batchData.initialVerts.size(), "Assumption failed!" );
 
-      register Point3F skinnedVert;
-      register Point3F skinnedNorm;
+      Point3F skinnedVert;
+      Point3F skinnedNorm;
       
       // If using hardware skinning, don't update (data is set in createBatchData)
-      if (TSShape::smUseHardwareSkinning)
+      if (TSShape::smUseHardwareSkinning || true)
          return;
 
       for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchData.vertexBatchOperations.begin();
@@ -1208,6 +1208,7 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &r
             deltaTransform.mulV( inNorms[curVert.vertexIndex], &srcNrm );
             skinnedNorm += srcNrm * transformOp.weight;
          }
+         
 
          // Assign results 
          __TSMeshVertexBase &dest = mVertexData.getBase(curVert.vertexIndex);
@@ -1368,10 +1369,12 @@ void TSSkinMesh::createBatchData()
          const BatchData::BatchedVertex &curTransform = *itr;
          __TSMeshVertex_BoneData &v = mVertexData.getBone(curTransform.vertexIndex);
          
+         //Log::printf("MESH BONE OFFSET==%u\n", (char*)&v - (char*)&mVertexData.getBase(curTransform.vertexIndex));
+         
          __TSMeshIndex_List col;
          Point4F weights(0,0,0,0);
          
-         //dMemset(&col, '\0', sizeof(col));
+         dMemset(&col, '\0', sizeof(col));
          
          // max of 4 transforms per vert
          switch (curTransform.transformCount)
@@ -3012,12 +3015,8 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
 
       vertexData.set(aligned_mem, mVertSize, mNumVerts, colorOffset, boneOffset);
       vertexData.setReady(true);
-
-#if defined(LIBDTSHAPE_OS_XENON)
-      XMemCpyStreaming(vertexData.address(), mVertexData.address(), vertexData.mem_size() );
-#else
+      
       dMemcpy(vertexData.address(), mVertexData.address(), vertexData.mem_size());
-#endif
       return;
    }
 
@@ -3087,5 +3086,112 @@ void TSMesh::_convertToAlignedMeshData( TSMeshVertexArray &vertexData, const Vec
 }
 
 //-----------------------------------------------------------------------------
+
+TSBasicVertexFormat::TSBasicVertexFormat() :
+texCoordOffset(-1),
+boneOffset(-1),
+colorOffset(-1),
+numBones(0),
+vertexSize(-1)
+{
+}
+
+TSBasicVertexFormat::TSBasicVertexFormat(TSMesh *mesh)
+{
+   texCoordOffset = -1;
+   boneOffset = -1;
+   colorOffset = -1;
+   numBones = 0;
+   vertexSize = -1;
+   
+   addMeshRequirements(mesh);
+}
+
+void TSBasicVertexFormat::getFormat(GFXVertexFormat &fmt)
+{
+   // NOTE: previously the vertex data was padded to allow for verts to be skinned via SSE.
+   //       since we now prefer to skin on the GPU and use a basic non-SSE fallback for software
+   //       skinning, adding in padding via GFXSemantic::PADDING or dummy fields is no longer required.
+   fmt.addElement(GFXSemantic::POSITION, GFXDeclType_Float3);
+   fmt.addElement(GFXSemantic::TANGENTW, GFXDeclType_Float, 3);
+   fmt.addElement(GFXSemantic::NORMAL, GFXDeclType_Float3);
+   fmt.addElement(GFXSemantic::TANGENT, GFXDeclType_Float3);
+   
+   fmt.addElement(GFXSemantic::TEXCOORD, GFXDeclType_Float2, 0);
+   
+   if (texCoordOffset >= 0 || colorOffset >= 0)
+   {
+      fmt.addElement(GFXSemantic::TEXCOORD, GFXDeclType_Float2, 1);
+      fmt.addElement(GFXSemantic::COLOR, GFXDeclType_Color);
+   }
+   
+   for (U32 i=0; i<numBones; i++)
+   {
+      fmt.addElement(GFXSemantic::BLENDINDICES, GFXDeclType_UByte4, i);
+      fmt.addElement(GFXSemantic::BLENDWEIGHT, GFXDeclType_Float4, i);
+   }
+}
+
+void TSBasicVertexFormat::calculateSize()
+{
+   GFXVertexFormat fmt;
+   vertexSize = 0;
+   getFormat(fmt);
+   vertexSize = fmt.getSizeInBytes();
+}
+
+void TSBasicVertexFormat::writeAlloc(TSShapeAlloc* alloc)
+{
+   alloc->set16(texCoordOffset);
+   alloc->set16(boneOffset);
+   alloc->set16(colorOffset);
+   alloc->set16(numBones);
+   alloc->set16(vertexSize);
+}
+
+void TSBasicVertexFormat::readAlloc(TSShapeAlloc* alloc)
+{
+   texCoordOffset = alloc->get16();
+   boneOffset = alloc->get16();
+   colorOffset = alloc->get16();
+   numBones = alloc->get16();
+   vertexSize = alloc->get16();
+}
+
+void TSBasicVertexFormat::addMeshRequirements(TSMesh *mesh)
+{
+   bool hasColors = false;
+   bool hasTexcoord2 = false;
+   bool hasSkin = false;
+   /*
+   hasColors = mesh->getHasColor() || (colorOffset != -1);
+   hasTexcoord2 = mesh->getHasTVert2() || (texCoordOffset != -1);
+   hasSkin = (mesh->getMeshType() == TSMesh::SkinMeshType) || (boneOffset != -1);
+   
+   S32 offset = sizeof(TSMesh::__TSMeshVertexBase);
+   
+   if ((hasTexcoord2 || hasColors))
+   {
+      if (texCoordOffset == -1 || colorOffset == -1)
+      {
+         texCoordOffset = offset;
+         colorOffset = offset + (sizeof(float) * 2);
+      }
+      
+      offset += sizeof(TSMesh::__TSMeshVertex_3xUVColor);
+   }
+   
+   if (hasSkin)
+   {
+      boneOffset = offset;
+      
+      U32 numMeshBones = mesh->getMaxBonesPerVert();
+      U32 boneBlocks = numMeshBones / 4;
+      U32 extraBlocks = numMeshBones % 4 != 0 ? 1 : 0;
+      U32 neededBones = boneBlocks + extraBlocks;
+      numBones = MAX(neededBones, numBones);
+   }*/
+}
+
 
 END_NS

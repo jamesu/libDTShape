@@ -28,7 +28,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 #define GL_GLEXT_PROTOTYPES
 
 #include "SDL.h"
-#include "GLIncludes.h"
 #include <stdio.h>
 
 #include "libdtshape.h"
@@ -42,6 +41,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "math/util/frustum.h"
 #include "core/stream/fileStream.h"
 
+
 extern "C"
 {
 #include "soil/SOIL.h"
@@ -49,11 +49,76 @@ extern "C"
 
 
 #include "main.h"
-#include "GLSimpleShader.h"
-#include "GLMaterial.h"
-#include "GLTSMeshRenderer.h"
 
-#define TICK_TIME 32
+using namespace DTShape;
+
+// Generic interface which provides scene info to the rendering code
+class MetalTSSceneRenderState : public TSSceneRenderState
+{
+public:
+   MatrixF mWorldMatrix;
+   MatrixF mViewMatrix;
+   MatrixF mProjectionMatrix;
+   
+   MetalTSSceneRenderState()
+   {
+      mWorldMatrix = MatrixF(1);
+      mViewMatrix = MatrixF(1);
+      mProjectionMatrix = MatrixF(1);
+   }
+   
+   ~MetalTSSceneRenderState()
+   {
+   }
+   
+   virtual TSMaterialInstance *getOverrideMaterial( TSMaterialInstance *inst ) const
+   {
+      return inst;
+   }
+   
+   virtual Point3F getCameraPosition() const
+   {
+      return mViewMatrix.getPosition();
+   }
+   
+   virtual Point3F getDiffuseCameraPosition() const
+   {
+      return mViewMatrix.getPosition();
+   }
+   
+   virtual RectF getViewport() const
+   {
+      return RectF(0,0,800,600);
+   }
+   
+   virtual Point2F getWorldToScreenScale() const
+   {
+      return Point2F(1,1);
+   }
+   
+   virtual const MatrixF *getWorldMatrix() const
+   {
+      return &mWorldMatrix;
+   }
+   
+   virtual bool isShadowPass() const
+   {
+      return false;
+   }
+   
+   // Shared matrix stuff
+   virtual const MatrixF *getViewMatrix() const
+   {
+      return &mViewMatrix;
+   }
+   
+   virtual const MatrixF *getProjectionMatrix() const
+   {
+      return &mProjectionMatrix;
+   }
+};
+
+#define TICK_TIME 15
 
 const char* GetAssetPath(const char *file);
 
@@ -61,7 +126,7 @@ const char* GetAssetPath(const char *file);
 
 const char* sTSAppSequenceNames[] = {
    "Root",
-   "Run",
+   "Forward",
    "Crouch_Backward",
    "Side",
    "Jump",
@@ -76,20 +141,20 @@ AnimSequenceInfo sAppSequenceInfos[] = {
    {1000, 1010, false}
 };
 
-GLStateTracker gGLStateTracker;
-
 AppState *AppState::sInstance = NULL;
+
+using namespace DTShape;
 
 TSMaterialManager *TSMaterialManager::instance()
 {
-   return AppState::getInstance()->sMaterialManager;
+   return AppState::getInstance()->mMaterialManager;
 }
 
 AppState::AppState()
 {
    running = false;
-   window = NULL;
-   dStrcpy(shapeToLoad, "cube.dae");
+   mWindow = NULL;
+   dStrcpy(shapeToLoad, "player.dts");//cube.dae");
    sInstance = this;
    
    sShape = NULL;
@@ -99,9 +164,6 @@ AppState::AppState()
    sCurrentSequenceIdx = 0;
    for (int i=0; i<kNumTSAppSequences; i++)
       sSequences[i] = -1;
-   
-   sShader = NULL;
-   mCurrentShader = NULL;
       
    sRot = 180.0f;
    sDeltaRot = 0.0f;
@@ -110,25 +172,25 @@ AppState::AppState()
    deltaCameraPos = Point3F(0,0,0);
    
    sOldTicks = 0;
+   mFrame = 0;
    sRenderState = NULL;
-   
-   sMaterialManager = new GLTSMaterialManager();
 }
 
 AppState::~AppState()
 {
-   if (sShader)
-      delete sShader;
    if (sRenderState)
       delete sRenderState;
-   if (sMaterialManager)
-      delete sMaterialManager;
+   if (mMaterialManager)
+      delete mMaterialManager;
    CleanupShape();
    
-   if (window)
+   if (mRenderer)
+      delete mRenderer;
+   
+   if (mWindow)
    {
-      SDL_GL_DeleteContext(glcontext);
-      SDL_DestroyWindow(window);
+      SDL_DestroyRenderer(mSDLRenderer);
+      SDL_DestroyWindow(mWindow);
    }
    sInstance = NULL;
 }
@@ -217,19 +279,27 @@ void AppState::mainLoop()
    }
    
    // Draw scene
-   glClearColor(1,1,1,1); // Use OpenGL commands, see the OpenGL reference.
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clearing screen
-   
    SetupProjection();
-   DrawShape(deltaTime);
    
-   SDL_GL_SwapWindow(window);
+   
+   if (mRenderer->BeginFrame())
+   {
+      sRenderState->reset();
+      PrepShape(deltaTime);
+      ComputeShapeMeshes(); // mesh info is setup in PrepShape
+      
+      mRenderer->BeginRasterPass();
+      DrawShapes();
+      mRenderer->EndFrame();
+   }
    
    // Slow down if we're going too fast
    U32 tickEnd = SDL_GetTicks();
    deltaTick = (tickEnd - tickTime);
    if (deltaTick < TICK_TIME)
       SDL_Delay(TICK_TIME - deltaTick);
+   
+   mFrame++;
 }
 
 bool AppState::LoadShape()
@@ -238,10 +308,14 @@ bool AppState::LoadShape()
    TSMaterialManager::instance()->allocateAndRegister("Soldier_Dazzle");
    TSMaterialManager::instance()->mapMaterial("base_Soldier_Main", "Soldier_Dif");
    TSMaterialManager::instance()->mapMaterial("base_Soldier_Dazzle", "Soldier_Dazzle");
+   //TSMaterialManager::instance()->mapMaterial("player_blue", "Soldier_Dazzle");
    
    
    TSMaterial *cubeMat = TSMaterialManager::instance()->allocateAndRegister("cube");
    TSMaterialManager::instance()->mapMaterial("Cube", "cube");
+   
+   TSMaterialManager::instance()->allocateAndRegister("player");
+   TSMaterialManager::instance()->mapMaterial("Player", "player");
    
    const char* fullPath = GetAssetPath(shapeToLoad);
    sShape = TSShape::createFromPath(fullPath);
@@ -256,13 +330,15 @@ bool AppState::LoadShape()
    // Load all dsq files
    for (int i=0; i<kNumTSAppSequences; i++)
    {
-      //FileStream dsqFile;
+      FileStream dsqFile;
       char pathName[64];
-      dSprintf(pathName, 64, "player_%s.dts", sTSAppSequenceNames[i]);
-      /*if (dsqFile.open(GetAssetPath(pathName), FileStream::Read) && sShape->importSequences(&dsqFile, ""))
+      dSprintf(pathName, 64, "player_%s.dsq", sTSAppSequenceNames[i]);
+      Log::printf("Attempting to load sequence file %s", pathName);
+      
+      if (dsqFile.open(GetAssetPath(pathName), FileStream::Read) && sShape->importSequences(&dsqFile, ""))
       {
          Log::printf("Sequence file %s loaded", pathName);
-      }*/
+      }
       if (sShape->addSequence(GetAssetPath(pathName), "", sTSAppSequenceNames[i], sAppSequenceInfos[i].start, sAppSequenceInfos[i].end, true, false))
       {
          Log::printf("Sequence file %s loaded", pathName);
@@ -285,7 +361,7 @@ bool AppState::LoadShape()
    sThread = sShapeInstance->addThread();
    if (sSequences[kTSRootAnim] != -1)
    {
-      sShapeInstance->setSequence(sThread, sSequences[kTSRootAnim], 0);
+      sShapeInstance->setSequence(sThread, sSequences[kTSForwardAnim], 0);
       sShapeInstance->setTimeScale(sThread, 1.0f);
    }
    
@@ -307,61 +383,50 @@ void AppState::CleanupShape()
    }
 }
 
-void AppState::DrawShape(F32 dt)
+void AppState::PrepShape(F32 dt)
 {
-   GLTSSceneRenderState dummyScene;
+   MetalTSSceneRenderState *dummyScene = sRenderState->allocCustom<MetalTSSceneRenderState>();
+   constructInPlace(dummyScene);
    
    sCameraPosition += deltaCameraPos * dt;
    sRot += sDeltaRot * dt;
    
-   glEnable(GL_DEPTH_TEST);
-   
    MatrixF calc(1);
    
    // Set render transform
-   dummyScene.mProjectionMatrix = sProjectionMatrix;
-   dummyScene.mViewMatrix = MatrixF(1);
-   dummyScene.mWorldMatrix = MatrixF(1);
-   dummyScene.mWorldMatrix.setPosition(sModelPosition);
+   dummyScene->mProjectionMatrix = sProjectionMatrix;
+   dummyScene->mViewMatrix = MatrixF(1);
+   dummyScene->mWorldMatrix = MatrixF(1);
+   dummyScene->mWorldMatrix.setPosition(sModelPosition);
    
    // Apply model rotation
    calc = MatrixF(1);
    AngAxisF rot2 = AngAxisF(Point3F(0,0,1), mDegToRad(sRot));
    rot2.setMatrix(&calc);
-   dummyScene.mWorldMatrix *= calc;
+   dummyScene->mWorldMatrix *= calc;
    
    // Set camera position
    calc = MatrixF(1);
    calc.setPosition(sCameraPosition);
-   dummyScene.mViewMatrix *= calc;
+   dummyScene->mViewMatrix *= calc;
    
    // Rotate camera
    rot2 = AngAxisF(Point3F(1,0,0), mDegToRad(-90.0f));
    calc = MatrixF(1);
    rot2.setMatrix(&calc);
-   dummyScene.mViewMatrix *= calc;
+   dummyScene->mViewMatrix *= calc;
    
    // Calculate lighting vector
-   mLightPos = -sCameraPosition;
-   dummyScene.mViewMatrix.mulV(mLightPos);
-   
-   // Calculate base modelview
-   MatrixF invView = dummyScene.mViewMatrix;
-   invView.inverse();
-   MatrixF glModelView = dummyScene.mWorldMatrix;
-   glModelView *= invView;
+   mLightPos = sCameraPosition;
    
    // Set base shader uniforms
-   mCurrentShader = sShader;
-   mCurrentShader->setProjectionMatrix(dummyScene.mProjectionMatrix);
-   mCurrentShader->setModelViewMatrix(glModelView);
-   mCurrentShader->setLightPosition(mLightPos);
-   mCurrentShader->setLightColor(ColorF(1,1,1,1));
-   mCurrentShader->use();
+   setLightPosition(mLightPos);
+   setLightColor(ColorF(1,1,1,1));
+   
+   mRenderer->SetPushConstants(renderConstants);
    
    // Now we can render
-   sRenderState->setSceneState(&dummyScene);
-   sRenderState->reset();
+   sRenderState->setSceneState(dummyScene);
    
    // Animate & render shape to the renderState
    sShapeInstance->beginUpdate(sRenderState);
@@ -370,7 +435,20 @@ void AppState::DrawShape(F32 dt)
    sShapeInstance->animateNodeSubtrees(true);
    sShapeInstance->animate();
    sShapeInstance->render(*sRenderState);
+}
+
+void AppState::ComputeShapeMeshes()
+{
+   if (!TSShape::smUseComputeSkinning)
+      return;
    
+   mRenderer->BeginComputePass();
+   mRenderer->DoComputeSkinning(sShapeInstance);
+   mRenderer->EndComputePass();
+}
+
+void AppState::DrawShapes()
+{
    // Ensure generated primitives are in the right z-order
    sRenderState->sortRenderInsts();
    
@@ -379,15 +457,13 @@ void AppState::DrawShape(F32 dt)
    {
       sRenderState->mRenderInsts[i]->render(sRenderState);
    }
-  
-   // Render translucent stuff
-   for (int i=0; i<sRenderState->mTranslucentRenderInsts.size(); i++)
-   {
-      // Update transform, & render buffers
-      sRenderState->mTranslucentRenderInsts[i]->render(sRenderState);
-   }
    
-   glDisable(GL_DEPTH_TEST);
+   // Render translucent stuff
+   /*for (int i=0; i<sRenderState->mTranslucentRenderInsts.size(); i++)
+    {
+    // Update transform, & render buffers
+    sRenderState->mTranslucentRenderInsts[i]->render(sRenderState);
+    }*/
 }
 
 void AppState::SwitchToSequence(U32 seqIdx, F32 transitionTime, bool doTransition)
@@ -445,6 +521,8 @@ void AppState::SetupProjection()
    frustum.getProjectionMatrix(&sProjectionMatrix, false);
 }
 
+SDL_Renderer* SetupMetalSDL(SDL_Window* window);
+
 int AppState::main(int argc, char **argv)
 {
    DTShapeInit::init();
@@ -462,11 +540,7 @@ int AppState::main(int argc, char **argv)
    
    int windowFlags = 0;
    
-#ifdef HAVE_OPENGLES2
-   windowFlags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|SDL_WINDOW_BORDERLESS;
-#else
-   windowFlags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
-#endif
+   windowFlags = SDL_WINDOW_RESIZABLE;
    
    SDL_GetCurrentDisplayMode(0, &mode);
    if (mode.w < screenW)
@@ -474,40 +548,13 @@ int AppState::main(int argc, char **argv)
    if (mode.h < screenH)
 	   screenH = mode.h;
    
-   window = SDL_CreateWindow("libDTShape Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenW, screenH, windowFlags);
+   mWindow = SDL_CreateWindow("libDTShape Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenW, screenH, windowFlags);
+   mSDLRenderer = SetupMetalSDL(mWindow);
    
-   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-#ifdef HAVE_OPENGLES2
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#else
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-#endif
+   SDL_ShowWindow(mWindow);
    
-   // Create an OpenGL context associated with the window.
-   glcontext = SDL_GL_CreateContext(window);
-   SDL_GL_MakeCurrent(window, glcontext);
-   
-   SDL_GL_GetDrawableSize(window, &screenW, &screenH);
-   glViewport(0, 0, screenW, screenH);
-   
-#ifndef HAVE_OPENGLES2
-   GLenum err = glewInit();
-   if (GLEW_OK != err)
-   {
-      Log::errorf("Error: %s\n", glewGetErrorString(err));
-      return false;
-   }
-   
-   Log::errorf("Using GLEW %s", glewGetString(GLEW_VERSION));
-#endif
-   
-   sShader = new GLSimpleShader(GLSimpleShader::sStandardVertexProgram, GLSimpleShader::sStandardFragmentProgram);
-   sSkinningShader = new GLSimpleShader(GLSimpleShader::sSkinnedVertexProgram, GLSimpleShader::sStandardFragmentProgram);
-   mCurrentShader = NULL;
+   createRenderer();
+   mRenderer->Init(mSDLRenderer);
 
    // Init render state
    sRenderState = new TSRenderState();
@@ -540,6 +587,16 @@ void AppState::OnAppLog(U32 level, LogEntry *logEntry)
       default:
          break;
    }
+}
+
+void AppState::setLightPosition(const DTShape::Point3F &pos)
+{
+   renderConstants.lightPos = simd_make_float3(pos.x, pos.y, pos.z);
+}
+
+void AppState::setLightColor(const DTShape::ColorF &color)
+{
+   renderConstants.lightColor = simd_make_float3(color.red, color.green, color.blue);
 }
 
 AppState *AppState::getInstance()

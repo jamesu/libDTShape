@@ -69,6 +69,8 @@ class ShapeBase;
 class TSMeshRenderer;
 class TSMeshInstanceRenderData;
 class TSIOState;
+class TSMesh;
+class TSShapeAlloc;
 
 struct TSDrawPrimitive
 {
@@ -87,6 +89,38 @@ struct TSDrawPrimitive
    S32 numElements;
    S32 matIndex;    ///< holds material index & element type (see above enum)
 };
+
+/// @name Vertex format serialization
+/// {
+struct TSBasicVertexFormat
+{
+   S16 texCoordOffset;
+   S16 boneOffset;
+   S16 colorOffset;
+   S16 numBones;
+   S16 vertexSize;
+   
+   TSBasicVertexFormat();
+   TSBasicVertexFormat(TSMesh *mesh);
+   void getFormat(GFXVertexFormat &fmt);
+   void calculateSize();
+   
+   void writeAlloc(TSShapeAlloc* alloc);
+   void readAlloc(TSShapeAlloc* alloc);
+   
+   void addMeshRequirements(TSMesh *mesh);
+   
+   U64 hash()
+   {
+      return ((U8)(numBones & 0xFF)) | ((U64)(vertexSize & 0xFF) << 8) | ((U64)((U16)texCoordOffset) << 16) | ((U64)((U16)boneOffset) << 32) | ((U64)((U16)colorOffset) << 48);
+   }
+   
+   bool operator==(const TSBasicVertexFormat &other)
+   {
+      return texCoordOffset == other.texCoordOffset && boneOffset == other.boneOffset && colorOffset == other.colorOffset && numBones == other.numBones && vertexSize == other.vertexSize;
+   }
+};
+/// }
 
 ///
 class TSMesh
@@ -400,6 +434,8 @@ protected:
    /// @{
    static const Point3F smU8ToNormalTable[];
    /// @}
+   
+   virtual void createBatchData() {;}
 
 
    TSMesh();
@@ -498,11 +534,11 @@ public:
 
    /// This method will build the batch operations and prepare the BatchData
    /// for use.
-   void createBatchData();
    virtual void convertToAlignedMeshData();
 
 public:
    typedef TSMesh Parent;
+   void createBatchData();
 
    /// Structure containing data needed to batch skinning
    BatchData batchData;

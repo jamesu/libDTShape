@@ -152,6 +152,8 @@ class TSShapeInstance
       S32 matFrame;
       F32 visible;
       
+      TSMesh *lastMesh;
+      
       /// If true this mesh is forced to be hidden
       /// regardless of the animation state.
       bool forceHidden;

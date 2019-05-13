@@ -26,34 +26,49 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
-#include "GLIncludes.h"
-
 #include "ts/tsRender.h"
 #include "ts/tsRenderState.h"
 #include "ts/tsMaterial.h"
 #include "ts/tsMaterialManager.h"
 #include "core/util/tVector.h"
 
+#include <unordered_map>
+#include <Metal/Metal.h>
+
 using namespace DTShape;
 
-class GLTSMaterial;
-class GLTSSceneRenderState;
-class GLSimpleShader;
+class MetalTSMaterial;
+class MetalTSSceneRenderState;
+class MetalSimpleShader;
+
+struct MetalPipelineState
+{
+   id<MTLRenderPipelineState> pipeline;
+   id<MTLDepthStencilState> depth;
+   uint32_t variantIdx;
+   
+   ~MetalPipelineState()
+   {
+      pipeline = nil;
+      depth = nil;
+   }
+};
 
 // Basic OpenGL Material Instance
-class GLTSMaterialInstance : public TSMaterialInstance
+class MetalTSMaterialInstance : public TSMaterialInstance
 {
 public:
-   GLTSMaterial *mMaterial;
-   GLuint mTexture;
-   GLSimpleShader *mShader;
+   MetalTSMaterial *mMaterial;
+   MetalPipelineState* mPipeline;
+   id<MTLTexture> mTexture;
+   id<MTLSamplerState> mSampler;
+   
    const GFXVertexFormat *mVertexFormat;
    
-   GLTSMaterialInstance(GLTSMaterial *mat);
-   ~GLTSMaterialInstance();
+   MetalTSMaterialInstance(MetalTSMaterial *mat);
+   ~MetalTSMaterialInstance();
    
-   virtual bool init(const GFXVertexFormat *fmt=NULL);
+   virtual bool init(TSMaterialManager* mgr, const GFXVertexFormat *fmt=NULL);
    
    virtual TSMaterial *getMaterial();
    
@@ -65,18 +80,18 @@ public:
    
    virtual const char* getName();
    
-   void activate(GLTSSceneRenderState *sceneState, TSRenderInst *renderInst);
+   void activate(const TSSceneRenderState *sceneState, TSRenderInst *renderInst);
 };
 
 // Basic OpenGL Material
-class GLTSMaterial : public TSMaterial
+class MetalTSMaterial : public TSMaterial
 {
 public:
    String mMapTo;
    String mName;
    
-   GLTSMaterial();
-   ~GLTSMaterial();
+   MetalTSMaterial();
+   ~MetalTSMaterial();
    
    // Create an instance of this material
    virtual TSMaterialInstance *createMatInstance(const GFXVertexFormat *fmt=NULL);
@@ -93,14 +108,29 @@ public:
 };
 
 // Basic OpenGL Material Manager
-class GLTSMaterialManager : public TSMaterialManager
+class TSPipelineCollection;
+class MetalTSMaterialManager : public TSMaterialManager
 {
 public:
-   GLTSMaterial *mDummyMaterial;
-   Vector<GLTSMaterial*> mMaterials;
    
-   GLTSMaterialManager();
-   ~GLTSMaterialManager();
+   MetalTSMaterial *mDummyMaterial;
+   Vector<MetalTSMaterial*> mMaterials;
+   
+   id<MTLFunction> mBasicVertexFunction;
+   id<MTLFunction> mSkinnedVertexFunction;
+   id<MTLFunction> mBasicFragmentFunction;
+   
+   std::unordered_map<const char*, TSPipelineCollection*> mPipelines;
+   
+   id<MTLDevice> mDevice;
+   
+   
+   
+   MetalTSMaterialManager();
+   ~MetalTSMaterialManager();
+   
+   void init(id<MTLDevice> &device, MTLPixelFormat backFormat);
+   void cleanup();
    
    TSMaterial *allocateAndRegister(const String &objectName, const String &mapToName = String());
 

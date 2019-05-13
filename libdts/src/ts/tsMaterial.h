@@ -59,6 +59,8 @@ public:
    virtual const char* getName() = 0;
 };
 
+class TSMaterialManager;
+
 // Instance of TSMaterial. This is mainly for the app to track instances created from
 // TSMaterial::createMatInstance.
 class TSMaterialInstance : public StrongRefBase
@@ -68,7 +70,7 @@ public:
    TSMaterialInstance(){;}
    ~TSMaterialInstance(){;}
    
-   virtual bool init(const GFXVertexFormat *fmt=NULL) = 0;
+   virtual bool init(TSMaterialManager* mgr, const GFXVertexFormat *fmt=NULL) = 0;
    virtual TSMaterial *getMaterial() = 0;
    virtual bool isTranslucent() = 0;
    virtual bool isValid() = 0;

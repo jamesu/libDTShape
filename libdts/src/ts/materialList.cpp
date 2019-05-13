@@ -326,7 +326,7 @@ void MaterialList::initMatInstances( const GFXVertexFormat *vertexFormat )
       if ( !matInst )
          continue;
       
-      if ( !matInst->init( vertexFormat ) )
+      if ( !matInst->init( TSMaterialManager::instance(), vertexFormat ) )
       {
          Log::errorf( "MaterialList::initMatInstances - failed to initialize material instance for '%s'",
                      matInst->getMaterial()->getName() );

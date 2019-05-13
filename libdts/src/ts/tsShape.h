@@ -728,6 +728,7 @@ class TSShape : public StrongRefBase
    
    static bool smAllowHardwareSkinning;
    static bool smUseHardwareSkinning;
+   static bool smUseComputeSkinning;
 };
 
 typedef StrongRefPtr<TSShape> TSShapeRef;
