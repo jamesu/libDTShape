@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2013 James S Urquhart
+Copyright (C) 2019 James S Urquhart
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -52,22 +52,24 @@ extern "C"
 
 using namespace DTShape;
 
+bool gUseMetal;
+
 // Generic interface which provides scene info to the rendering code
-class MetalTSSceneRenderState : public TSSceneRenderState
+class GenericTSSceneRenderState : public TSSceneRenderState
 {
 public:
    MatrixF mWorldMatrix;
    MatrixF mViewMatrix;
    MatrixF mProjectionMatrix;
    
-   MetalTSSceneRenderState()
+   GenericTSSceneRenderState()
    {
       mWorldMatrix = MatrixF(1);
       mViewMatrix = MatrixF(1);
       mProjectionMatrix = MatrixF(1);
    }
    
-   ~MetalTSSceneRenderState()
+   ~GenericTSSceneRenderState()
    {
    }
    
@@ -187,9 +189,13 @@ AppState::~AppState()
    if (mRenderer)
       delete mRenderer;
    
-   if (mWindow)
+   if (mSDLRenderer)
    {
       SDL_DestroyRenderer(mSDLRenderer);
+   }
+   
+   if (mWindow)
+   {
       SDL_DestroyWindow(mWindow);
    }
    sInstance = NULL;
@@ -385,7 +391,7 @@ void AppState::CleanupShape()
 
 void AppState::PrepShape(F32 dt)
 {
-   MetalTSSceneRenderState *dummyScene = sRenderState->allocCustom<MetalTSSceneRenderState>();
+   GenericTSSceneRenderState *dummyScene = sRenderState->allocCustom<GenericTSSceneRenderState>();
    constructInPlace(dummyScene);
    
    sCameraPosition += deltaCameraPos * dt;
@@ -498,6 +504,12 @@ void AppState::SetupProjection()
 {
    F32 viewportWidth = 800;
    F32 viewportHeight = 600;
+   
+   int viewportWidthI, viewportHeightI;
+   SDL_GetWindowSize(mWindow, &viewportWidthI, &viewportHeightI);
+   viewportWidth = viewportWidthI;
+   viewportHeight = viewportHeightI;
+   
    F32 viewportFOV = 70.0f;
    F32 aspectRatio = viewportWidth / viewportHeight;
    
@@ -529,6 +541,14 @@ int AppState::main(int argc, char **argv)
    
    Log::addConsumer(OnAppLog);
    
+   for (int i=0; i<argc; i++)
+   {
+      if (strcmp(argv[i], "-metal") == 0)
+      {
+         gUseMetal = true;
+      }
+   }
+   
    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
       Log::errorf("Couldn't initialize SDL: %s\n", SDL_GetError());
       return (1);
@@ -549,12 +569,22 @@ int AppState::main(int argc, char **argv)
 	   screenH = mode.h;
    
    mWindow = SDL_CreateWindow("libDTShape Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenW, screenH, windowFlags);
+   
+   
+#if defined(USE_BOTH_RENDER)
+   mSDLRenderer = gUseMetal ? SetupMetalSDL(mWindow) : NULL;
+#else
+#if defined(USE_METAL)
    mSDLRenderer = SetupMetalSDL(mWindow);
+#else
+   mSDLRenderer = NULL;
+#endif
+#endif
    
    SDL_ShowWindow(mWindow);
    
    createRenderer();
-   mRenderer->Init(mSDLRenderer);
+   mRenderer->Init(mWindow, mSDLRenderer);
 
    // Init render state
    sRenderState = new TSRenderState();

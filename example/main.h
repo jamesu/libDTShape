@@ -59,7 +59,7 @@ class BaseRenderer
 public:
    virtual ~BaseRenderer() {;}
    
-   virtual void Init(SDL_Renderer* renderer) = 0;
+   virtual void Init(SDL_Window* window, SDL_Renderer* renderer) = 0;
    
    virtual bool BeginFrame() = 0;
    virtual void EndFrame() = 0;

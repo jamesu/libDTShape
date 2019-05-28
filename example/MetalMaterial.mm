@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2013 James S Urquhart
+Copyright (C) 2019 James S Urquhart
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -43,7 +43,7 @@ static const char *sMaterialTextureExts[] = {
 
 extern const char* GetAssetPath(const char *file);
 
-class TSPipelineCollection;
+class TSMetalPipelineCollection;
 
 
 MTLVertexFormat GFXToMetalVertexFormat(const GFXDeclType &fmt)
@@ -68,7 +68,7 @@ MTLVertexFormat GFXToMetalVertexFormat(const GFXDeclType &fmt)
 }
 
 // Up to VARIANT_SIZE
-void GFXGenVertexFormat(GFXVertexFormat &fmt, uint8_t variant)
+static void GFXGenVertexFormat(GFXVertexFormat &fmt, uint8_t variant)
 {
    bool hasTexcoord2 = variant & 0x1;
    bool hasColors = variant & 0x2;
@@ -91,7 +91,7 @@ void GFXGenVertexFormat(GFXVertexFormat &fmt, uint8_t variant)
    
    if (hasSkin)
    {
-      printf("METAL GEN SKIN OFFSET == %u\n", fmt.getSizeInBytes());
+      //printf("METAL GEN SKIN OFFSET == %u\n", fmt.getSizeInBytes());
       fmt.addElement( GFXSemantic::BLENDINDICES, GFXDeclType_UByte4 );
       fmt.addElement( GFXSemantic::BLENDWEIGHT, GFXDeclType_Float4 );
    }
@@ -111,7 +111,7 @@ void GFXGenVertexFormat(GFXVertexFormat &fmt, uint8_t variant)
 }
 
 // Provides a collection of possible pipeline states for a fragment function
-class TSPipelineCollection
+class TSMetalPipelineCollection
 {
 public:
    enum
@@ -119,13 +119,13 @@ public:
       VARIANT_SIZE = 8
    };
    
-   TSPipelineCollection(const char* fragment_name)
+   TSMetalPipelineCollection(const char* fragment_name)
    {
       memset(mPipelines, '\0', sizeof(mPipelines));
       mFragmentName = fragment_name;
    }
    
-   ~TSPipelineCollection()
+   ~TSMetalPipelineCollection()
    {
       for (int i=0; i<VARIANT_SIZE; i++)
       {
@@ -363,8 +363,9 @@ bool MetalTSMaterialInstance::init(TSMaterialManager* mgr, const GFXVertexFormat
    mSampler = [MetalTSMeshRenderer::smDevice newSamplerStateWithDescriptor:samplerDescriptor];
    
    MetalTSMaterialManager* mmgr = (MetalTSMaterialManager*)mgr;
-   TSPipelineCollection* collection = mmgr->mPipelines["standard_fragment"];
+   TSMetalPipelineCollection* collection = mmgr->mPipelines["standard_fragment"];
    mPipeline = collection->resolvePipeline(*fmt, !TSShape::smUseHardwareSkinning);
+   assert(mPipeline);
    
    return mTexture != 0;
 }
@@ -415,7 +416,7 @@ void MetalTSMaterialInstance::activate(const TSSceneRenderState *sceneState, TSR
       correctMat.setColumn(2, Point4F(0,0,0.5,0));
       correctMat.setColumn(3, Point4F(0,0,0.5,1));
       
-      MatrixF combined = *sceneState->getProjectionMatrix() * correctMat * glModelView;
+      MatrixF combined = (correctMat * *sceneState->getProjectionMatrix()) * glModelView;
       combined.transpose();
       memcpy(&renderConstants.worldMatrixProjection, &combined, sizeof(MatrixF));
       
@@ -578,14 +579,14 @@ void MetalTSMaterialManager::init(id<MTLDevice> &device, MTLPixelFormat backForm
    
    mDevice = device;
    
-   TSPipelineCollection* collection = new TSPipelineCollection("standard_fragment");
+   TSMetalPipelineCollection* collection = new TSMetalPipelineCollection("standard_fragment");
    collection->init(device);
    mPipelines["standard_fragment"] = collection;
 }
 
 void MetalTSMaterialManager::cleanup()
 {
-   for (std::unordered_map<const char*, TSPipelineCollection*>::iterator itr = mPipelines.begin(); itr != mPipelines.end(); itr++)
+   for (std::unordered_map<const char*, TSMetalPipelineCollection*>::iterator itr = mPipelines.begin(); itr != mPipelines.end(); itr++)
    {
       delete itr->second;
    }

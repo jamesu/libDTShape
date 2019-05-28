@@ -1185,7 +1185,7 @@ void TSSkinMesh::updateSkin( const Vector<MatrixF> &transforms, TSRenderState &r
       Point3F skinnedNorm;
       
       // If using hardware skinning, don't update (data is set in createBatchData)
-      if (TSShape::smUseHardwareSkinning || true)
+      if (TSShape::smUseHardwareSkinning)
          return;
 
       for( Vector<BatchData::BatchedVertex>::const_iterator itr = batchData.vertexBatchOperations.begin();

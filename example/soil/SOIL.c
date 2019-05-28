@@ -15,23 +15,7 @@
 
 #define SOIL_CHECK_FOR_GL_ERRORS 1
 
-#ifdef WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#include <wingdi.h>
-	#include <GL/gl.h>
-#elif defined(__APPLE__) || defined(__APPLE_CC__)
-	/*	I can't test this Apple stuff!	*/
-	#include <OpenGL/gl.h>
-	#include <Carbon/Carbon.h>
-	#define APIENTRY
-#elif defined(HAVE_OPENGLES2)
-	#include "SDL_opengles2.h"
-	#define GL_CLAMP     GL_CLAMP_TO_EDGE
-#else
-	#include <GL/gl.h>
-	#include <GL/glx.h>
-#endif
+#include "GLIncludes.h"
 
 #include "SOIL.h"
 #include "stb_image_aug.h"
@@ -1180,10 +1164,10 @@ unsigned int
 		switch( channels )
 		{
 		case 1:
-			original_texture_format = GL_LUMINANCE;
+			original_texture_format = GL_RED;
 			break;
 		case 2:
-			original_texture_format = GL_LUMINANCE_ALPHA;
+			original_texture_format = GL_RG;
 			break;
 		case 3:
 			original_texture_format = GL_RGB;
@@ -1346,7 +1330,7 @@ unsigned int
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-			unsigned int clamp_mode = GL_CLAMP;
+         unsigned int clamp_mode = GL_CLAMP_TO_EDGE;
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
 			if( opengl_texture_type == SOIL_TEXTURE_CUBE_MAP )
@@ -1813,7 +1797,7 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-			unsigned int clamp_mode = GL_CLAMP;
+         unsigned int clamp_mode = GL_CLAMP_TO_EDGE;
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
 			glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, clamp_mode );
@@ -1879,18 +1863,7 @@ int query_NPOT_capability( void )
 	if( has_NPOT_capability == SOIL_CAPABILITY_UNKNOWN )
 	{
 		/*	we haven't yet checked for the capability, do so	*/
-		if(
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_ARB_texture_non_power_of_two" ) )
-			)
-		{
-			/*	not there, flag the failure	*/
-			has_NPOT_capability = SOIL_CAPABILITY_NONE;
-		} else
-		{
-			/*	it's there!	*/
-			has_NPOT_capability = SOIL_CAPABILITY_PRESENT;
-		}
+      has_NPOT_capability = SOIL_CAPABILITY_PRESENT;
 	}
 	/*	let the user know if we can do non-power-of-two textures or not	*/
 	return has_NPOT_capability;
@@ -1901,25 +1874,7 @@ int query_tex_rectangle_capability( void )
 	/*	check for the capability	*/
 	if( has_tex_rectangle_capability == SOIL_CAPABILITY_UNKNOWN )
 	{
-		/*	we haven't yet checked for the capability, do so	*/
-		if(
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_ARB_texture_rectangle" ) )
-		&&
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_EXT_texture_rectangle" ) )
-		&&
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_NV_texture_rectangle" ) )
-			)
-		{
-			/*	not there, flag the failure	*/
-			has_tex_rectangle_capability = SOIL_CAPABILITY_NONE;
-		} else
-		{
-			/*	it's there!	*/
-			has_tex_rectangle_capability = SOIL_CAPABILITY_PRESENT;
-		}
+      has_tex_rectangle_capability = SOIL_CAPABILITY_NONE;
 	}
 	/*	let the user know if we can do texture rectangles or not	*/
 	return has_tex_rectangle_capability;
@@ -1930,22 +1885,7 @@ int query_cubemap_capability( void )
 	/*	check for the capability	*/
 	if( has_cubemap_capability == SOIL_CAPABILITY_UNKNOWN )
 	{
-		/*	we haven't yet checked for the capability, do so	*/
-		if(
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_ARB_texture_cube_map" ) )
-		&&
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_EXT_texture_cube_map" ) )
-			)
-		{
-			/*	not there, flag the failure	*/
-			has_cubemap_capability = SOIL_CAPABILITY_NONE;
-		} else
-		{
-			/*	it's there!	*/
-			has_cubemap_capability = SOIL_CAPABILITY_PRESENT;
-		}
+      has_cubemap_capability = SOIL_CAPABILITY_PRESENT;
 	}
 	/*	let the user know if we can do cubemaps or not	*/
 	return has_cubemap_capability;
@@ -1956,74 +1896,7 @@ int query_DXT_capability( void )
 	/*	check for the capability	*/
 	if( has_DXT_capability == SOIL_CAPABILITY_UNKNOWN )
 	{
-		/*	we haven't yet checked for the capability, do so	*/
-		if( NULL == strstr(
-				(char const*)glGetString( GL_EXTENSIONS ),
-				"GL_EXT_texture_compression_s3tc" ) )
-		{
-			/*	not there, flag the failure	*/
-			has_DXT_capability = SOIL_CAPABILITY_NONE;
-		} else
-		{
-			/*	and find the address of the extension function	*/
-			P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC ext_addr = NULL;
-			#ifdef WIN32
-				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
-						wglGetProcAddress
-						(
-							"glCompressedTexImage2DARB"
-						);
-			#elif defined(__APPLE__) || defined(__APPLE_CC__)
-				/*	I can't test this Apple stuff!	*/
-				CFBundleRef bundle;
-				CFURLRef bundleURL =
-					CFURLCreateWithFileSystemPath(
-						kCFAllocatorDefault,
-						CFSTR("/System/Library/Frameworks/OpenGL.framework"),
-						kCFURLPOSIXPathStyle,
-						true );
-				CFStringRef extensionName =
-					CFStringCreateWithCString(
-						kCFAllocatorDefault,
-						"glCompressedTexImage2DARB",
-						kCFStringEncodingASCII );
-				bundle = CFBundleCreate( kCFAllocatorDefault, bundleURL );
-				assert( bundle != NULL );
-				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
-						CFBundleGetFunctionPointerForName
-						(
-							bundle, extensionName
-						);
-				CFRelease( bundleURL );
-				CFRelease( extensionName );
-				CFRelease( bundle );
-			#elif defined(HAVE_OPENGLES2)
-				ext_addr = &glCompressedTexImage2D;
-			#else
-				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
-						glXGetProcAddressARB
-						(
-							(const GLubyte *)"glCompressedTexImage2DARB"
-						);
-			
-			#endif
-			/*	Flag it so no checks needed later	*/
-			if( NULL == ext_addr )
-			{
-				/*	hmm, not good!!  This should not happen, but does on my
-					laptop's VIA chipset.  The GL_EXT_texture_compression_s3tc
-					spec requires that ARB_texture_compression be present too.
-					this means I can upload and have the OpenGL drive do the
-					conversion, but I can't use my own routines or load DDS files
-					from disk and upload them directly [8^(	*/
-				has_DXT_capability = SOIL_CAPABILITY_NONE;
-			} else
-			{
-				/*	all's well!	*/
-				soilGlCompressedTexImage2D = ext_addr;
-				has_DXT_capability = SOIL_CAPABILITY_PRESENT;
-			}
-		}
+      has_DXT_capability = SOIL_CAPABILITY_NONE;
 	}
 	/*	let the user know if we can do DXT or not	*/
 	return has_DXT_capability;

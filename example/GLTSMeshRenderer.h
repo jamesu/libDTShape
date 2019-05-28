@@ -1,8 +1,8 @@
-#ifndef _METALTSMESHRENDERER_H_
-#define _METALTSMESHRENDERER_H_
+#ifndef _GLTSMESHRENDERER_H_
+#define _GLTSMESHRENDERER_H_
 
 /*
-Copyright (C) 2013-2019 James S Urquhart
+Copyright (C) 2019 James S Urquhart
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -28,40 +28,35 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ts/tsRenderState.h"
 #include "ts/tsMesh.h"
-#include <Metal/Metal.h>
-
-#include "mtl_shared.h"
+#include "GLIncludes.h"
 
 using namespace DTShape;
 
 // Basic OpenGL Buffer Information
-class MetalTSMeshInstanceRenderData : public TSMeshInstanceRenderData
+class GLTSMeshInstanceRenderData : public TSMeshInstanceRenderData
 {
 public:
-   MetalTSMeshInstanceRenderData() : mVB(), mNumVerts(0), mVBOffset(0) { memset(&mComputeParams, '\0', sizeof(mComputeParams)); }
+   GLTSMeshInstanceRenderData() : mVB(0), mNumVerts(0), mVBOffset(0) {}
    
-   ~MetalTSMeshInstanceRenderData()
+   ~GLTSMeshInstanceRenderData()
    {
    }
    
-   id<MTLBuffer> mVB;
+   GLuint mVB;
    U32 mVBOffset;
    U32 mNumVerts;
-   SkinParams mComputeParams;
+   //SkinParams mComputeParams;
 };
 
 // Generic interface which stores vertex buffers and such for TSMeshes
-class MetalTSMeshRenderer : public TSMeshRenderer
+class GLTSMeshRenderer : public TSMeshRenderer
 {
 public:
-   MetalTSMeshRenderer();
-   virtual ~MetalTSMeshRenderer();
+   GLTSMeshRenderer();
+   virtual ~GLTSMeshRenderer();
    
-   static id<MTLDevice> smDevice;
-   static id<MTLRenderCommandEncoder> smCurrentRenderEncoder;
-   
-   id<MTLBuffer> mPB;
-   id<MTLBuffer> mVB;
+   GLuint mPB;
+   GLuint mVB;
    int mNumIndices;
    int mNumVerts;
    

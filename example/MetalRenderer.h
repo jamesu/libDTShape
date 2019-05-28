@@ -22,7 +22,7 @@ public:
    void cleanup();
    
    
-   void Init(SDL_Renderer* renderer);
+   void Init(SDL_Window* window, SDL_Renderer* renderer);
    
    virtual bool BeginFrame();
    

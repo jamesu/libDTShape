@@ -122,7 +122,7 @@ void MetalRenderer::cleanup()
 }
 
 
-void MetalRenderer::Init(SDL_Renderer* renderer)
+void MetalRenderer::Init(SDL_Window* window, SDL_Renderer* renderer)
 {
    mRenderer = renderer;
    mFrameSemaphore = SemBase::create(2);
@@ -412,9 +412,11 @@ void MetalRenderer::EndComputePass()
    mCurrentComputeEncoder = nil;
 }
 
-
+#if defined(USE_METAL) && !defined(USE_BOTH_RENDER)
 void AppState::createRenderer()
 {
    mRenderer = new MetalRenderer();
    mMaterialManager = new MetalTSMaterialManager();
 }
+#endif
+
