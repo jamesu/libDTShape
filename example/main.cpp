@@ -156,7 +156,7 @@ AppState::AppState()
 {
    running = false;
    mWindow = NULL;
-   dStrcpy(shapeToLoad, "player.dts");//cube.dae");
+   dStrcpy(shapeToLoad, "cube.dae");
    sInstance = this;
    
    sShape = NULL;
